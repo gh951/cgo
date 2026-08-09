@@ -78,23 +78,25 @@ main{padding:14px 16px 22px;display:flex;flex-direction:column;gap:10px}
 .lc .tg i{width:5px;height:5px;border-radius:50%;animation:glow 1.8s infinite}
 .bar{width:100%;display:flex;align-items:center;gap:12px;padding:19px 16px;min-height:68px;border-radius:12px;background:linear-gradient(120deg,#0a1220,#0b1526);cursor:pointer;text-align:left;color:inherit}
 .bar .tt{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-width:0}
-.bar .t{font-size:12.5px;font-weight:800}
-.bar .s{font-size:10px;color:rgba(204,216,228,.45)}
-.bar .c{font-size:9px;color:rgba(204,216,228,.45);transition:transform .18s}
+.bar .t{font-size:15px;font-weight:800;color:#2f8f5b}
+.bar .s{font-size:12px;color:rgba(255,255,255,.58)}
+.bar .c{font-size:11px;color:rgba(255,255,255,.5);transition:transform .18s}
 .bar.open .c{transform:rotate(90deg)}
 .body{padding:4px 14px 16px;animation:fade .18s ease-out}
 .grp{margin-bottom:16px}
 .grp-h{display:flex;align-items:baseline;gap:9px;margin-bottom:9px}
-.grp-h span:first-child{font-family:'Lato','Noto Sans KR',sans-serif;font-weight:900;font-size:14.5px}
-.grp-h .tag{font-size:9.5px;letter-spacing:.14em;color:rgba(212,168,67,.7);font-family:'Orbitron',sans-serif}
+.grp-h span:first-child{font-family:'Lato','Noto Sans KR',sans-serif;font-weight:900;font-size:14px;color:#fff}
+.grp-h .tag{font-size:10.5px;letter-spacing:.14em;color:rgba(212,168,67,.7);font-family:'Orbitron',sans-serif}
 .grp-h .rule{flex:1;height:1px;background:var(--line)}
 /* ★2026-08-09 — 타일을 정사각형으로. 바 형태는 글자 위주라 눈으로 훑기 어려웠다.
    이모지를 크게 두고 칸을 정사각으로 만들면 아이콘이 먼저 눈에 들어온다. */
 .tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:9px}
-.tile{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;aspect-ratio:1/1;padding:10px 7px;border-radius:16px;border:1px solid var(--line);background:var(--card);cursor:pointer;font:inherit;color:var(--txt);font-size:11px;font-weight:700;text-align:center;line-height:1.3;letter-spacing:-.1px;transition:border-color .14s,transform .14s,background .14s}
+/* ★2026-08-09 — 전체 기능 타일만 민트로 구분한다.
+   마이페이지·프로필은 금색, 39개 기능 타일은 민트 — 성격이 다른 곳을 색으로 나눈다. */
+.tile{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;aspect-ratio:1/1;padding:10px 7px;border-radius:16px;border:1px solid rgba(45,212,191,.34);background:linear-gradient(180deg,rgba(45,212,191,.13),rgba(45,212,191,.045));cursor:pointer;font:inherit;color:var(--txt);font-size:12.5px;font-weight:700;text-align:center;line-height:1.3;letter-spacing:-.1px;transition:border-color .14s,transform .14s,background .14s}
 .tile:active{transform:scale(.96)}
-.tile:hover{border-color:rgba(212,168,67,.45)}
-.tile .ico{font-size:30px;line-height:1;filter:saturate(1.05)}
+.tile:hover{border-color:rgba(45,212,191,.7);background:linear-gradient(180deg,rgba(45,212,191,.22),rgba(45,212,191,.08))}
+.tile .ico{font-size:32px;line-height:1;filter:saturate(1.05)}
 .tile .od{position:absolute;top:8px;right:8px;font-size:7px;font-weight:900;letter-spacing:.08em;color:var(--cyan);font-family:'Orbitron',sans-serif}
 #mount:empty{display:none}
 .stub{border:1px solid var(--line);background:var(--card);border-radius:16px;padding:26px;min-height:300px;display:flex;flex-direction:column;gap:14px;animation:fade .2s ease-out}
@@ -131,6 +133,99 @@ main{padding:14px 16px 22px;display:flex;flex-direction:column;gap:10px}
   background:var(--mintL);color:#eaf7f4;font-size:13.5px;font-weight:800;cursor:pointer}
 .fsp .skip{display:flex;align-items:center;gap:7px;margin-top:14px;font-size:11.5px;color:var(--ink3);cursor:pointer}
 
+
+
+/* 안내 팝업 — 표·강점·한계 블록 */
+.fsp .rate{background:#fff;border:1px solid rgba(16,27,43,.08);border-radius:12px;padding:4px 14px;margin-top:10px}
+.fsp .rate div{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgba(16,27,43,.05);font-size:11px}
+.fsp .rate div:last-child{border-bottom:0}
+.fsp .rate .l{font-weight:700;color:var(--ink2);width:112px;flex-shrink:0}
+.fsp .rate .st{color:#f0a500;letter-spacing:1px;font-size:11px;width:60px;flex-shrink:0}
+.fsp .rate .r{color:var(--ink3);font-size:10px}
+.fsp .blk{border-radius:12px;padding:13px 15px;margin-top:10px;font-size:10.5px;line-height:1.95}
+.fsp .blk .hd{font-size:11px;font-weight:800;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.fsp .blk li{list-style:none;display:flex;gap:7px;padding:3px 0;color:var(--ink2)}
+.fsp .blk li b{font-weight:800;color:var(--ink)}
+.fsp .quote{margin-top:14px;border:1px dashed rgba(18,185,129,.35);border-radius:12px;background:#f2fbf8;
+  padding:16px;text-align:center;font-size:12px;font-weight:700;color:#0e5a4e;line-height:1.9}
+
+/* ── 건강 페이지 (WINDOW 2 · 600번대) ── */
+.hz{margin:-26px -22px 0;padding:22px 20px 30px;background:linear-gradient(165deg,#0d4f42,#0a3d34);border-radius:16px 16px 0 0}
+.hz-box{background:#fff;border-radius:14px;padding:14px;box-shadow:0 6px 22px rgba(0,0,0,.18)}
+.hz-t{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:800;color:#0e5a4e;margin-bottom:11px}
+.hz-6{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;background:#f2faf8;border-radius:10px;padding:10px 6px}
+.hz-6 div{text-align:center}
+.hz-6 .e{font-size:17px;line-height:1}
+.hz-6 .n{font-size:9.5px;font-weight:700;color:#123;margin-top:4px}
+.hz-6 .s{font-size:8.5px;color:#8fa4a0;margin-top:1px}
+.hz-go{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:11px;padding:15px;
+  border:0;border-radius:11px;background:linear-gradient(100deg,#15a37f,#0d8a6a);color:#fff;
+  font-size:13.5px;font-weight:800;cursor:pointer;box-shadow:0 3px 12px rgba(13,138,106,.3)}
+.hz-go .sub{font-weight:600;opacity:.85;font-size:11px}
+.hz-p{margin-top:9px;padding:8px;border-radius:8px;background:#f6fbfa;border:1px solid rgba(14,90,78,.08);
+  font-size:9px;color:#7d968f;text-align:center;line-height:1.6}
+
+.h-sec{margin-top:26px}
+.h-sec > h2{display:flex;align-items:baseline;gap:9px;font-family:'Lato','Noto Sans KR',sans-serif;
+  font-weight:900;font-size:16px;color:var(--ink);margin:0 0 13px}
+.h-sec > h2 em{font-style:normal;font-size:10px;font-weight:700;color:#12b981}
+
+.h-g5{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:9px}
+.h-c{background:#fff;border:1px solid rgba(16,27,43,.07);border-radius:12px;padding:15px 11px 13px;
+  text-align:center;cursor:pointer;transition:border-color .16s,transform .12s}
+.h-c:hover{border-color:rgba(18,185,129,.4);transform:translateY(-1px)}
+.h-c .e{font-size:21px;line-height:1;margin-bottom:8px}
+.h-c .n{font-size:11px;font-weight:800;color:var(--ink)}
+.h-c .d{font-size:9px;color:var(--ink3);margin-top:4px;line-height:1.5}
+
+.h-g3{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
+.h-st{background:#fff;border:1px solid rgba(16,27,43,.07);border-radius:12px;padding:13px 14px 12px;position:relative}
+.h-st b{position:absolute;top:-8px;left:13px;width:19px;height:19px;border-radius:6px;background:#12b981;
+  color:#fff;font-size:10px;font-weight:900;display:flex;align-items:center;justify-content:center}
+.h-st .e{font-size:17px;margin:5px 0 7px;line-height:1}
+.h-st .n{font-size:12px;font-weight:800;color:var(--ink)}
+.h-st .d{font-size:9.5px;color:var(--ink3);margin-top:3px;line-height:1.5}
+.h-st .s{font-size:9.5px;font-weight:700;color:#12b981;margin-top:7px}
+
+.h-g4{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+.h-i{border-radius:12px;padding:15px 13px 13px;text-align:center;border:1.5px solid}
+.h-i .e{font-size:19px;line-height:1;margin-bottom:7px}
+.h-i .n{font-size:13px;font-weight:900}
+.h-i .d{font-size:9.5px;color:var(--ink3);margin-top:5px;line-height:1.5}
+
+.h-wait{border:1.5px dashed rgba(47,110,240,.3);border-radius:13px;background:#f7faff;
+  padding:26px 18px;text-align:center}
+.h-wait .e{font-size:24px;margin-bottom:9px}
+.h-wait .n{font-size:12.5px;font-weight:800;color:#2f6ef0;margin-bottom:6px}
+.h-wait .d{font-size:10px;color:var(--ink3);line-height:1.8}
+
+.h-split{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-top:12px}
+@media(max-width:560px){.h-split{grid-template-columns:1fr}}
+.h-rows{background:#fff;border:1px solid rgba(16,27,43,.07);border-radius:12px;padding:6px 14px}
+.h-rows>div{display:flex;gap:12px;align-items:flex-start;text-align:left;padding:13px 0;font-size:10.5px;color:var(--ink3);
+  border-bottom:1px solid rgba(16,27,43,.05)}
+.h-rows>div>div{flex:1;min-width:0}
+.h-rows .hd{flex:0 0 22px;width:22px;height:22px;border-radius:7px;display:flex;align-items:center;justify-content:center;
+  background:rgba(21,155,109,.1);color:var(--mint);font-size:10.5px;font-weight:800}
+.h-rows span:not(.hd){display:block;font-size:11.5px;color:var(--ink3);line-height:1.75}
+.h-rows div:last-child{border-bottom:0}
+.h-rows b{display:block;font-size:13px;font-weight:800;color:var(--ink);margin-bottom:3px}
+.h-list{background:#fff;border:1px solid rgba(16,27,43,.07);border-radius:12px;padding:12px 14px}
+.h-list > .hd{font-size:10.5px;font-weight:800;color:#e0567a;margin-bottom:9px}
+.h-list li{list-style:none;display:flex;align-items:center;gap:7px;padding:6px 0;font-size:10.5px;color:var(--ink2)}
+
+.h-ai{border:1px solid rgba(212,168,67,.28);border-radius:13px;background:#fffdf6;padding:15px;
+  display:flex;align-items:flex-start;gap:12px}
+.h-ai .e{font-size:26px;line-height:1;flex-shrink:0}
+.h-ai .n{font-size:12.5px;font-weight:800;color:var(--ink)}
+.h-ai .d{font-size:10px;color:var(--ink3);margin-top:5px;line-height:1.8}
+.h-ai .lk{margin-left:auto;flex-shrink:0;padding:4px 9px;border-radius:9px;background:#fff4e0;
+  color:#b07d1a;font-size:8.5px;font-weight:800;white-space:nowrap}
+
+.h-warn{margin-top:22px;border:1px solid rgba(224,86,122,.2);border-radius:12px;background:#fff7f9;
+  padding:14px 16px;font-size:9.5px;color:#8a6572;line-height:1.9}
+.h-warn b{color:#c0455f}
+
 /* ── 밝은 페이지 ── */
 .pg{background:var(--pg);border-radius:16px;padding:26px 22px 28px;animation:fade .18s ease-out;color:var(--ink)}
 .pg-h{display:flex;align-items:flex-start;gap:14px;margin-bottom:20px}
@@ -160,9 +255,123 @@ main{padding:14px 16px 22px;display:flex;flex-direction:column;gap:10px}
 .pg .sel-row{display:flex;align-items:center;gap:9px;background:#fff;border:1px solid rgba(16,27,43,.09);
   border-radius:11px;padding:14px 15px;margin-bottom:9px;font-size:12.5px;font-weight:700;color:var(--ink);cursor:pointer}
 .pg .sel-row .cv{margin-left:auto;font-size:10px;color:var(--ink3)}
+
+/* ★ 페이지 되돌아가기 줄 — 모든 기능이 같은 자리, 같은 모양.
+   왜 위인가: 되돌아가기는 화면 맨 위 왼쪽에 있어야 손이 먼저 간다.
+   긴 페이지에서 아래에만 있으면 끝까지 내려가야 나온다.
+   붙박이(sticky)라 스크롤해도 항상 같은 자리에 있다. */
+/* ★2026-08-09 — 되돌아가기를 오른쪽 아래 떠 있는 단추로.
+   위에 두면 페이지 제목과 나란히 놓여 어수선하고, 손이 닿기에도 먼 자리다.
+   오른쪽 아래는 엄지가 가장 편히 닿는 곳이라 39개 기능 어디서든 같은 동작이 된다. */
+.pg-top{display:none}
+.pg-fab{position:fixed;right:18px;bottom:20px;z-index:60;display:inline-flex;align-items:center;gap:7px;
+  padding:12px 18px 12px 15px;background:#12474f;color:#eafaf3;border:0;border-radius:999px;
+  font-size:12.5px;font-weight:800;cursor:pointer;box-shadow:0 6px 18px rgba(18,71,79,.3);
+  transition:transform .14s,box-shadow .14s,background .14s}
+.pg-fab:hover{background:#0f3a41;transform:translateY(-2px);box-shadow:0 9px 24px rgba(18,71,79,.36)}
+.pg-fab:active{transform:translateY(0)}
+.pg-fab2{position:fixed;right:18px;bottom:72px;z-index:60;display:inline-flex;align-items:center;gap:6px;
+  padding:9px 15px;background:rgba(255,255,255,.97);color:#2f8f5b;border:1px solid rgba(47,143,91,.26);
+  border-radius:999px;font-size:11.5px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(18,71,79,.13)}
+.pg-fab2:hover{background:#fff;border-color:rgba(47,143,91,.45)}
 .pg-back{display:inline-flex;align-items:center;gap:7px;margin-top:18px;padding:12px 20px;
   border-radius:11px;border:1px solid rgba(16,27,43,.12);background:#fff;
   color:var(--ink2);font-size:12px;font-weight:700;cursor:pointer}
+
+
+.h-c[data-cond]{cursor:pointer;transition:transform .14s,box-shadow .14s,border-color .14s}
+.h-c[data-cond]:hover{transform:translateY(-2px);border-color:rgba(26,127,142,.4);box-shadow:0 6px 20px rgba(26,127,142,.14)}
+.h-c[data-cond]:active{transform:translateY(0)}
+.cd-h{display:flex;gap:16px;align-items:flex-start;margin-bottom:22px}
+.cd-e{font-size:40px;line-height:1;flex:none}
+.cd-h h1{margin:0 0 6px;font-size:26px;font-weight:800;color:#0f2f3a;letter-spacing:-.3px}
+.cd-s{margin:0;font-size:14px;color:#5d7f88;line-height:1.55}
+.cd-box{background:#fff;border:1px solid rgba(26,127,142,.13);border-radius:14px;padding:18px 20px;margin-bottom:12px}
+.cd-t{font-size:11px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:#1a7f8e;margin-bottom:10px}
+.cd-box p{margin:0;font-size:14.5px;line-height:1.72;color:#2c4a54}
+.cd-r{display:flex;gap:14px;padding:9px 0;border-top:1px solid rgba(26,127,142,.08)}
+.cd-r:first-of-type{border-top:0;padding-top:0}
+.cd-r b{flex:0 0 40%;font-size:13.5px;font-weight:700;color:#0f2f3a}
+.cd-r span{flex:1;font-size:13.5px;color:#5d7f88;line-height:1.55}
+.cd-l{margin:0;padding-left:18px}
+.cd-l li{font-size:14px;line-height:1.75;color:#2c4a54;margin-bottom:5px}
+.cd-l li:last-child{margin-bottom:0}
+.cd-note{font-size:12px;color:#7d9aa2;line-height:1.6;padding:14px 2px 0;border-top:1px solid rgba(26,127,142,.1);margin-top:6px}
+
+.fsp.sheet{align-items:flex-end;background:rgba(6,20,26,.5)}
+.fsp.sheet .fsp-in{max-width:100%;width:100%;border-radius:20px 20px 0 0;padding:0;
+  background:linear-gradient(180deg,#eaf7f4 0%,#f4fbf9 100%);max-height:92vh;display:flex;flex-direction:column;
+  transform:translateY(100%);transition:transform .26s cubic-bezier(.22,1,.36,1);overflow:hidden}
+.fsp.sheet.on .fsp-in{transform:translateY(0)}
+.fsp.sheet .fsp-x{display:none}
+.cs-hd{display:flex;align-items:center;gap:9px;padding:15px 20px;flex:none;
+  background:rgba(26,127,142,.07);border-bottom:1px solid rgba(26,127,142,.14)}
+.cs-e{font-size:17px}
+.cs-t{font-size:15px;font-weight:800;color:#1a7f8e;letter-spacing:-.2px}
+.cs-x{margin-left:auto;width:26px;height:26px;border-radius:50%;border:1px solid rgba(26,127,142,.25);
+  background:#fff;color:#1a7f8e;font-size:12px;cursor:pointer;line-height:1}
+.cs-bd{padding:14px 20px 18px;overflow-y:auto;flex:1}
+.cs-strip{background:rgba(26,127,142,.08);border:1px solid rgba(26,127,142,.16);border-radius:9px;
+  padding:9px 13px;font-size:11.5px;color:#1a7f8e;font-weight:600;margin-bottom:11px}
+.cs-strip b{color:#4a8f7e;margin:0 4px}
+.cs-box{background:#fff;border:1px solid rgba(26,127,142,.16);border-radius:11px;padding:13px 15px;margin-bottom:12px}
+.cs-bt{font-size:11.5px;font-weight:800;color:#c2557a;margin-bottom:9px}
+.cs-li{font-size:12px;color:#2c4a54;line-height:1.5;padding:4px 0;display:flex;gap:7px}
+.cs-li b{color:#1a7f8e;font-weight:700;flex:none}
+.cs-warn{margin-top:9px;padding-top:9px;border-top:1px solid rgba(26,127,142,.1);
+  font-size:11px;color:#c2557a;line-height:1.55}
+.cs-line{font-size:12px;color:#2c4a54;margin-bottom:13px}
+.cs-line b{color:#1a7f8e}
+.cs-sub{font-size:12px;font-weight:800;color:#c2557a;margin-bottom:7px}
+.cs-ob{display:flex;align-items:baseline;gap:7px;font-size:12px;line-height:1.6;padding:2.5px 0}
+.cs-ob .d{width:4px;height:4px;border-radius:50%;background:#1a7f8e;flex:none;transform:translateY(-2px)}
+.cs-ob b{color:#0f2f3a;font-weight:700}
+.cs-ob em{color:#5d7f88;font-style:normal}
+.cs-sub2{font-size:12px;color:#c2557a;margin:12px 0 9px}
+.cs-sub2 b{color:#1a7f8e}
+.cs-note{font-size:10.5px;color:#7d9aa2;line-height:1.6;padding-top:9px;border-top:1px solid rgba(26,127,142,.1)}
+.cs-go{flex:none;width:100%;padding:14px;border:0;border-top:1px solid rgba(26,127,142,.2);
+  background:linear-gradient(180deg,#d9f0ea,#c9e9e1);color:#0f5f5a;font-size:13.5px;font-weight:800;
+  cursor:pointer;letter-spacing:-.2px}
+.cs-go em{font-style:normal;font-weight:500;opacity:.7;font-size:11.5px;margin-left:5px}
+.cs-go:active{background:#c2e4db}
+
+.mg-ov{position:fixed;inset:0;z-index:97;background:rgba(10,26,36,.14);opacity:0;pointer-events:none;transition:opacity .2s}
+.mg-ov.on{opacity:1;pointer-events:auto}
+.mg{position:fixed;left:50%;top:50%;transform:translate(-50%,-44%) scale(.985);z-index:98;
+  width:min(400px,90vw);max-height:86vh;display:flex;flex-direction:column;
+  background:#fff;border-radius:20px;overflow:hidden;
+  border:1.5px solid rgba(198,163,90,.42);
+  box-shadow:0 18px 54px rgba(10,26,36,.16);opacity:0;pointer-events:none;
+  transition:opacity .26s cubic-bezier(.22,1,.36,1),transform .26s cubic-bezier(.22,1,.36,1)}
+.mg.on{opacity:1;pointer-events:auto;transform:translate(-50%,-50%) scale(1)}
+.mg-hd{flex:none;padding:17px 20px 15px;background:#fff;
+  border-bottom:1px solid rgba(198,163,90,.22);text-align:center}
+.mg-hd h4{margin:0;font-size:15px;font-weight:800;color:#2a3f46;letter-spacing:-.3px}
+.mg-hd .tot{display:inline-block;margin-top:6px;font-size:10.5px;font-weight:700;color:#8a6a12;
+  background:#fdf6e3;border:1px solid rgba(198,163,90,.3);border-radius:20px;padding:3px 11px;letter-spacing:.3px}
+.mg-bd{flex:1;overflow-y:auto;padding:18px 20px 16px;-webkit-overflow-scrolling:touch}
+.mg-step{text-align:center;padding-bottom:14px;border-bottom:1px solid rgba(198,163,90,.18)}
+.mg-step .ic{font-size:34px;line-height:1;margin-bottom:8px}
+.mg-step .nm{font-size:13.5px;font-weight:800;color:#0f2f3a}
+.mg-cam{display:inline-flex;align-items:center;gap:5px;margin-top:9px;font-size:11px;font-weight:700;
+  color:#7d6420;background:#fdf8ea;border:1px solid rgba(198,163,90,.28);border-radius:20px;padding:4px 11px}
+.mg-dist{margin:14px 0 12px;text-align:center;font-size:12.5px;color:#3d5f6a;line-height:1.7}
+.mg-dist b{display:inline-block;margin:0 4px;font-size:15px;font-weight:800;color:#a8842e}
+.mg-li{display:flex;align-items:baseline;gap:8px;font-size:12px;color:#3d5f6a;line-height:1.65;padding:3px 0}
+.mg-li .d{width:4px;height:4px;border-radius:50%;background:#c6a35a;flex:none;transform:translateY(-2px)}
+.mg-warn{margin-top:14px;padding:12px 13px;background:#fff8e6;border:1px solid rgba(184,138,32,.18);border-radius:11px}
+.mg-warn .wt{font-size:11.5px;font-weight:800;color:#8a6a12;margin-bottom:6px}
+.mg-warn .wl{display:flex;align-items:baseline;gap:7px;font-size:11px;color:#6d5a2c;line-height:1.6;padding:2px 0}
+.mg-warn .wl .d{width:3px;height:3px;border-radius:50%;background:#b88a20;flex:none;transform:translateY(-2px)}
+.mg-ft{flex:none;padding:13px 16px 15px;border-top:1px solid rgba(198,163,90,.2);background:#fffdf8}
+.mg-ok{width:100%;padding:14px;border:1.5px solid rgba(198,163,90,.5);border-radius:13px;
+  background:#fdf8ea;color:#7d6420;
+  font-size:13.5px;font-weight:800;cursor:pointer;letter-spacing:-.2px;transition:background .14s}
+.mg-ok:hover{background:#faf1d8}
+.mg-ok:active{background:#f5e9c4}
+.mg-later{width:100%;margin-top:8px;padding:9px;border:0;background:none;
+  color:#8f9ba0;font-size:11.5px;cursor:pointer}
 
 </style>
 </head>
@@ -242,45 +451,46 @@ main{padding:14px 16px 22px;display:flex;flex-direction:column;gap:10px}
       <div class="cards" style="margin-top:10px">
         <div class="lc" style="border:1px solid rgba(125,211,252,.3);background:linear-gradient(150deg,rgba(56,189,248,.09),#050c18 70%)">
           <div class="i">🛰️</div><div class="n" style="color:#7dd3fc" data-k="70">SATELLITE</div>
-          <div class="v">421km</div><div class="s" style="color:#7dd3fc" data-k="77">49.91°N 174.97°W</div>
+          <div class="v">421km</div><div class="s" style="" data-k="77">49.91°N 174.97°W</div>
           <div class="s2" data-k="78">7.67km/s</div><div class="tg"><i style="background:#7dd3fc"></i>LIVE</div>
         </div>
         <div class="lc" style="border:1px solid rgba(52,211,153,.3);background:linear-gradient(150deg,rgba(52,211,153,.09),#050f14 70%)">
           <div class="i">⛅</div><div class="n" style="color:#34d399" data-k="71">WEATHER</div>
-          <div class="v">25°C</div><div class="s" style="color:#34d399" data-k="79">Humidity 55%</div>
+          <div class="v">25°C</div><div class="s" style="" data-k="79">Humidity 55%</div>
           <div class="s2" data-k="80">Metal (金) energy — dry air</div><div class="tg"><i style="background:#34d399"></i>GPS SYNC</div>
         </div>
         <div class="lc" style="border:1px solid rgba(212,168,67,.35);background:linear-gradient(150deg,rgba(212,168,67,.09),#12090a 70%)">
           <div class="i">🧭</div><div class="n" style="color:#d4a843" data-k="72">COMPASS</div>
-          <div class="v">0°</div><div class="s" style="color:#d4a843" data-k="81">Facing north</div>
+          <div class="v">0°</div><div class="s" style="" data-k="81">Facing north</div>
           <div class="s2" data-k="82">Water (水) — wealth · benefactor</div><div class="tg"><i style="background:#d4a843"></i>LIVE</div>
         </div>
       </div>
 
       <div style="display:flex;flex-direction:column;gap:10px;margin-top:10px">
-        <button class="bar" style="border:1px solid rgba(56,189,248,.18)" data-go="mypage">
-          <span>👤</span><span class="tt"><span class="t" style="color:#38bdf8" data-k="50">My Page</span><span class="s" data-k="60">Membership · points · settings</span></span><span class="spacer"></span><span class="c">▶</span>
+        <button class="bar" style="border:1px solid rgba(255,255,255,.14)" data-go="mypage">
+          <span>👤</span><span class="tt"><span class="t" style="" data-k="50">My Page</span><span class="s" style="" data-k="60">Membership · points · settings</span></span><span class="spacer"></span><span class="c">▶</span>
         </button>
-        <button class="bar" style="border:1px solid rgba(52,211,153,.18)" data-sec="patent">
-          <span>🔒</span><span class="tt"><span class="t" style="color:#34d399" data-k="51">CGO-FULI Patented Technology</span><span class="s" data-k="61">Visible-only rendering · numbered translation</span></span><span class="spacer"></span><span class="c">▶</span>
+        <button class="bar" style="border:1px solid rgba(47,143,91,.3)" data-sec="patent">
+          <span>🔒</span><span class="tt"><span class="t" style="" data-k="51">CGO-FULI Patented Technology</span><span class="s" style="" data-k="61">Visible-only rendering · numbered translation</span></span><span class="spacer"></span><span class="c">▶</span>
         </button>
         <div class="body" hidden data-body="patent" style="font-family:'Orbitron',sans-serif;font-size:11.5px;color:rgba(204,216,228,.55)">RESERVED · 0KB IN FIRST PAINT</div>
-        <button class="bar" style="border:1px solid rgba(99,130,201,.22)" data-sec="guide">
-          <span>✦</span><span class="tt"><span class="t" style="color:#8fa6d8" data-k="53">User Guide</span><span class="s" data-k="63">How to use · quick start · FAQ</span></span><span class="spacer"></span><span class="c">▶</span>
+        <button class="bar" style="border:1px solid rgba(47,143,91,.3)" data-sec="guide">
+          <span>✦</span><span class="tt"><span class="t" style="" data-k="53">User Guide</span><span class="s" style="" data-k="63">How to use · quick start · FAQ</span></span><span class="spacer"></span><span class="c">▶</span>
         </button>
         <div class="body" hidden data-body="guide" style="font-family:'Orbitron',sans-serif;font-size:11.5px;color:rgba(204,216,228,.55)">RESERVED · 0KB IN FIRST PAINT</div>
-        <button class="bar" style="border:1px solid rgba(52,211,153,.18)" data-sec="signup">
-          <span>▤</span><span class="tt"><span class="t" style="color:#34d399" data-k="54">Enter Info & Sign Up</span><span class="s" data-k="64">Name and date of birth — analysis unlocks</span></span><span class="spacer"></span><span class="c">▶</span>
+        <button class="bar" style="border:1px solid rgba(255,255,255,.14)" data-sec="signup">
+          <span>▤</span><span class="tt"><span class="t" style="" data-k="54">Enter Info & Sign Up</span><span class="s" style="" data-k="64">Name and date of birth — analysis unlocks</span></span><span class="spacer"></span><span class="c">▶</span>
         </button>
         <div class="body" hidden data-body="signup" style="font-family:'Orbitron',sans-serif;font-size:11.5px;color:rgba(204,216,228,.55)">GATE · UNLOCKS ANALYSIS</div>
         <button class="bar" style="border:1px solid rgba(212,168,67,.25)" data-sec="features">
-          <span>✚</span><span class="tt"><span class="t" style="color:#d4a843" data-k="55">All Features — after entering info</span><span class="s" data-k="65">35 features across three groups</span></span><span class="spacer"></span><span class="c">▶</span>
+          <span>✚</span><span class="tt"><span class="t" style="color:#d4a843" data-k="55">All Features — after entering info</span><span class="s" style="color:rgba(212,168,67,.6)" data-k="65">35 features across three groups</span></span><span class="spacer"></span><span class="c">▶</span>
         </button>
         <div class="body" hidden data-body="features">
 
       <div class="grp">
         <div class="grp-h"><span data-k="100">Biometrics</span><span class="tag">WINDOW 2</span><span class="rule"></span></div>
         <div class="tiles">
+          <button class="tile" data-go="wellness"><span class="ico">❤️</span><span data-k="683">My Wellness</span></button>
           <button class="tile" data-go="travel"><span class="ico">🏨</span><span data-k="521">Feng Shui Travel</span></button>
           <button class="tile" data-go="gwansang"><span class="ico">🙂</span><span data-k="200">Face Reading</span></button>
           <button class="tile" data-go="sonkeum"><span class="ico">🖐</span><span data-k="201">Palm Reading</span></button>
@@ -339,16 +549,639 @@ main{padding:14px 16px 22px;display:flex;flex-direction:column;gap:10px}
   </main>
 </section>
 
-  <template data-cgo-page="travel">
+  
+<script>
+/* 기능 페이지 자료 — 화면 구조는 웰니스와 같다. 여기엔 '무엇을 담을지'만 적는다.
+   hero  : 맨 위 진한 상자 (제목 · 작은 칸들 · 시작 단추 · 안내문)
+   cards : 카드 묶음 [제목, 부제, [이모지, 이름, 설명] …]
+   rows  : 줄 목록  [제목, 부제, [이름, 설명] …]
+   warn  : 맨 아래 주의문 */
+window.PGSPEC = {
+ howto:{hero:['✦','User guide','35 features · terms · quick start · FAQ',
+   [['📖','Guide','35'],['🔤','Glossary','terms'],['❓','FAQ','common'],['⚡','Start','3 steps']],'📖 Open the guide'],
+  cards:[['Key terms','✦ explained simply',[
+    ['📊','ILI','Integrated Life Index — your energy as 0-100'],
+    ['🫀','rPPG','Camera reads blood flow, contactless'],
+    ['☯️','Five elements','Wood · Fire · Earth · Metal · Water'],
+    ['🧠','BEI','Brain endurance — guessing vs real skill'],
+    ['💪','SVI','Skin vitality — rebound elasticity'],
+    ['🛡️','MUFE','Post-quantum security, zero storage'],
+    ['🛰','VSOP87','NASA JPL planetary orbit theory'],
+    ['📜','CSI','Conflict-offset index across 50 systems']]]],
+  rows:[['Start in 3 steps','✦ new here?',[
+    ['Enter info','Birth date and hour'],
+    ['Bio scan','Face · hand · tongue'],
+    ['Unlock','All features open']]]],
+  warn:'All analyses are for infotainment and wellness reference and are not a medical diagnosis.'},
+
+ mypage:{hero:['👤','My page','Account · subscription · vault · settings · support',
+   [['👤','Profile','account'],['💳','Plan','manage'],['🎁','Vault','points'],['📞','Support','1:1']],'👤 Open my page'],
+  cards:[['What you can manage','✦ Tap a card',[
+    ['👤','Profile and account','Member info · password · delete'],
+    ['💳','Subscription and payment','Status · method · refund'],
+    ['🎁','Vault','Coupons · points · event wins'],
+    ['⚙️','App settings','Notifications · theme · font · cache'],
+    ['📞','Support','AI counsellor · 1:1 email · terms'],
+    ['🔒','Security','MUFE quantum defense']]]],
+  rows:[['Good to know','✦ 3 points',[
+    ['Data stays on your device','Zero storage by default'],
+    ['Cancel any time','Before the next billing date'],
+    ['Voice input is free','On every plan']]]],
+  warn:'For billing and refunds, the platform where you signed up applies (web, App Store, or Google Play).'},
+
+ profile:{hero:['📋','Profile and info','Name · birth date · location · algorithm settings',
+   [['👤','Basic','info'],['📍','Location','birth·now'],['⚙️','Weights','algorithm'],['📊','ILI','stats']],'📋 Enter my info'],
+  cards:[['What to enter','✦ Tap a card',[
+    ['👤','Name and birth date','Solar or lunar'],
+    ['⏰','Birth hour','Skip if unknown'],
+    ['🗺️','Birthplace','Down to the neighbourhood'],
+    ['📍','Current location','For direction and weather'],
+    ['⚙️','Algorithm weights','Saju · Zi Wei · astrology · numerology'],
+    ['📷','rPPG calibration','Live measurement folded in']]]],
+  rows:[['Why it matters','✦ 3 points',[
+    ['Birth hour raises accuracy','The hour pillar is computed'],
+    ['Location sets direction','Feng Shui and weather'],
+    ['Saved on your device','Auto-fills next time']]]],
+  warn:'Your name and biometric data are stored only on your device and are not transmitted to any server.'},
+
+ lotto:{hero:['🎰','Lucky numbers','Saju × five elements × 50 systems × NASA',
+   [['🎰','Sets','3·5·7'],['📜','Systems','50'],['🛰','NASA','live'],['📱','Phone','analysis']],'🎰 Generate lucky numbers'],
+  cards:[['Three generation stages','✦ pick one',[
+    ['✨','Stage 1 · pure metaphysics','From birth date alone'],
+    ['🛰','Stage 2 · NASA integrated','Planetary positions folded in'],
+    ['🧬','Stage 3 · bio integrated','rPPG values folded in'],
+    ['📱','Phone number analysis','Divination energy of your digits'],
+    ['🔢','Life number','Sum of your birth-date digits'],
+    ['☯️','Element harmony','Numbers that fill what is lacking']]]],
+  rows:[['How to use','✦ 3 steps',[
+    ['Enter birth date','Or link from the dashboard'],
+    ['Choose a stage and count','3, 5 or 7 sets'],
+    ['Generate','Numbers matching your energy pattern']]]],
+  warn:'For entertainment. These numbers do not predict or guarantee any outcome.'},
+
+ sports:{hero:['⚽','Sports energy','SRI · 7 engines × NASA × 316 teams',
+   [['⚽','Teams','316'],['⚙️','Engines','7'],['🛰','NASA','7 planets'],['📊','SRI','0-100']],'⚡ Analyze energy match'],
+  cards:[['7 engines and weights','✦ designed together',[
+    ['🛰','Planetary transit','25% — 7 planets live'],
+    ['🧭','Qi Men Dun Jia','18% — 12 hours mapping'],
+    ['⭐','Zi Wei Dou Shu','15% — fate chart'],
+    ['🌟','Nine Star Ki','14% — sun altitude × time'],
+    ['☱','I Ching','12% — 64 hexagram patterns'],
+    ['☯','Saju','8% — elements + HRV'],
+    ['🌌','Taiyi','8% — Jupiter-Saturn angles']]]],
+  rows:[['How to use','✦ 4 steps',[
+    ['Enter info','Your Day Master is set'],
+    ['Pick teams','Chips or autocomplete from 316'],
+    ['Choose sport and time','Chips change by sport'],
+    ['Run the analysis','Data 60% + resonance 40%']]]],
+  warn:'An energy-information service unrelated to betting or gambling. It does not predict match outcomes.'},
+
+ stock:{hero:['📈','Stock energy','50 systems × NASA planets × five elements',
+   [['🏢','Stocks','36,000+'],['🛰','NASA','planets'],['📜','Systems','50'],['⭐','Match','Saju']],'📈 Search a stock'],
+  cards:[['What is analysed','✦ Tap a card',[
+    ['🏢','Founding date','The company chart'],
+    ['☯️','Element match','Your elements × stock elements'],
+    ['🛰','Planetary energy','7 planets, direct or retrograde'],
+    ['🌍','Sector radar','By element'],
+    ['🗓️','30-day events','Planetary events × market'],
+    ['🔮','Overall summary','Combined energy reading']]]],
+  rows:[['How to use','✦ 3 steps',[
+    ['Enter your info','Day Master is set'],
+    ['Search a company','AI finds the founding date'],
+    ['Read the match','Score + element relation']]]],
+  warn:'This is divination and astronomical-energy reference, not investment advice. It does not recommend buying or selling any security. All decisions and responsibility rest with the investor.'},
+
+ family:{hero:['👨‍👩‍👧','Family ILI','Health · location · fortune at a glance',
+   [['👥','Members','add'],['📍','Location','share'],['🚨','SOS','3 sec'],['📊','ILI','trend']],'👨‍👩‍👧 Open family centre'],
+  cards:[['What you can do','✦ Tap a card',[
+    ['👥','Add members','Register family with relationship'],
+    ['📍','Location sharing','App link or map link'],
+    ['🚨','Emergency SOS','Press and hold 3 seconds'],
+    ['🌿','Condition sharing','Summary card after the report'],
+    ['🌟','Exchange fortunes','Send today reading'],
+    ['📋','Alert feed','Changes and reminders']]]],
+  rows:[['How to use','✦ 3 steps',[
+    ['Add a member','Name, relationship, phone'],
+    ['Choose a linking method','App or map link'],
+    ['Monitor together','ILI trend per person']]]],
+  warn:'Wellness reference only, not medical information. All data is stored on your device.'},
+
+ star:{hero:['⭐','Star station','Energy currency for AI and photo analysis',
+   [['⭐','Stars','top up'],['🆓','Voice','free'],['📊','Plans','6'],['🎁','Bonus','+35%']],'⭐ Top up stars'],
+  cards:[['Plans','✦ choose one',[
+    ['🆓','Taster','Non-member · tops up daily'],
+    ['⭐','Star plan','Each of 35 features once a day'],
+    ['💎','VIP Premium','All features unlimited'],
+    ['💧','C-61 Basic','₩500/mo · AI 30 · photos 30'],
+    ['💠','C-61 Pro','₩5,000/mo · AI 350 · photos 350'],
+    ['👑','C-61 Unlimited','₩10,000/mo · no limits']]]],
+  rows:[['How stars work','✦ 3 points',[
+    ['Voice is always free','Unlimited on every plan'],
+    ['Stars pay for AI and photos','Analysis and recognition'],
+    ['Top up any time','Bonus grows with the amount']]]],
+  warn:'All analyses are divination reference. Pricing is subject to change before launch.'},
+
+ vip:{hero:['💎','VIP Premium','Quantum stocks · resonance numbers · SRI Pro · AI Master',
+   [['💎','Services','4'],['📜','Systems','50'],['🛰','NASA','deep'],['🤖','AI','18 engines']],'💎 Enter VIP'],
+  cards:[['VIP-only services','✦ Tap a card',[
+    ['📈','Quantum stocks','Best 5 matches from 36,000+'],
+    ['🎰','Resonance numbers','Precise numbers from 50 systems'],
+    ['⚽','SRI Pro','In-depth player-matchup analysis'],
+    ['🤖','AI Master','18-engine scientific reasoning'],
+    ['🔭','Buy timing','NASA optimal windows'],
+    ['🔮','Life advice','Deep chain-of-thought reading']]]],
+  rows:[['How to use','✦ 3 steps',[
+    ['Enter the access code','VIP members only'],
+    ['Choose a service','Four deep-analysis tools'],
+    ['Read the report','Verified VIP report format']]]],
+  warn:'VIP analysis is deep reference content. Stock sections are not investment advice.'},
+
+ "music-v2":{hero:['🎵','Frequency music','Biosignals × 50 systems × NASA × Solfeggio',
+   [['🎼','Tracks','16'],['🎹','Solfeggio','6'],['⏰','Hours','12'],['🌸','Seasons','4']],'🎵 Get recommendations'],
+  cards:[['Per-element frequency','✦ 5-element mapping',[
+    ['🌳','Wood (木)','Major scale · 120-140 BPM · 528Hz'],
+    ['🔥','Fire (火)','Pentatonic · 140-170 BPM · 417Hz'],
+    ['🪨','Earth (土)','Dorian · 80-100 BPM · 396Hz'],
+    ['⚔️','Metal (金)','Minor scale · 60-90 BPM · 741Hz'],
+    ['💧','Water (水)','Minor pentatonic · 60-80 BPM · 852Hz'],
+    ['✨','Solfeggio','396 · 417 · 528 · 639 · 741 · 852']]]],
+  rows:[['How it recommends','✦ two stages',[
+    ['Stage 1','Perpetual calendar × NASA — instant from birth date'],
+    ['Stage 2','Biosignals × metaphysics — after the bio scan'],
+    ['Every 10 minutes','The seed changes, so does the list']]]],
+  warn:'An entertainment and wellness aid. It does not guarantee medical effects. Playback links to external search; copyrights belong to their owners.'},
+
+ food:{hero:['🍱','Food compatibility','Photo → elements × biosignals × constitution',
+   [['📷','Photo','AI read'],['☯️','Elements','match'],['🚫','Allergy','blocked'],['⏰','Timing','by hour']],'🍱 Start food analysis'],
+  cards:[['Five-element food matching','✦ taste for your Day Master',[
+    ['🌳','Wood (木) · sour','Vinegar, plum, spinach, greens'],
+    ['🔥','Fire (火) · bitter','Bellflower, mugwort, red foods'],
+    ['🪨','Earth (土) · sweet','Pumpkin, sweet potato, honey'],
+    ['⚔️','Metal (金) · spicy','Garlic, ginger, scallion, white foods'],
+    ['💧','Water (水) · salty','Black beans, seaweed, seafood'],
+    ['🚫','Restricted','Allergies pre-blocked']]]],
+  rows:[['How to use','✦ 5 steps',[
+    ['Enter info','Day Master and elements are set'],
+    ['Bio scan','BPM and HRV raise accuracy'],
+    ['Wellness profile','5 steps — lifestyle and restrictions'],
+    ['Photo or name','AI recognises the food'],
+    ['Read the match','Score + eat/avoid + timing']]]],
+  warn:'This is a custom recommendation based on traditional medicine, five elements and modern nutrition. For diagnosis or treatment, consult a doctor.'},
+
+ shop:{hero:['🛍️','Element shopping','Saju × 12 systems × AI design × OEM',
+   [['👕','Items','19'],['🎨','AI design','prompt'],['📦','OEM','7-14 days'],['📐','Measure','auto']],'🛍️ Browse my elements'],
+  cards:[['19-item lifestyle coverage','✦ Tap a card',[
+    ['👕','Apparel','T-shirt · pajamas · jacket · hoodie'],
+    ['🤵','Suits','Suit set and jacket'],
+    ['🏃','Activewear','Tracksuit and joggers'],
+    ['💍','Jewelry','Ring · necklace · bracelet'],
+    ['👟','Footwear','Sneakers · slippers · indoor'],
+    ['🏠','Home living','Pillow · cushion · tableware'],
+    ['🪑','Furniture','Table · dining table · chair'],
+    ['📦','Made to order','Full sets and 24-hour sets']]]],
+  rows:[['Order in 3 steps','✦ OEM custom',[
+    ['Copy the AI prompt','Based on your elements and ILI'],
+    ['Generate and upload','Free image tools work well'],
+    ['Choose item and size','Delivered in 7-14 days']]]],
+  warn:'These are design concepts; actual products may differ at launch. Pricing and launch dates will be announced later.'},
+
+ "travel-yeogi":{hero:['✈️','Stays and destinations','Five elements × Feng Shui × NASA',
+   [['🌍','Countries','59'],['🏙','Cities','153'],['🏯','Systems','7'],['🔍','Safety','scan']],'✈️ Find destinations'],
+  cards:[['7 space systems','✦ choose one',[
+    ['🧠','Space psychology','Lighting · colour · flow'],
+    ['🌿','Terroir','Geology · water · sunlight'],
+    ['⛩️','Kanso','Emptiness · simplicity · ki'],
+    ['🕌','Vastu','5 elements · 8 directions'],
+    ['🏡','Yangzhai','Gate · master room · kitchen'],
+    ['🏯','Feng Shui','Dragon veins · qi · luopan'],
+    ['🪶','Native','4-direction elements']]]],
+  rows:[['How to use','✦ 5 steps',[
+    ['Choose a system','One is most accurate'],
+    ['Country and city, or GPS','59 countries, 153 cities'],
+    ['Run match analysis','Score + Saju↔city elements'],
+    ['360° space scan on site','10 directions, 7 systems'],
+    ['Safety scan and AI chat','Lens-glint detection aid']]]],
+  warn:'Recommendations are based on Eastern divination and astronomy. The safety scan is an aid with no 100% detection guarantee.'},
+
+ "cgo-navi":{hero:['🧭','My navigation','Lucky-direction compass × GPS × AR',
+   [['🧭','Compass','AR'],['📍','GPS','live'],['☯️','Elements','4 lenses'],['📊','Score','today']],'🧭 Start compass'],
+  cards:[['What this compass shows','✦ Tap a card',[
+    ['🧭','Lucky-direction compass','The arrow points to today direction'],
+    ['📍','GPS lucky direction','Computed from your location'],
+    ['📊','Five-element score','Today directional fortune'],
+    ['🔮','4-lens fusion','Elements · Qimen · Nine Star · planets']]]],
+  rows:[['How to use','✦ 3 steps',[
+    ['Allow camera and location','Mobile and HTTPS'],
+    ['Turn toward the arrow','Until it reads Front'],
+    ['Take a step','Mindful of the lucky direction']]]],
+  warn:'A fortune feature for everyday fun. Not scientific navigation or prophecy. Compass and GPS are device sensors and can have errors.'},
+
+ gmd:{hero:['📸','Feng Shui camera','360° scan × 7 global space systems',
+   [['📸','Shots','10'],['🏯','Systems','7'],['🛰','NASA','live'],['📊','Score','space']],'🧭 Start 360° scan'],
+  cards:[['10-direction shooting order','✦ stand in the centre',[
+    ['⬆','North','Start here'],
+    ['➡','East','Then clockwise'],
+    ['⬇','South','Keep turning'],
+    ['⬅','West','Full circle'],
+    ['↗','Corners','NE · SE · SW · NW'],
+    ['⬆⬇','Ceiling and floor','Up and down']]]],
+  rows:[['How to use','✦ 3 steps',[
+    ['Stand in the centre','Of the room or space'],
+    ['Shoot following the arrow','The compass guides you'],
+    ['Read the score','7 systems + NASA combined']]]],
+  warn:'Space energy analysis is reference content. Results are not saved (zero storage).'},
+
+ msp52:{hero:['🎴','MSP52','Personality archetype × 52-card mapping',
+   [['🎴','Cards','52'],['🧠','Types','16'],['📝','Items','48·92·144'],['🔗','Fusion','tarot']],'🎴 Start MSP52'],
+  cards:[['What it reads','✦ Tap a card',[
+    ['🧠','Archetype code','Your 16-type lens'],
+    ['🎴','Card mapping','52-card correspondence'],
+    ['💬','Communication','How you speak and listen'],
+    ['💼','Work style','How you get things done'],
+    ['💕','Relationships','How you connect'],
+    ['🌱','Growth','Where you stretch next']]]],
+  rows:[['How to use','✦ 3 steps',[
+    ['Choose a length','48, 92 or 144 items'],
+    ['Answer intuitively','First instinct is best'],
+    ['Read the mapping','Type + card + advice']]]],
+  warn:'Personality types are reference to aid self-understanding. They do not label or define people.'},
+
+ tnbti:{hero:['🧬','TNBTI','Tarot × personality × metaphysics triple fusion',
+   [['🃏','Tarot','78'],['🧠','Type','16'],['📜','Systems','50'],['🔗','Fusion','triple']],'🧬 Run triple fusion'],
+  cards:[['Three inputs','✦ cross-computed',[
+    ['🧠','Archetype code','The base lens'],
+    ['🃏','Tarot card','Current situation and flow'],
+    ['📜','Metaphysics','Up to 3 systems'],
+    ['✨','Fusion mode','Pure · live · biometric'],
+    ['🤖','AI docent','Reads it back to you'],
+    ['🌟','Self-reflection','Today advice and keywords']]]],
+  rows:[['How to use','✦ 4 steps',[
+    ['Set your archetype','Take the test or pick directly'],
+    ['Draw one card','With your heart'],
+    ['Choose a system','One is most accurate'],
+    ['Run the engine','Triple fusion result']]]],
+  warn:'A psychological and divinatory reference tool for self-understanding. It does not determine your future.'},
+
+ fusion3:{hero:['🔗','Fusion 3','Metaphysics × cosmos × your body right now',
+   [['📜','Systems','50'],['🛰','NASA','live'],['🫀','rPPG','bio'],['📊','ILI','index']],'🔗 Run 3-layer fusion'],
+  cards:[['Three layers','✦ weighted together',[
+    ['📜','Innate metaphysics','Your chart'],
+    ['🛰','Cosmos now','Geomagnetism · moon · planets'],
+    ['🫀','Biosignals','Heart rate · HRV · complexion'],
+    ['🧮','Multi-engine','Each engine scores'],
+    ['🔗','CSI','Weighted into one index'],
+    ['🎯','Result','Overall + by area']]]],
+  rows:[['How to use','✦ 3 steps',[
+    ['Enter info','Chart is built'],
+    ['Allow live data','Cosmos layer activates'],
+    ['Complete bio scan','Body layer activates']]]],
+  warn:'Infotainment and wellness reference content, not a scientific prediction or medical diagnosis.'},
+
+ naming:{hero:['✍️','Naming','Saju five elements × hanja name recommendations',
+   [['✍️','Names','curated'],['☯️','Elements','balance'],['🔢','Strokes','numerology'],['🏢','Company','naming']],'✨ Start naming'],
+  cards:[['What it covers','✦ Tap a card',[
+    ['👶','Person name','Saju-matched hanja names'],
+    ['🔍','Check my name','Forbidden characters and conflicts'],
+    ['🏪','Shop name','Industry and representative fit'],
+    ['🏢','Company','6 systems combined'],
+    ['🔢','Numerology','Stroke count harmony'],
+    ['☯️','Element balance','Fills what is lacking']]]],
+  rows:[['How to use','✦ 3 steps',[
+    ['Enter surname and birth date','Or link from the dashboard'],
+    ['Choose what to name','Person, shop, company, brand'],
+    ['Review the list','With element and numerology notes']]]],
+  warn:'Name study is traditional reference content and does not guarantee any outcome.'},
+
+ couple:{hero:['💑','Couple compatibility','rPPG × Saju × live video',
+   [['📡','Live','video'],['🫀','rPPG','both'],['☯️','Saju','both'],['💞','Score','match']],'💑 Start compatibility'],
+  cards:[['What is compared','✦ Tap a card',[
+    ['💞','Mutual complementarity','How you fill each other'],
+    ['💍','Marriage luck','Long-term flow'],
+    ['👶','Children luck','Family energy'],
+    ['💬','Communication','How you talk'],
+    ['💰','Money','Shared economy'],
+    ['❤️','Health','Constitution fit']]]],
+  rows:[['Two ways to use','✦ pick one',[
+    ['Live video','Create a room, share the code, see each other'],
+    ['Info entry','Just enter their birth date and name'],
+    ['Read the result','Score + relationship tips']]]],
+  warn:'Compatibility reading is infotainment and reference content.'},
+
+ diag:{hero:['🩺','Diagnosis board','Five-element constitution × biosignals',
+   [['☯️','Elements','5'],['🫀','rPPG','bio'],['👅','Tongue','observation'],['📊','Index','combined']],'🩺 Open diagnosis board'],
+  cards:[['What is read','✦ Tap a card',[
+    ['☯️','Yin-Yang balance','Warm-cool tendency'],
+    ['🌳','Element constitution','Based on Saju elements'],
+    ['👅','Tongue observation','Colour and coating'],
+    ['🫀','Heart vitality','Measured BPM and HRV'],
+    ['🌟','Constellation','Season and organ energy'],
+    ['🕉️','Vedic','Ayanamsa constitution']]]],
+  rows:[['How to use','✦ 3 steps',[
+    ['Enter your info','Chart is built'],
+    ['Complete the bio scan','Measured values fold in'],
+    ['Read the board','10 integrated indicators']]]],
+  warn:'General wellness information only. Not intended to diagnose, treat, cure, or prevent any disease.'},
+
+ algo:{hero:['✨','Saju · pure metaphysics','50 systems analysed from your birth date and hour',
+   [['📜','Systems','50'],['☯️','Elements','5'],['🀄','Day Master','pillar'],['📊','Score','CSI']],'✨ Run 50-system analysis'],
+  cards:[['What is analysed','✦ Tap a card',[
+    ['☯️','Four Pillars','Day Master · elements · fortune cycle'],
+    ['⭐','Zi Wei Dou Shu','Fate chart and palace scores'],
+    ['🧭','Qi Men Dun Jia','Direction and timing'],
+    ['🔮','Nine Star Ki','Nine stars and directions'],
+    ['☰','I Ching','64 hexagrams'],
+    ['🔢','Numerology','Life path number'],
+    ['✍️','Name studies','Stroke count and sound'],
+    ['♈','Sun sign','12 zodiac signs'],
+    ['🌀','Taiyi','Macro flow'],
+    ['📊','CSI','Conflict-offset index']]]],
+  rows:[['How to use','✦ 3 steps',[
+    ['Complete your info','Name, birth date and hour'],
+    ['Start the analysis','50 systems run at once'],
+    ['Read the result','Overall score + per-system reading']]]],
+  warn:'Infotainment and wellness reference content. Not medical, legal, or investment advice.'},
+
+ "algo-v2":{hero:['📊','Health board','50 systems × NASA × weather, live',
+   [['🛰','NASA','real-time'],['🌤','Weather','live'],['📜','Systems','50'],['⚡','Energy','today']],'📊 Run live analysis'],
+  cards:[['Live data used','✦ updated every visit',[
+    ['🛰','Planetary transit','NASA JPL, 0.01° error'],
+    ['🌤','Weather','Pressure · temperature · humidity'],
+    ['🧭','Direction','Compass bearing'],
+    ['☯️','Elements','Your Saju baseline'],
+    ['📊','Overall','Today energy score'],
+    ['💡','Advice','Direction · time · colour']]]],
+  rows:[['How to use','✦ 3 steps',[
+    ['Enter info and allow permissions','Location and weather'],
+    ['Start the analysis','Live values are folded in'],
+    ['Check today score','It changes daily']]]],
+  warn:'Satellite and weather use real public data, but the divination reading is for fun and reference. Not a scientific prediction or medical diagnosis.'},
+
+ "c14-v2":{hero:['🃏','Tarot','78 cards · AI reading · spreads from 1 to 12',
+   [['🃏','Cards','78'],['🎴','Spreads','6'],['🤖','AI','reading'],['🌙','Daily','new card']],'🃏 Draw a card'],
+  cards:[['Choose a spread','✦ by your question',[
+    ['1️⃣','One card','Today fortune · yes/no'],
+    ['3️⃣','Three cards','Past · present · future'],
+    ['5️⃣','In-depth','Cause · surroundings · advice'],
+    ['7️⃣','Celtic variant','Weekly · relationships'],
+    ['🔟','Celtic Cross','Full context and outcome'],
+    ['📅','Horoscope','A card for each month']]]],
+  rows:[['How to read tarot well','✦ important',[
+    ['Quiet place, clear question','Bring it to mind'],
+    ['Open questions work better','How and why, not yes/no'],
+    ['Do not redraw the same question','1–2 times a day'],
+    ['Cards are a mirror, not a verdict','Choices are always yours']]]],
+  warn:'For entertainment and self-reflection. Tarot does not fix the future.'},
+
+ report:{hero:['📜','Detailed report','18 fields bound into one illustrated volume',
+   [['📚','Fields','18'],['🀄','Eastern','10'],['♈','Western','8'],['🧬','rPPG','measured']],'📜 Open the report'],
+  cards:[['18 fields','✦ Tap a card',[
+    ['☯️','Four Pillars','Day Master · elements'],
+    ['☉','Sun sign','Core self'],
+    ['⭐','Zi Wei Dou Shu','Destiny map'],
+    ['🌐','Natal chart','Ascendant · Moon · planets'],
+    ['🧭','Qi Men Dun Jia','Space-time advantage'],
+    ['🛰','Transit','Real-time planets'],
+    ['⚡','Liuren','Event fortune'],
+    ['🔢','Numerology','Soul number'],
+    ['🏔️','Feng Shui','Spatial energy'],
+    ['✡️','Kabbalah','Sephirot'],
+    ['✍️','Name studies','Numeric harmony'],
+    ['🏛️','Houses','12 life areas'],
+    ['🌀','Taiyi','Era energy'],
+    ['💞','Synastry','Compatibility'],
+    ['☰','I Ching','Primary hexagram'],
+    ['🃏','Tarot','Renewed daily'],
+    ['👤','Physiognomy','Camera-linked'],
+    ['🖐️','Palmistry','Camera-linked']]]],
+  rows:[['How it works','✦ auto-generated',[
+    ['Enter name and birth date','The report generates itself'],
+    ['Complete the bio scan','Fields 17 and 18 fill in'],
+    ['Updated daily','Tarot and transits recompute']]]],
+  warn:'This report is infotainment and wellness reference content. Do not use it as the sole basis for medical, legal, or financial decisions.'},
+
+ tianziren:{hero:['🌏','Heaven-Earth-Human','Cosmic order × earthly energy × your body',
+   [['天','Cosmos','NASA'],['地','Earth','location'],['人','Human','rPPG'],['⚡','Fusion','live']],'🌌 Get my luck signal'],
+  cards:[['Three layers','✦ fused into one',[
+    ['🛸','Heaven (天)','Real-time planetary path'],
+    ['🌍','Earth (地)','Location and direction energy'],
+    ['🧑','Human (人)','Biometric energy'],
+    ['⚡','Fusion','Today overall flow']]]],
+  rows:[['How to use','✦ 3 steps',[
+    ['Enter your info','Birth date and hour'],
+    ['Allow location','Earth layer activates'],
+    ['Check today flow','Three layers combined']]]],
+  warn:'Infotainment and wellness reference content, not a scientific prediction.'},
+
+ gwansang:{hero:['🙂','Face reading','Perpetual calendar × 12 palaces × warm AI reading',
+   [['📷','Front shot','33 sec'],['🏯','Palaces','12'],['🐾','Animal type','match'],['💰','Wealth','flow']],'📷 Start face measurement · about 33 sec'],
+  cards:[['What face reading reads','✦ Tap a card for details',[
+    ['⚖️','Five-feature balance','Eyes · nose · mouth · ears · brows'],
+    ['🏯','12-palace fortune','Life · wealth · career palaces'],
+    ['🐾','Animal face type','The energy that resembles you'],
+    ['🎭','Personality','Innate disposition'],
+    ['💕','Love luck','The flow of connections'],
+    ['💰','Wealth luck','Wealth energy'],
+    ['🩸','Complexion','rPPG measurement'],
+    ['🌳','Face type','Five-shape theory'],
+    ['📜','Day Master','Perpetual calendar'],
+    ['✨','Overall','AI integrated reading']]]],
+  rows:[['How to measure','✦ about 33 sec',[
+    ['Enter your info first','Birth date and time'],
+    ['Front-on, well lit','Do not cover your forehead'],
+    ['Hold still','33 seconds']]]],
+  warn:'Face Reading is based on the tradition of face reading and is infotainment and wellness reference content. It may not be used to diagnose, treat, or prevent any disease, and it does not determine the future.'},
+
+ sonkeum:{hero:['🖐','Palm reading','Both hands · innate and acquired lines',
+   [['🫲','Left','nature'],['🫱','Right','nurture'],['📷','Shot','30 sec'],['📅','Stages','early·mid·late']],'🤲 Start both-hands measurement · about 30 sec'],
+  cards:[['What the palm reads','✦ Tap a card for details',[
+    ['🫲','Left hand (nature)','Innate destiny · past'],
+    ['🫱','Right hand (nurture)','Present · future effort'],
+    ['💗','Life line','Vitality and vigor'],
+    ['💕','Heart line','Love · emotion'],
+    ['🧠','Head line','Intellect · thought'],
+    ['🧭','Fate line','Life direction'],
+    ['💰','Wealth line','Money'],
+    ['💍','Marriage luck','Connections'],
+    ['📅','Life stages','Early · middle · late'],
+    ['🔄','Change','Nature → nurture']]]],
+  rows:[['How to measure','✦ both hands, about 30 sec',[
+    ['Open your palm','Bright light'],['Left hand first','Then right hand'],['Hold still','15 sec each']]]],
+  warn:'Palm reading is based on traditional chiromancy and is infotainment and wellness reference content. It may not be used to diagnose, treat, or prevent any disease, nor to predict lifespan.'},
+
+ "rppg-ar":{hero:['📡','rPPG AR makeup','World-first camera rPPG × FaceMesh 468 × five elements',
+   [['🎨','Colors','130'],['📐','Landmarks','468'],['✨','MAI','score'],['📸','Save','one tap']],'🎥 Start AR mode'],
+  cards:[['6 measured metrics','✦ CHROM rPPG',[
+    ['⚖️','Skin evenness','Makeup evenness'],
+    ['✨','Glow','Skin radiance index'],
+    ['🎭','Tone match rate','Skin-tone correction'],
+    ['💧','Glow and moisture','Moisture-glow index'],
+    ['📐','FaceMesh accuracy','Landmark tracking rate'],
+    ['🌳','5-element balance','rPPG scan']]]],
+  rows:[['How to use','✦ 3 steps',[
+    ['Before-makeup photo','Bare face — the baseline'],
+    ['After-makeup analysis','30-sec scan, bright light'],
+    ['Apply AR makeup','Pick a colour, capture and save']]]],
+  warn:'This is infotainment and beauty reference content, not a medical device.'},
+
+ svi:{hero:['🩸','Skin elasticity (SVI)','Optical rebound wave × five elements',
+   [['💪','SVI','index'],['⏱','Scan','30 sec'],['🔬','Areas','6 zones'],['⏳','Skin age','rhythm']],'💪 Start skin elasticity analysis'],
+  cards:[['What is measured','✦ optical rebound',[
+    ['✨','Skin radiance','Surface radiance index'],
+    ['💪','Elasticity index','Real-time rebound wave'],
+    ['🔬','Texture evenness','Surface uniformity'],
+    ['❤️','Vitality energy','Vitality energy index'],
+    ['⏳','Skin-age rhythm','Wellness reference'],
+    ['⚖️','Left-right balance','Symmetry score']]]],
+  rows:[['How to measure','✦ 30 sec',[
+    ['30 min after washing','Let cosmetics absorb'],
+    ['Bright light, face the screen','Natural or fluorescent'],
+    ['Press and release your cheek','The rebound wave is recorded'],
+    ['Check your guide','Water · exercise · food by element']]]],
+  warn:'SVI is a wellness and beauty reference index and does not replace a diagnosis. Results may differ with lighting and camera quality.'},
+
+ "cgo-photo":{hero:['📷','Energy photo analysis','Photo colour and energy read as five elements',
+   [['🎨','Colors','pixel'],['🌳','Elements','5'],['💫','Match','with me'],['🖌','Advice','colors']],'📷 Turn on camera'],
+  cards:[['What this analysis shows','✦ Tap a card',[
+    ['🎨','Colour pixel analysis','Pixel by pixel'],
+    ['🌳','Element distribution','Wood·Fire·Earth·Metal·Water'],
+    ['💫','Match with me','Generative · controlling'],
+    ['🖌','Colour recommendations','Which colours suit you']]]],
+  rows:[['How to use','✦ 3 steps',[
+    ['Turn on camera','Allow permission'],
+    ['Capture the moment','A person, object or scene'],
+    ['Check compatibility','Match score + matching colours']]]],
+  warn:'A fun five-element match from a photo colour and energy. For reference, not scientific analysis. The photo is analysed on-device, not stored or sent.'},
+
+ "c39-dementia":{hero:['🧠','Cognitive wellness check','Memory · attention · language screening with rPPG',
+   [['📝','Questions','10·20·50'],['💗','rPPG','live'],['👨‍👩‍👧','Guardian','alerts'],['💊','Meds','reminder']],
+   '🧠 Start check','· 5~15 min','🛡 Camera video is processed on-device only — deleted immediately when done'],
+  cards:[['Areas measured','✦ Tap a card for details',
+   [['🧭','Orientation','Time and place awareness'],['🧠','Memory','Immediate and delayed recall'],
+    ['🔢','Calculation','Numeric working memory'],['🗣','Language','Naming and repetition'],
+    ['🖼','Visuospatial','Copying and construction'],['⚡','Attention','Focus and switching'],
+    ['🎨','Stroop','Interference control'],['📖','Story recall','Sequence and detail'],
+    ['💗','Inner resilience','HRV under cognitive load'],['📊','Trend','Change over sessions']]]],
+  rows:[['Course options','✦ longer means more accumulated data',
+   [['Quick · 10 questions','About 60 sec · basic rhythm · 50% confidence'],
+    ['Standard · 20 questions','About 2 min · deep rhythm · 80% confidence'],
+    ['Full · 50 questions','About 5 min · 95% confidence']]],
+   ['Care card','✦ guardian · warnings · medication · food',
+   [['Guardian info','Registered family receive daily-change alerts'],
+    ['12 warning behaviours','Coping manual from public psychology and care material'],
+    ['Medication management','Alerts the phone at dose time · guardian after 30 min'],
+    ['Brain foods and exercise','12 curated picks from public nutrition material']]]],
+  warn:'This is a general wellness self-check for cognitive health. It is not intended to diagnose, treat, cure, or prevent any disease, including dementia. If you are concerned about changes in cognitive function, please consult a neurologist or psychiatrist.'},
+
+ scalp:{hero:['🧴','Scalp care','5-area camera scan × rPPG inner-resilience fusion',
+   [['🧑‍🦱','Crown','30s'],['↖️','Hairline L','20s'],['↗️','Hairline R','20s'],['📏','Midline','20s'],['🌫️','Back','20s']],
+   '📸 Start self-check','· 2 min 40 sec','🛡 Camera video is processed on-device only — no server transfer'],
+  cards:[['What the scan reads','✦ Tap a card for details',
+   [['🔬','Follicle density','Estimated from magnified image'],['🌡','Scalp heat','Warmth and redness observation'],
+    ['💧','Oil balance','Sebum tendency by area'],['🧬','Hair thickness','L/M/C/U type reference'],
+    ['🍃','Flaking','Dryness and shedding signs'],['💗','Stress link','rPPG inner-resilience fusion']]]],
+  rows:[['Self-check steps','✦ 3 steps before the camera',
+   [['Step 1 · Condition','Pick what concerns you from 8 items'],
+    ['Step 2 · Type','Choose the one closest to you from 8 tension types'],
+    ['Step 3 · Detail','4 follow-up questions on speed, scalp, hair, care']]]],
+  warn:'This tool is not a medical diagnostic, treatment, or disease-prediction device. It is for lifestyle self-tracking and wellness-care reference for scalp and hair. For medical judgement, consult a dermatologist or hair-care specialist.'},
+
+ iq:{hero:['💡','My IQ','5-domain cognition × rPPG inner-resilience fusion',
+   [['🔷','Pattern',''],['🧊','Spatial',''],['📖','Verbal',''],['🔢','Numeric',''],['🧠','Memory','']],
+   '📸 Start measuring','· 8~45 min','🛡 Measurement video is never sent externally · deleted immediately when done'],
+  cards:[['Levels','✦ Tap a card for details',
+   [['⚡','Quick · 25','About 8 min · a light try'],['🧩','Mensa · 35','About 25 min · pure figure patterns'],
+    ['📐','Standard · 35','About 15 min · balanced 5-area'],['🎯','Full · 50','About 25 min · full analysis'],
+    ['👑','In-depth · 80','About 45 min · the ultimate all-in-one']]]],
+  rows:[['What you get','✦ score · endurance · aptitude',
+   [['Estimated IQ','Own scale (beta) — not a Mensa or clinical test'],
+    ['Brain Endurance Index','Accuracy + reaction time + HRV — separates guessing from skill'],
+    ['5-area distribution','Strengths and weaknesses by domain'],
+    ['Career aptitude','Reference suggestions from the distribution']]]],
+  warn:'FULI own scale (beta). Not a Mensa or clinical IQ test, and not for diagnosis, admissions or hiring decisions. Please treat it as fun and self-check.'},
+
+ "c44-eye":{hero:['👁️','My eye health','Pupil tracking · blink analysis · under-eye rPPG',
+   [['👁️','Eye movement',''],['📏','Distance',''],['👀','Blink',''],['⚡','Response',''],['🎯','Stability','']],
+   '📸 Start measuring','· 1~2 min','🛡 Measurement video is never sent externally · deleted immediately when done'],
+  cards:[['What it measures','✦ Tap a card for details',
+   [['👁️','Pupil tracking','Fine movement of the pupil'],['⚡','Reaction speed','Response to 25 visual cues'],
+    ['💗','Under-eye rPPG','Micro blood flow and fatigue'],['📏','Distance lock','Auto-locks if 30–40cm drifts'],
+    ['👀','Blink rate','Per-minute count'],['🎯','Clarity index','Distance + clarity + AI fusion']]]],
+  rows:[['Before you measure','✦ 5 things',
+   [['Bright place','Lighting or natural light'],['Whole face in the circle','No shadows on the face'],
+    ['One eye at a time','Cover the other eye'],['Keep 30–40cm','Auto-locks if it drifts'],
+    ['React quickly','Response time is recorded']]]],
+  warn:'An eye-health self-check aid, not a medical device and not a formal eyesight test. It does not replace an ophthalmologist diagnosis. If you have abnormal eye symptoms, always see a specialist.'},
+
+ "cgo-sleep":{hero:['🌙','Good sleep','Pre-sleep rPPG × 4-7-8 breathing feedback',
+   [['💗','Measure','40s'],['🫁','Breathe','4-7-8'],['📊','Compare','before/after'],['🎵','Sounds','50']],
+   '📸 Measure and start','· about 2 min','🛡 Biosignals are processed on-device only, not stored or sent'],
+  cards:[['Sleep guide','✦ evidence-based · tap for details',
+   [['🏃','Exercise','Aerobic 30 min, 3–5 times a week'],['👐','Acupressure','Shenmen · Anmian · Sanyinjiao'],
+    ['🍵','Food','Kiwi · tart cherry · warm milk'],['🩺','Habits','Morning light · cool room 18–20°C'],
+    ['🧘','Self-hypnosis','Guided relaxation + suggestion'],['🎵','Sound therapy','6 themes · Solfeggio']]]],
+  rows:[['3 steps','✦ measure → breathe → compare',
+   [['Step 1 · Measure before bed','40 sec rPPG reads vitality beat, resilience and tension'],
+    ['Step 2 · 4-7-8 breathing','Inhale 4 · hold 7 · exhale 8 — reps adjust to your tension'],
+    ['Step 3 · Before/after','Shows honestly whether you actually settled']]]],
+  warn:'Biosignals are processed on-device only, not stored or sent. This is a wellness relaxation tool, not medical diagnosis or treatment. If sleep problems last over 2 weeks, consult a professional.'}
+};
+</script>
+
+
+<script>
+window.buildSpecPage = function(key, name){
+  var s = (window.PGSPEC||{})[key]; if(!s) return null;
+  var H = s.hero||[], out = '<div class="pg">'
+    + '<button class="pg-fab" data-back>◀ <span data-k="520">Dashboard</span></button>'
+    + '<button class="pg-fab2" data-guide="'+key+'">💡 How to use</button>';
+
+  /* 맨 위 진한 상자 — 이 기능이 무엇을 하는지 한눈에 */
+  out += '<div class="hz"><div class="hz-box">'
+      +  '<div class="hz-t">'+(H[0]||'✨')+' <span>'+(H[1]||name)+'</span></div>';
+  if(H[2]) out += '<div class="hz-p" style="margin:0 0 12px">'+H[2]+'</div>';
+  if(H[3] && H[3].length){
+    out += '<div class="hz-6">'+H[3].map(function(x){
+      return '<div><div class="e">'+x[0]+'</div><div class="n">'+x[1]+'</div>'+(x[2]?'<div class="s">'+x[2]+'</div>':'')+'</div>';
+    }).join('')+'</div>';
+  }
+  if(H[4]) out += '<button class="hz-go">'+H[4]+(H[5]?'<span class="sub">'+H[5]+'</span>':'')+'</button>';
+  if(H[6]) out += '<div class="hz-p">'+H[6]+'</div>';
+  out += '</div></div>';
+
+  /* 카드 묶음 */
+  (s.cards||[]).forEach(function(g){
+    out += '<div class="h-sec"><h2><span>'+g[0]+'</span>'+(g[1]?'<em>'+g[1]+'</em>':'')+'</h2><div class="h-g5">'
+        + g[2].map(function(c){
+            return '<div class="h-c" data-spec="'+key+'|'+c[1].replace(/"/g,'&quot;')+'" style="cursor:pointer"><div class="e">'+c[0]+'</div><div class="n">'+c[1]+'</div><div class="d">'+c[2]+'</div></div>';
+          }).join('')
+        + '</div></div>';
+  });
+
+  /* 줄 목록 */
+  (s.rows||[]).forEach(function(g){
+    out += '<div class="h-sec"><h2><span>'+g[0]+'</span>'+(g[1]?'<em>'+g[1]+'</em>':'')+'</h2><div class="h-rows">'
+        + g[2].map(function(r,i){
+            return '<div><span class="hd">'+(i+1)+'</span><div><b>'+r[0]+'</b><span>'+r[1]+'</span></div></div>';
+          }).join('')
+        + '</div></div>';
+  });
+
+  if(s.warn) out += '<div class="h-warn">⚠️ '+s.warn+'</div>';
+  return out + '</div>';
+};
+</script>
+
+<template data-cgo-page="travel">
   <div class="pg">
+    <button class="pg-fab" data-back>◀ <span data-k="520">Dashboard</span></button><button class="pg-fab2" data-guide="travel" data-k="503">💡 How to use</button>
+    
     <div class="pg-h">
       <h1 data-k="500">Find the destination that fits you</h1>
       <div class="meta" data-k="501">9 systems × global coordinates</div>
     </div>
 
     <div class="card">
-      <h3><span data-k="502">🌍 From which viewpoint do you see destinations?</span>
-        <button class="pill" data-guide="travel" data-k="503">💡 How to use</button></h3>
+      <h3><span data-k="502">🌍 From which viewpoint do you see destinations?</span></h3>
 
       <div class="steps">
         <div><b>1</b><div class="t" data-k="504">Choose a system</div><div class="s" data-k="505">one card below</div></div>
@@ -369,8 +1202,129 @@ main{padding:14px 16px 22px;display:flex;flex-direction:column;gap:10px}
 
     <div class="sel-row">🌐 <span data-k="518">Choose country</span><span class="cv">▾</span></div>
     <div class="sel-row">🏙️ <span data-k="519">Choose city</span><span class="cv">▾</span></div>
+  </div>
+</template>
 
-    <button class="pg-back" data-back>◀ <span data-k="520">Dashboard</span></button>
+
+<template data-cgo-page="wellness">
+  <div class="pg">
+    <button class="pg-fab" data-back>◀ <span data-k="520">Dashboard</span></button><button class="pg-fab2" data-guide="wellness" data-k="503">💡 How to use</button>
+    
+    <div class="hz">
+      <div class="hz-box">
+        <div class="hz-t">✨ <span data-k="600">6-area vitality scan — a single camera scan</span></div>
+        <div class="hz-6">
+          <div><div class="e">👤</div><div class="n" data-k="601">Face</div><div class="s">60s</div></div>
+          <div><div class="e">👅</div><div class="n" data-k="602">Tongue</div><div class="s">20s</div></div>
+          <div><div class="e">👁</div><div class="n" data-k="603">Eyes</div><div class="s">20s</div></div>
+          <div><div class="e">🎨</div><div class="n" data-k="604">Skin</div><div class="s">30s</div></div>
+          <div><div class="e">🤚</div><div class="n" data-k="605">Back of hand</div><div class="s">15s</div></div>
+          <div><div class="e">✋</div><div class="n" data-k="606">Palm</div><div class="s">15s</div></div>
+        </div>
+        <button class="hz-go">📷 <span data-k="607">Start camera measurement</span><span class="sub" data-k="608">· 2 min 40 sec</span></button>
+        <div class="hz-p" data-k="609">🛡 Camera video is processed on-device only — no server transfer · deleted immediately when measurement ends</div>
+      </div>
+    </div>
+
+    <div class="h-sec">
+      <h2><span data-k="610">10 conditions you can explore</span><em data-k="611">✦ Tap a card for details</em></h2>
+      <div class="h-g5">
+        <div class="h-c" data-cond="heart"><div class="e">💗</div><div class="n" data-k="612">Heart Engine Rhythm</div><div class="d" data-k="613">The beat of your vitality engine</div></div>
+        <div class="h-c" data-cond="blood"><div class="e">🩸</div><div class="n" data-k="614">Blood-Qi Circulation Balance</div><div class="d" data-k="615">Red vitality stem spreading through the body</div></div>
+        <div class="h-c" data-cond="burn"><div class="e">🦋</div><div class="n" data-k="616">Vitality Burn Efficiency</div><div class="d" data-k="617">Speed and tension of your energy factor</div></div>
+        <div class="h-c" data-cond="cleanse"><div class="e">🌿</div><div class="n" data-k="618">Body Cleanse Rhythm</div><div class="d" data-k="619">Clean energy that clears out your body</div></div>
+        <div class="h-c" data-cond="sugar"><div class="e">🍬</div><div class="n" data-k="620">Sugar Charge Balance</div><div class="d" data-k="621">Energy absorption and consumption rhythm</div></div>
+        <div class="h-c" data-cond="mind"><div class="e">🧠</div><div class="n" data-k="622">Mind shield</div><div class="d" data-k="623">Inner resilience that withstands external stimuli</div></div>
+        <div class="h-c" data-cond="breath"><div class="e">🫁</div><div class="n" data-k="624">Clear Breath Index</div><div class="d" data-k="625">Stability of breathing and clean energy</div></div>
+        <div class="h-c" data-cond="tongue"><div class="e">👅</div><div class="n" data-k="626">Tongue-Sign Energy</div><div class="d" data-k="627">Today's five-element signs shown on the tongue</div></div>
+        <div class="h-c" data-cond="fatigue"><div class="e">😴</div><div class="n" data-k="628">All-Nighter Damage</div><div class="d" data-k="629">Energy battery level and accumulated fatigue</div></div>
+        <div class="h-c" data-cond="glow"><div class="e">✨</div><div class="n" data-k="630">Charm Glow Tone</div><div class="d" data-k="631">The aura around your complexion and skin</div></div>
+      </div>
+    </div>
+
+    <div class="h-sec">
+      <h2><span data-k="632">6-stage measurement flow</span><em data-k="633">✦ 2 min 40 sec total</em></h2>
+      <div class="h-g3">
+        <div class="h-st"><b>1</b><div class="e">👤</div><div class="n" data-k="634">Face Scan</div><div class="d" data-k="635">Vitality wave scan via CHROM rPPG</div><div class="s">60 sec</div></div>
+        <div class="h-st"><b>2</b><div class="e">👅</div><div class="n" data-k="636">Tongue observation</div><div class="d" data-k="637">Tongue observation · constitution & condition reference</div><div class="s">20 sec</div></div>
+        <div class="h-st"><b>3</b><div class="e">👁</div><div class="n" data-k="638">Eye check</div><div class="d" data-k="639">Vitality & clearness reference from gaze tone</div><div class="s">20 sec</div></div>
+        <div class="h-st"><b>4</b><div class="e">🎨</div><div class="n" data-k="640">Skin scan</div><div class="d" data-k="641">Vitality · elasticity · even tone</div><div class="s">30 sec</div></div>
+        <div class="h-st"><b>5</b><div class="e">🤚</div><div class="n" data-k="642">Back-of-hand check</div><div class="d" data-k="643">Fingertip vitality flow observation</div><div class="s">15 sec</div></div>
+        <div class="h-st"><b>6</b><div class="e">✋</div><div class="n" data-k="644">Palm scan</div><div class="d" data-k="645">Palm vitality flow</div><div class="s">15 sec</div></div>
+      </div>
+    </div>
+
+    <div class="h-sec">
+      <h2><span data-k="646">Key measured indicators</span><em data-k="647">✦ CHROM rPPG algorithm</em></h2>
+      <div class="h-g4">
+        <div class="h-i" style="background:#fff5f7;border-color:rgba(236,72,120,.25)">
+          <div class="e">💗</div><div class="n" style="color:#e0567a" data-k="648">Vitality beat</div>
+          <div class="d" data-k="649">Vitality rhythm · observed where your vitality lives</div></div>
+        <div class="h-i" style="background:#f2f7ff;border-color:rgba(47,110,240,.22)">
+          <div class="e">🛡️</div><div class="n" style="color:#2f6ef0" data-k="650">Inner resilience</div>
+          <div class="d" data-k="651">Recovery resilience · the grain of tension-relaxation recovery</div></div>
+        <div class="h-i" style="background:#fdf4ff;border-color:rgba(168,85,247,.22)">
+          <div class="e">🎨</div><div class="n" style="color:#9333ea" data-k="652">Vitality tone</div>
+          <div class="d" data-k="653">Facial glow · energy · complexion</div></div>
+        <div class="h-i" style="background:#fff5f9;border-color:rgba(236,72,120,.25)">
+          <div class="e">🫁</div><div class="n" style="color:#e0567a" data-k="654">RSI</div>
+          <div class="d" data-k="655">Breath-counting synchrony · the grain of relaxation</div></div>
+      </div>
+    </div>
+
+    <div class="h-sec">
+      <h2><span data-k="656">5-Area Comprehensive Condition Report</span><em data-k="657">✦ photo + AI reference analysis · hand is a combined score</em></h2>
+      <div class="h-wait">
+        <div class="e">📷</div>
+        <div class="n" data-k="658">Activates after the comprehensive camera scan</div>
+        <div class="d" data-k="659">Tap the comprehensive-scan card above and measure the 5 areas — face · tongue · eyes · skin · hand — then each area's photo and AI analysis appear here</div>
+      </div>
+
+      <div class="h-split">
+        <div class="h-rows">
+          <div><span data-k="660">Vitality beat</span><b>—</b></div>
+          <div><span data-k="661">Inner resilience</span><b>—</b></div>
+          <div><span data-k="662">Vitality tone</span><b>—</b></div>
+          <div><span data-k="663">Energy flow</span><b>—</b></div>
+          <div><span data-k="664">Visual observation</span><b>—</b></div>
+          <div><span data-k="665">× 7-4 blending</span><b>—</b></div>
+        </div>
+        <div class="h-list">
+          <div class="hd" data-k="666">🔮 Divination analysis (30%)</div>
+          <li>🟡 <span data-k="667">Yin-Yang balance</span></li>
+          <li>🟢 <span data-k="668">Five-Element constitution</span></li>
+          <li>🟣 <span data-k="669">Zi Wei Dou Shu</span></li>
+          <li>🔵 <span data-k="670">Nine Star Ki</span></li>
+          <li>🟠 <span data-k="671">Vedic astrology</span></li>
+        </div>
+      </div>
+    </div>
+
+    <div class="h-sec">
+      <h2><span data-k="672">🤖 Fusion Life-Indexing AI</span><em data-k="673">✦ AI-powered</em></h2>
+      <div class="h-ai">
+        <div class="e">🧬</div>
+        <div style="flex:1;min-width:0">
+          <div class="n" data-k="674">Bio-wave + 50 divination systems cross-matching</div>
+          <div class="d" data-k="675">Based on your measurements, an integrated Korean-Western reference analysis. It offers reference info on lifestyle and diet.</div>
+        </div>
+        <span class="lk" data-k="676">🔒 Activates after measurement</span>
+      </div>
+    </div>
+
+    <div class="h-sec">
+      <h2><span data-k="677">✨ Energy Flow Balance</span><em data-k="678">✦ cross-analysis: today's TOP 3 vitality rhythms</em></h2>
+      <div class="h-wait" style="border-color:rgba(236,72,120,.25);background:#fff7fa">
+        <div class="e">🌊</div>
+        <div class="n" style="color:#e0567a" data-k="679">Activates after 🤖 Fusion Life-Indexing AI</div>
+        <div class="d" data-k="680">When you tap the Fusion Life-Indexing AI card above, it cross-analyzes your results + 50 divination systems, and today's TOP 3 vitality rhythms appear here</div>
+      </div>
+    </div>
+
+    <div class="h-warn">
+      <b data-k="681">⚠️ Wellness notice</b> —
+      <span data-k="682">These observation and analysis results are for infotainment and wellness reference content and are not a medical device. They cannot be used to diagnose, treat, or prevent disease, or to determine a health condition. If you are concerned about your health, please consult a medical institution. rPPG calculations are processed only within the device. However, the photos used to read the tongue and 5 areas are sent to the analysis server, then discarded without being stored.</span>
+    </div>
   </div>
 </template>
 
@@ -378,46 +1332,46 @@ main{padding:14px 16px 22px;display:flex;flex-direction:column;gap:10px}
   <div style="margin:-14px -16px -22px;padding:34px 18px 90px;background:#eefaf8;min-height:calc(100vh - 56px);position:relative;">
   <div style="display:flex;align-items:center;justify-content:center;gap:9px;">
   <span style="font-size:22px;">👤</span>
-  <span data-k="84" style="font-family:'Lato','Noto Sans KR',sans-serif;font-weight:900;font-size:26px;color:#1a7f8e;">My Page</span>
+  <span data-k="84" style="font-family:'Lato','Noto Sans KR',sans-serif;font-weight:900;font-size:26px;color:#2f8f5b;">My Page</span>
   </div>
   <div data-k="85" style="text-align:center;font-size:12.5px;color:#5b7a86;margin-top:9px;">Account · Subscription · Storage · Settings · Support</div>
-  <div style="max-width:530px;margin:24px auto 0;height:38px;border-radius:20px;background:#fff;border:1px solid rgba(26,127,142,.1);box-shadow:0 1px 3px rgba(26,127,142,.06);"></div>
+  <div style="max-width:530px;margin:24px auto 0;height:38px;border-radius:20px;background:#fff;border:1px solid rgba(47,143,91,.18);box-shadow:0 1px 3px rgba(47,143,91,.05);"></div>
   <div style="max-width:530px;margin:14px auto 0;display:flex;flex-direction:column;gap:14px;">
-  <button data-go="profile" style="display:flex;align-items:center;gap:14px;width:100%;padding:18px;border-radius:14px;border:1px solid rgba(26,127,142,.1);background:#fff;box-shadow:0 1px 4px rgba(26,127,142,.07);cursor:pointer;font-family:inherit;text-align:left;">
+  <button data-go="profile" style="display:flex;align-items:center;gap:14px;width:100%;padding:18px;border-radius:14px;border:1px solid rgba(47,143,91,.22);background:#fff;box-shadow:0 1px 4px rgba(26,150,74,.07);cursor:pointer;font-family:inherit;text-align:left;">
   <span style="font-size:22px;flex-shrink:0;">👤</span>
   <span style="display:flex;flex-direction:column;gap:4px;min-width:0;">
-  <span data-k="86" style="font-family:'Lato','Noto Sans KR',sans-serif;font-weight:900;font-size:15px;color:#12333d;">Profile &amp; Account Management</span>
-  <span data-k="87" style="font-size:11px;color:#7a939d;">Member info · Password · SNS · Delete account</span>
+  <span data-k="86" style="font-family:'Lato','Noto Sans KR',sans-serif;font-weight:900;font-size:15px;color:#12474f;">Profile &amp; Account Management</span>
+  <span data-k="87" style="font-size:11px;color:#6d8f96;">Member info · Password · SNS · Delete account</span>
   </span>
   <span style="flex:1"></span>
-  <span style="color:#1aa5c4;font-size:13px;">▶</span>
+  <span style="color:#2f8f5b;font-size:13px;">▶</span>
   </button>
-  <button data-go="vip" style="display:flex;align-items:center;gap:14px;width:100%;padding:18px;border-radius:14px;border:1px solid rgba(26,127,142,.1);background:#fff;box-shadow:0 1px 4px rgba(26,127,142,.07);cursor:pointer;font-family:inherit;text-align:left;">
+  <button data-go="vip" style="display:flex;align-items:center;gap:14px;width:100%;padding:18px;border-radius:14px;border:1px solid rgba(47,143,91,.22);background:#fff;box-shadow:0 1px 4px rgba(26,150,74,.07);cursor:pointer;font-family:inherit;text-align:left;">
   <span style="font-size:22px;flex-shrink:0;">💳</span>
   <span style="display:flex;flex-direction:column;gap:4px;min-width:0;">
-  <span data-k="88" style="font-family:'Lato','Noto Sans KR',sans-serif;font-weight:900;font-size:15px;color:#12333d;">Subscription &amp; Payment Management</span>
-  <span data-k="89" style="font-size:11px;color:#7a939d;">Subscription status · Payment method · Refund request</span>
+  <span data-k="88" style="font-family:'Lato','Noto Sans KR',sans-serif;font-weight:900;font-size:15px;color:#12474f;">Subscription &amp; Payment Management</span>
+  <span data-k="89" style="font-size:11px;color:#6d8f96;">Subscription status · Payment method · Refund request</span>
   </span>
   <span style="flex:1"></span>
-  <span style="color:#1aa5c4;font-size:13px;">▶</span>
+  <span style="color:#2f8f5b;font-size:13px;">▶</span>
   </button>
-  <button data-go="account" style="display:flex;align-items:center;gap:14px;width:100%;padding:18px;border-radius:14px;border:1px solid rgba(26,127,142,.1);background:#fff;box-shadow:0 1px 4px rgba(26,127,142,.07);cursor:pointer;font-family:inherit;text-align:left;">
+  <button data-go="account" style="display:flex;align-items:center;gap:14px;width:100%;padding:18px;border-radius:14px;border:1px solid rgba(47,143,91,.22);background:#fff;box-shadow:0 1px 4px rgba(26,150,74,.07);cursor:pointer;font-family:inherit;text-align:left;">
   <span style="font-size:22px;flex-shrink:0;">⚙️</span>
   <span style="display:flex;flex-direction:column;gap:4px;min-width:0;">
-  <span data-k="90" style="font-family:'Lato','Noto Sans KR',sans-serif;font-weight:900;font-size:15px;color:#12333d;">App Settings</span>
-  <span data-k="91" style="font-size:11px;color:#7a939d;">Notifications · Theme · Font size · Cache · Version</span>
+  <span data-k="90" style="font-family:'Lato','Noto Sans KR',sans-serif;font-weight:900;font-size:15px;color:#12474f;">App Settings</span>
+  <span data-k="91" style="font-size:11px;color:#6d8f96;">Notifications · Theme · Font size · Cache · Version</span>
   </span>
   <span style="flex:1"></span>
-  <span style="color:#1aa5c4;font-size:13px;">▶</span>
+  <span style="color:#2f8f5b;font-size:13px;">▶</span>
   </button>
-  <button data-go="howto" style="display:flex;align-items:center;gap:14px;width:100%;padding:18px;border-radius:14px;border:1px solid rgba(26,127,142,.1);background:#fff;box-shadow:0 1px 4px rgba(26,127,142,.07);cursor:pointer;font-family:inherit;text-align:left;">
+  <button data-go="howto" style="display:flex;align-items:center;gap:14px;width:100%;padding:18px;border-radius:14px;border:1px solid rgba(47,143,91,.22);background:#fff;box-shadow:0 1px 4px rgba(26,150,74,.07);cursor:pointer;font-family:inherit;text-align:left;">
   <span style="font-size:22px;flex-shrink:0;">📞</span>
   <span style="display:flex;flex-direction:column;gap:4px;min-width:0;">
-  <span data-k="92" style="font-family:'Lato','Noto Sans KR',sans-serif;font-weight:900;font-size:15px;color:#12333d;">Customer Support &amp; Info</span>
-  <span data-k="93" style="font-size:11px;color:#7a939d;">AI counselor · 1:1 email · Terms</span>
+  <span data-k="92" style="font-family:'Lato','Noto Sans KR',sans-serif;font-weight:900;font-size:15px;color:#12474f;">Customer Support &amp; Info</span>
+  <span data-k="93" style="font-size:11px;color:#6d8f96;">AI counselor · 1:1 email · Terms</span>
   </span>
   <span style="flex:1"></span>
-  <span style="color:#1aa5c4;font-size:13px;">▶</span>
+  <span style="color:#2f8f5b;font-size:13px;">▶</span>
   </button>
   </div>
   <button data-go="dashboard" title="Home" style="position:fixed;right:20px;bottom:22px;width:52px;height:52px;border-radius:50%;border:none;background:#17b0c9;color:#fff;font-size:21px;cursor:pointer;box-shadow:0 6px 18px rgba(23,176,201,.4);">🏠</button>
@@ -428,48 +1382,48 @@ main{padding:14px 16px 22px;display:flex;flex-direction:column;gap:10px}
   <div style="margin:-14px -16px -22px;padding:0 0 60px;background:#eefaf8;min-height:calc(100vh - 56px);">
   <div style="display:flex;align-items:center;gap:10px;padding:18px 18px 14px;">
   <span style="font-size:18px;">👤</span>
-  <span data-k="300" style="font-family:'Lato','Noto Sans KR',sans-serif;font-weight:900;font-size:17px;color:#1a7f8e;">Profile &amp; account management</span>
+  <span data-k="300" style="font-family:'Lato','Noto Sans KR',sans-serif;font-weight:900;font-size:17px;color:#2f8f5b;">Profile &amp; account management</span>
   <span style="flex:1"></span>
-  <button data-go="mypage" style="width:34px;height:34px;border-radius:50%;border:none;background:#cdeef2;color:#2b7f92;font-size:15px;cursor:pointer;">✕</button>
+  <button data-go="mypage" style="width:34px;height:34px;border-radius:50%;border:none;background:#cdeef2;color:#2f8f5b;font-size:15px;cursor:pointer;">✕</button>
   </div>
   <div style="max-width:530px;margin:0 auto;padding:0 14px;display:flex;flex-direction:column;gap:12px;">
-  <div style="background:#fff;border:1px solid rgba(26,127,142,.1);border-radius:14px;padding:22px 18px;text-align:center;box-shadow:0 1px 4px rgba(26,127,142,.07);">
+  <div style="background:#fff;border:1px solid rgba(47,143,91,.1);border-radius:14px;padding:22px 18px;text-align:center;box-shadow:0 1px 4px rgba(47,143,91,.07);">
   <div style="width:74px;height:74px;border-radius:50%;margin:0 auto 14px;background:linear-gradient(140deg,#22b8cf,#1a8fa8);display:flex;align-items:center;justify-content:center;font-size:32px;">👤</div>
-  <div data-k="301" style="font-family:'Lato','Noto Sans KR',sans-serif;font-weight:900;font-size:19px;color:#12333d;">Guest</div>
-  <div data-k="302" style="display:inline-block;margin-top:9px;padding:5px 16px;border-radius:16px;border:1px solid rgba(26,127,142,.18);color:#5b7a86;font-size:11.5px;font-weight:800;">FREE</div>
+  <div data-k="301" style="font-family:'Lato','Noto Sans KR',sans-serif;font-weight:900;font-size:19px;color:#12474f;">Guest</div>
+  <div data-k="302" style="display:inline-block;margin-top:9px;padding:5px 16px;border-radius:16px;border:1px solid rgba(47,143,91,.18);color:#5b7a86;font-size:11.5px;font-weight:800;">FREE</div>
   <div data-k="303" style="margin-top:14px;font-family:'Orbitron',sans-serif;font-size:10.5px;color:#5b7a86;">📱 Device ID · FULI-AA86-7574</div>
   </div>
-  <div style="background:#fff;border:1px solid rgba(26,127,142,.1);border-radius:14px;padding:16px 18px;box-shadow:0 1px 4px rgba(26,127,142,.07);">
+  <div style="background:#fff;border:1px solid rgba(47,143,91,.1);border-radius:14px;padding:16px 18px;box-shadow:0 1px 4px rgba(47,143,91,.07);">
   <div style="display:flex;align-items:baseline;gap:10px;">
-  <span data-k="304" style="font-size:12px;font-weight:800;color:#12333d;">Currently FREE</span>
+  <span data-k="304" style="font-size:12px;font-weight:800;color:#12474f;">Currently FREE</span>
   <span style="flex:1"></span>
-  <span data-k="305" style="font-size:12px;font-weight:800;color:#12333d;">Next: MEMBER →</span>
+  <span data-k="305" style="font-size:12px;font-weight:800;color:#12474f;">Next: MEMBER →</span>
   </div>
   <div style="margin-top:10px;height:7px;border-radius:5px;background:#dfe9ec;overflow:hidden;">
   <div style="width:38%;height:100%;background:linear-gradient(90deg,#22b8cf,#7c3aed);"></div>
   </div>
-  <div data-k="306" style="margin-top:9px;font-size:11px;color:#7a939d;">Upgrade to unlock more features</div>
+  <div data-k="306" style="margin-top:9px;font-size:11px;color:#6d8f96;">Upgrade to unlock more features</div>
   </div>
-  <div style="background:#fff;border:1px solid rgba(26,127,142,.1);border-radius:14px;padding:16px 18px;box-shadow:0 1px 4px rgba(26,127,142,.07);">
-  <div data-k="307" style="font-size:12.5px;font-weight:900;color:#12333d;">Member Information</div>
-  <div style="margin-top:10px;font-size:13px;color:#12333d;">
+  <div style="background:#fff;border:1px solid rgba(47,143,91,.1);border-radius:14px;padding:16px 18px;box-shadow:0 1px 4px rgba(47,143,91,.07);">
+  <div data-k="307" style="font-size:12.5px;font-weight:900;color:#12474f;">Member Information</div>
+  <div style="margin-top:10px;font-size:13px;color:#12474f;">
   <span data-k="308" style="font-weight:900;">Email</span><span data-k="309" style="color:#5b7a86;">(No login info)</span>
   </div>
   </div>
-  <div style="background:#fff;border:1px solid rgba(26,127,142,.1);border-radius:14px;padding:16px 18px;box-shadow:0 1px 4px rgba(26,127,142,.07);">
-  <div data-k="310" style="font-size:12.5px;font-weight:900;color:#1a7f8e;">🔒 MUFE Security — activated after launch</div>
+  <div style="background:#fff;border:1px solid rgba(47,143,91,.1);border-radius:14px;padding:16px 18px;box-shadow:0 1px 4px rgba(47,143,91,.07);">
+  <div data-k="310" style="font-size:12.5px;font-weight:900;color:#2f8f5b;">🔒 MUFE Security — activated after launch</div>
   <div style="margin-top:10px;display:flex;flex-direction:column;gap:6px;font-size:12px;color:#5b7a86;line-height:1.6;">
   <span data-k="311">• Login / Authentication settings</span>
   <span data-k="312">• Biometric sync (rPPG · pupils)</span>
   <span data-k="313">• Post-quantum password (ML-KEM-768)</span>
   </div>
-  <div data-k="314" style="margin-top:11px;font-size:10.5px;color:#7a939d;">Automatically switches to MUFE Security at launch</div>
+  <div data-k="314" style="margin-top:11px;font-size:10.5px;color:#6d8f96;">Automatically switches to MUFE Security at launch</div>
   </div>
-  <div style="background:#fff;border:1px solid rgba(220,38,38,.18);border-radius:14px;padding:16px 18px;box-shadow:0 1px 4px rgba(26,127,142,.07);">
+  <div style="background:#fff;border:1px solid rgba(220,38,38,.18);border-radius:14px;padding:16px 18px;box-shadow:0 1px 4px rgba(47,143,91,.07);">
   <button style="width:100%;padding:12px;border-radius:11px;border:1px solid rgba(220,38,38,.3);background:rgba(220,38,38,.07);color:#c02626;font-size:12.5px;font-weight:900;cursor:pointer;font-family:inherit;"><span data-k="315">❌ Delete account now (shred device data)</span></button>
-  <div data-k="316" style="margin-top:12px;font-size:11.5px;font-weight:800;color:#12333d;">※ On-device shredding (complete deletion within the device)</div>
+  <div data-k="316" style="margin-top:12px;font-size:11.5px;font-weight:800;color:#12474f;">※ On-device shredding (complete deletion within the device)</div>
   <div data-k="317" style="margin-top:6px;font-size:11px;color:#5b7a86;line-height:1.75;">The moment you delete your account, all data stored on this device (health records · playlists · settings · device ID) will be permanently deleted in 1 second and cannot be recovered. Since nothing is stored on the server, no trace remains.</div>
-  <div data-k="318" style="margin-top:12px;font-size:11.5px;font-weight:800;color:#12333d;">※ Paid subscription cancellation notice</div>
+  <div data-k="318" style="margin-top:12px;font-size:11.5px;font-weight:800;color:#12474f;">※ Paid subscription cancellation notice</div>
   <div data-k="319" style="margin-top:6px;font-size:11px;color:#5b7a86;line-height:1.75;">To cancel a paid subscription, please do so separately in the subscription management of the App Store · Google Play.</div>
   </div>
   </div>
@@ -480,31 +1434,31 @@ main{padding:14px 16px 22px;display:flex;flex-direction:column;gap:10px}
   <div style="margin:-14px -16px -22px;padding:0 0 56px;background:#eefaf8;min-height:calc(100vh - 56px);">
   <div style="display:flex;align-items:center;gap:10px;padding:18px 18px 14px;">
   <span style="font-size:18px;">💳</span>
-  <span data-k="320" style="font-family:'Lato','Noto Sans KR',sans-serif;font-weight:900;font-size:17px;color:#1a7f8e;">Subscription &amp; License Management</span>
+  <span data-k="320" style="font-family:'Lato','Noto Sans KR',sans-serif;font-weight:900;font-size:17px;color:#2f8f5b;">Subscription &amp; License Management</span>
   <span style="flex:1"></span>
-  <button data-go="mypage" style="width:34px;height:34px;border-radius:50%;border:none;background:#cdeef2;color:#2b7f92;font-size:15px;cursor:pointer;">✕</button>
+  <button data-go="mypage" style="width:34px;height:34px;border-radius:50%;border:none;background:#cdeef2;color:#2f8f5b;font-size:15px;cursor:pointer;">✕</button>
   </div>
   <div style="max-width:530px;margin:0 auto;padding:0 14px;display:flex;flex-direction:column;gap:14px;">
   <div style="background:#f2fbf8;border:1px solid rgba(26,168,142,.2);border-radius:16px;padding:16px 18px;text-align:center;">
   <div data-k="321" style="font-size:12.5px;font-weight:900;color:#1a8f8e;">📍 Current access: Web / PWA · Direct payment</div>
   <div data-k="322" style="font-size:12px;color:#6f8f97;margin-top:6px;">Manage it through the payment channel you signed up with</div>
   </div>
-  <div style="background:#fff;border:1px solid rgba(26,127,142,.1);border-radius:16px;padding:18px;box-shadow:0 1px 4px rgba(26,127,142,.06);display:flex;flex-direction:column;gap:12px;">
-  <div data-k="323" style="font-family:'Lato','Noto Sans KR',sans-serif;font-size:14px;font-weight:900;color:#12333d;">Subscription status</div>
+  <div style="background:#fff;border:1px solid rgba(47,143,91,.1);border-radius:16px;padding:18px;box-shadow:0 1px 4px rgba(47,143,91,.06);display:flex;flex-direction:column;gap:12px;">
+  <div data-k="323" style="font-family:'Lato','Noto Sans KR',sans-serif;font-size:14px;font-weight:900;color:#12474f;">Subscription status</div>
   <div style="display:flex;align-items:center;">
   <span data-k="324" style="font-size:13px;color:#3d5a63;">Current plan</span><span style="flex:1"></span>
-  <span data-k="325" style="font-size:13px;font-weight:900;color:#12333d;">FREE</span>
+  <span data-k="325" style="font-size:13px;font-weight:900;color:#12474f;">FREE</span>
   </div>
   <div style="display:flex;align-items:center;">
   <span data-k="326" style="font-size:13px;color:#3d5a63;">Next billing date</span><span style="flex:1"></span>
-  <span style="font-size:13px;font-weight:900;color:#12333d;">-</span>
+  <span style="font-size:13px;font-weight:900;color:#12474f;">-</span>
   </div>
   <button style="width:100%;padding:14px;border-radius:13px;border:none;background:linear-gradient(100deg,#a78bfa,#7c3aed);color:#fff;font-size:13.5px;font-weight:900;cursor:pointer;font-family:'Lato','Noto Sans KR',sans-serif;"><span data-k="327">💎 Premium Upgrade</span></button>
   </div>
-  <div style="background:#fff;border:1px solid rgba(26,127,142,.1);border-radius:16px;padding:18px;box-shadow:0 1px 4px rgba(26,127,142,.06);display:flex;flex-direction:column;gap:12px;">
-  <div data-k="328" style="font-family:'Lato','Noto Sans KR',sans-serif;font-size:14px;font-weight:900;color:#12333d;">Payment method</div>
-  <div data-k="329" style="font-size:12px;color:#7a939d;margin-top:-6px;">Managed directly through the payment channel you signed up with</div>
-  <div data-k="330" style="padding:13px 15px;border-radius:12px;border:1px solid rgba(26,127,142,.14);background:#f7fbfc;font-size:12.5px;color:#94aab1;">No payment method selected yet — register one below</div>
+  <div style="background:#fff;border:1px solid rgba(47,143,91,.1);border-radius:16px;padding:18px;box-shadow:0 1px 4px rgba(47,143,91,.06);display:flex;flex-direction:column;gap:12px;">
+  <div data-k="328" style="font-family:'Lato','Noto Sans KR',sans-serif;font-size:14px;font-weight:900;color:#12474f;">Payment method</div>
+  <div data-k="329" style="font-size:12px;color:#6d8f96;margin-top:-6px;">Managed directly through the payment channel you signed up with</div>
+  <div data-k="330" style="padding:13px 15px;border-radius:12px;border:1px solid rgba(47,143,91,.14);background:#f7fbfc;font-size:12.5px;color:#94aab1;">No payment method selected yet — register one below</div>
   <div style="display:flex;align-items:center;gap:13px;padding:14px 15px;border-radius:13px;border:1px solid rgba(124,58,237,.25);background:linear-gradient(100deg,#f7f3ff,#fdfbff);">
   <span style="font-size:19px;flex-shrink:0;">🌐</span>
   <span style="display:flex;flex-direction:column;gap:3px;min-width:0;">
@@ -514,27 +1468,27 @@ main{padding:14px 16px 22px;display:flex;flex-direction:column;gap:10px}
   <span style="flex:1"></span>
   <span style="color:#22b8cf;font-size:15px;">💎</span>
   </div>
-  <div style="display:flex;align-items:center;gap:13px;padding:14px 15px;border-radius:13px;border:1px solid rgba(26,127,142,.13);background:#fff;">
+  <div style="display:flex;align-items:center;gap:13px;padding:14px 15px;border-radius:13px;border:1px solid rgba(47,143,91,.13);background:#fff;">
   <span style="font-size:19px;flex-shrink:0;">🍏</span>
   <span style="display:flex;flex-direction:column;gap:3px;min-width:0;">
-  <span data-k="333" style="font-family:'Lato','Noto Sans KR',sans-serif;font-size:13.5px;font-weight:900;color:#12333d;">App Store subscription management</span>
-  <span data-k="334" style="font-size:11px;color:#7a939d;">Account → Subscriptions</span>
+  <span data-k="333" style="font-family:'Lato','Noto Sans KR',sans-serif;font-size:13.5px;font-weight:900;color:#12474f;">App Store subscription management</span>
+  <span data-k="334" style="font-size:11px;color:#6d8f96;">Account → Subscriptions</span>
   </span>
   <span style="flex:1"></span>
   <span style="color:#22b8cf;font-size:15px;">→</span>
   </div>
-  <div style="display:flex;align-items:center;gap:13px;padding:14px 15px;border-radius:13px;border:1px solid rgba(26,127,142,.13);background:#fff;">
+  <div style="display:flex;align-items:center;gap:13px;padding:14px 15px;border-radius:13px;border:1px solid rgba(47,143,91,.13);background:#fff;">
   <span style="font-size:19px;flex-shrink:0;">🤖</span>
   <span style="display:flex;flex-direction:column;gap:3px;min-width:0;">
-  <span data-k="335" style="font-family:'Lato','Noto Sans KR',sans-serif;font-size:13.5px;font-weight:900;color:#12333d;">Google Play payment management</span>
-  <span data-k="336" style="font-size:11px;color:#7a939d;">Payments &amp; subscriptions</span>
+  <span data-k="335" style="font-family:'Lato','Noto Sans KR',sans-serif;font-size:13.5px;font-weight:900;color:#12474f;">Google Play payment management</span>
+  <span data-k="336" style="font-size:11px;color:#6d8f96;">Payments &amp; subscriptions</span>
   </span>
   <span style="flex:1"></span>
   <span style="color:#22b8cf;font-size:15px;">→</span>
   </div>
   </div>
-  <div style="background:#fff;border:1px solid rgba(26,127,142,.1);border-radius:16px;padding:18px;box-shadow:0 1px 4px rgba(26,127,142,.06);display:flex;flex-direction:column;gap:12px;">
-  <div data-k="337" style="font-family:'Lato','Noto Sans KR',sans-serif;font-size:14px;font-weight:900;color:#12333d;">💸 Payment cancellation / refund request</div>
+  <div style="background:#fff;border:1px solid rgba(47,143,91,.1);border-radius:16px;padding:18px;box-shadow:0 1px 4px rgba(47,143,91,.06);display:flex;flex-direction:column;gap:12px;">
+  <div data-k="337" style="font-family:'Lato','Noto Sans KR',sans-serif;font-size:14px;font-weight:900;color:#12474f;">💸 Payment cancellation / refund request</div>
   <div style="display:flex;align-items:center;gap:13px;padding:14px 15px;border-radius:13px;border:1px solid rgba(124,58,237,.25);background:linear-gradient(100deg,#f7f3ff,#fdfbff);">
   <span style="font-size:19px;flex-shrink:0;">🌐</span>
   <span style="display:flex;flex-direction:column;gap:3px;min-width:0;">
@@ -576,14 +1530,14 @@ main{padding:14px 16px 22px;display:flex;flex-direction:column;gap:10px}
   <div style="margin:-14px -16px -22px;padding:0 0 56px;background:#eefaf8;min-height:calc(100vh - 56px);">
   <div style="display:flex;align-items:center;gap:10px;padding:18px 18px 14px;">
   <span style="font-size:18px;">⚙️</span>
-  <span data-k="360" style="font-family:'Lato','Noto Sans KR',sans-serif;font-weight:900;font-size:17px;color:#1a7f8e;">App Settings</span>
+  <span data-k="360" style="font-family:'Lato','Noto Sans KR',sans-serif;font-weight:900;font-size:17px;color:#2f8f5b;">App Settings</span>
   <span style="flex:1"></span>
-  <button data-go="mypage" style="width:34px;height:34px;border-radius:50%;border:none;background:#cdeef2;color:#2b7f92;font-size:15px;cursor:pointer;">✕</button>
+  <button data-go="mypage" style="width:34px;height:34px;border-radius:50%;border:none;background:#cdeef2;color:#2f8f5b;font-size:15px;cursor:pointer;">✕</button>
   </div>
   <div style="max-width:530px;margin:0 auto;padding:0 14px;display:flex;flex-direction:column;gap:14px;">
-  <div style="background:#fff;border:1px solid rgba(26,127,142,.1);border-radius:16px;padding:18px;box-shadow:0 1px 4px rgba(26,127,142,.06);display:flex;flex-direction:column;gap:12px;">
+  <div style="background:#fff;border:1px solid rgba(47,143,91,.1);border-radius:16px;padding:18px;box-shadow:0 1px 4px rgba(47,143,91,.06);display:flex;flex-direction:column;gap:12px;">
   <div style="display:flex;align-items:center;">
-  <span data-k="361" style="font-size:13px;font-weight:700;color:#12333d;">🔔 Push notifications</span>
+  <span data-k="361" style="font-size:13px;font-weight:700;color:#12474f;">🔔 Push notifications</span>
   <span style="flex:1"></span>
   <span style="display:flex;align-items:center;gap:8px;">
   <span style="font-family:'Orbitron',sans-serif;font-size:10px;font-weight:900;color:#17b0c9;">ON</span>
@@ -593,7 +1547,7 @@ main{padding:14px 16px 22px;display:flex;flex-direction:column;gap:10px}
   </span>
   </div>
   <div style="display:flex;align-items:center;">
-  <span data-k="362" style="font-size:13px;font-weight:700;color:#12333d;">🌙 Night notification limit</span>
+  <span data-k="362" style="font-size:13px;font-weight:700;color:#12474f;">🌙 Night notification limit</span>
   <span style="flex:1"></span>
   <span style="display:flex;align-items:center;gap:8px;">
   <span style="font-family:'Orbitron',sans-serif;font-size:10px;font-weight:900;color:#a9bcc2;">OFF</span>
@@ -603,7 +1557,7 @@ main{padding:14px 16px 22px;display:flex;flex-direction:column;gap:10px}
   </span>
   </div>
   <div style="display:flex;align-items:center;">
-  <span data-k="363" style="font-size:13px;font-weight:700;color:#12333d;">📣 Marketing messages</span>
+  <span data-k="363" style="font-size:13px;font-weight:700;color:#12474f;">📣 Marketing messages</span>
   <span style="flex:1"></span>
   <span style="display:flex;align-items:center;gap:8px;">
   <span style="font-family:'Orbitron',sans-serif;font-size:10px;font-weight:900;color:#a9bcc2;">OFF</span>
@@ -613,32 +1567,32 @@ main{padding:14px 16px 22px;display:flex;flex-direction:column;gap:10px}
   </span>
   </div>
   </div>
-  <div style="background:#fff;border:1px solid rgba(26,127,142,.1);border-radius:16px;padding:18px;box-shadow:0 1px 4px rgba(26,127,142,.06);display:flex;flex-direction:column;gap:12px;">
-  <div data-k="364" style="font-family:'Lato','Noto Sans KR',sans-serif;font-size:14px;font-weight:900;color:#12333d;">🔤 Font size</div>
+  <div style="background:#fff;border:1px solid rgba(47,143,91,.1);border-radius:16px;padding:18px;box-shadow:0 1px 4px rgba(47,143,91,.06);display:flex;flex-direction:column;gap:12px;">
+  <div data-k="364" style="font-family:'Lato','Noto Sans KR',sans-serif;font-size:14px;font-weight:900;color:#12474f;">🔤 Font size</div>
   <div style="display:flex;gap:8px;">
-  <span data-k="365" style="flex:1;text-align:center;padding:9px 0;border-radius:10px;font-size:12.5px;font-weight:800;border:1px solid rgba(26,127,142,.13);background:#fff;color:#7a939d;">Small</span>
-  <span data-k="366" style="flex:1;text-align:center;padding:9px 0;border-radius:10px;font-size:12.5px;font-weight:800;border:1px solid rgba(23,176,201,.45);background:#e6f8fb;color:#12333d;">Medium</span>
-  <span data-k="367" style="flex:1;text-align:center;padding:9px 0;border-radius:10px;font-size:12.5px;font-weight:800;border:1px solid rgba(26,127,142,.13);background:#fff;color:#7a939d;">Large</span>
+  <span data-k="365" style="flex:1;text-align:center;padding:9px 0;border-radius:10px;font-size:12.5px;font-weight:800;border:1px solid rgba(47,143,91,.13);background:#fff;color:#6d8f96;">Small</span>
+  <span data-k="366" style="flex:1;text-align:center;padding:9px 0;border-radius:10px;font-size:12.5px;font-weight:800;border:1px solid rgba(23,176,201,.45);background:#e6f8fb;color:#12474f;">Medium</span>
+  <span data-k="367" style="flex:1;text-align:center;padding:9px 0;border-radius:10px;font-size:12.5px;font-weight:800;border:1px solid rgba(47,143,91,.13);background:#fff;color:#6d8f96;">Large</span>
   </div>
   </div>
-  <div style="background:#fff;border:1px solid rgba(26,127,142,.1);border-radius:16px;padding:18px;box-shadow:0 1px 4px rgba(26,127,142,.06);display:flex;flex-direction:column;gap:12px;">
-  <div data-k="368" style="font-family:'Lato','Noto Sans KR',sans-serif;font-size:14px;font-weight:900;color:#12333d;">🎨 Theme</div>
-  <div data-k="369" style="font-size:12px;color:#7a939d;line-height:1.7;margin-top:-6px;">Currently using the Light (Mint) theme. Dark mode is coming soon.</div>
+  <div style="background:#fff;border:1px solid rgba(47,143,91,.1);border-radius:16px;padding:18px;box-shadow:0 1px 4px rgba(47,143,91,.06);display:flex;flex-direction:column;gap:12px;">
+  <div data-k="368" style="font-family:'Lato','Noto Sans KR',sans-serif;font-size:14px;font-weight:900;color:#12474f;">🎨 Theme</div>
+  <div data-k="369" style="font-size:12px;color:#6d8f96;line-height:1.7;margin-top:-6px;">Currently using the Light (Mint) theme. Dark mode is coming soon.</div>
   </div>
-  <div style="background:#fff;border:1px solid rgba(26,127,142,.1);border-radius:16px;padding:18px;box-shadow:0 1px 4px rgba(26,127,142,.06);display:flex;flex-direction:column;gap:12px;">
-  <div data-k="370" style="font-family:'Lato','Noto Sans KR',sans-serif;font-size:14px;font-weight:900;color:#12333d;">🧹 Storage &amp; System Optimization</div>
-  <button style="width:100%;padding:13px;border-radius:12px;border:1px solid rgba(26,127,142,.18);background:#f4fbfc;color:#12333d;font-size:12.5px;font-weight:800;cursor:pointer;font-family:inherit;text-align:left;"><span data-k="371">🧹 Clear cache data (storage management)</span></button>
-  <div data-k="372" style="font-size:11px;color:#7a939d;line-height:1.7;margin-top:-4px;">※ Safely clears temporary frequency-music files and accumulated logs.</div>
-  <button style="width:100%;padding:13px;border-radius:12px;border:1px solid rgba(23,176,201,.45);background:linear-gradient(100deg,#e2f6fb,#f0fbfd);color:#1a7f8e;font-size:12.5px;font-weight:900;cursor:pointer;font-family:inherit;text-align:left;"><span data-k="373">🔄 Hard refresh app (sync latest data)</span></button>
-  <div data-k="374" style="font-size:11px;color:#7a939d;line-height:1.7;margin-top:-4px;">※ Force-reloads the system to the latest state. Press this after an update or after clearing the cache.</div>
+  <div style="background:#fff;border:1px solid rgba(47,143,91,.1);border-radius:16px;padding:18px;box-shadow:0 1px 4px rgba(47,143,91,.06);display:flex;flex-direction:column;gap:12px;">
+  <div data-k="370" style="font-family:'Lato','Noto Sans KR',sans-serif;font-size:14px;font-weight:900;color:#12474f;">🧹 Storage &amp; System Optimization</div>
+  <button style="width:100%;padding:13px;border-radius:12px;border:1px solid rgba(47,143,91,.18);background:#f4fbfc;color:#12474f;font-size:12.5px;font-weight:800;cursor:pointer;font-family:inherit;text-align:left;"><span data-k="371">🧹 Clear cache data (storage management)</span></button>
+  <div data-k="372" style="font-size:11px;color:#6d8f96;line-height:1.7;margin-top:-4px;">※ Safely clears temporary frequency-music files and accumulated logs.</div>
+  <button style="width:100%;padding:13px;border-radius:12px;border:1px solid rgba(23,176,201,.45);background:linear-gradient(100deg,#e2f6fb,#f0fbfd);color:#2f8f5b;font-size:12.5px;font-weight:900;cursor:pointer;font-family:inherit;text-align:left;"><span data-k="373">🔄 Hard refresh app (sync latest data)</span></button>
+  <div data-k="374" style="font-size:11px;color:#6d8f96;line-height:1.7;margin-top:-4px;">※ Force-reloads the system to the latest state. Press this after an update or after clearing the cache.</div>
   </div>
-  <div style="background:#fff;border:1px solid rgba(26,127,142,.1);border-radius:16px;padding:18px;box-shadow:0 1px 4px rgba(26,127,142,.06);display:flex;flex-direction:column;gap:12px;">
-  <div data-k="375" style="font-family:'Lato','Noto Sans KR',sans-serif;font-size:14px;font-weight:900;color:#12333d;">ℹ️ Version Info</div>
+  <div style="background:#fff;border:1px solid rgba(47,143,91,.1);border-radius:16px;padding:18px;box-shadow:0 1px 4px rgba(47,143,91,.06);display:flex;flex-direction:column;gap:12px;">
+  <div data-k="375" style="font-family:'Lato','Noto Sans KR',sans-serif;font-size:14px;font-weight:900;color:#12474f;">ℹ️ Version Info</div>
   <div style="display:flex;align-items:center;">
   <span data-k="376" style="font-size:13px;color:#3d5a63;">Current version: CGO-FULI</span><span style="flex:1"></span>
-  <span style="font-family:'Orbitron',sans-serif;font-size:12px;font-weight:900;color:#12333d;">v2026.06</span>
+  <span style="font-family:'Orbitron',sans-serif;font-size:12px;font-weight:900;color:#12474f;">v2026.06</span>
   </div>
-  <div data-k="377" style="font-size:11px;color:#7a939d;line-height:1.7;">To use the latest version, clear the cache above and then hard-refresh.</div>
+  <div data-k="377" style="font-size:11px;color:#6d8f96;line-height:1.7;">To use the latest version, clear the cache above and then hard-refresh.</div>
   </div>
   </div>
   </div>
@@ -718,14 +1672,61 @@ main{padding:14px 16px 22px;display:flex;flex-direction:column;gap:10px}
 
   /* ── ③ 속 페이지: 누를 때 붙이고 번호 칠하기 ── */
   var mount=null;
+  /* 어느 창에서 만들 기능인지 (안내용) */
+  var WINDOW_OF={};
+  (function(){
+    var m={2:['gwansang','sonkeum','scalp','c44-eye','rppg-ar','svi','c39-dementia','iq','cgo-sleep','cgo-photo'],
+           3:['algo','algo-v2','c14-v2','report','tianziren','msp52','tnbti','fusion3','naming','couple','diag'],
+           4:['music-v2','food','shop','travel-yeogi','cgo-navi','gmd','lotto','sports','stock','family','star'],
+           5:['howto']};
+    for(var w in m) for(var i=0;i<m[w].length;i++) WINDOW_OF[m[w][i]]=w;
+  })();
+  var CURPAGE=null;
+  /* 기능에 들어올 때 한 번 뜨는 입구 안내 — 하루 한 번 */
+  function openIntro(page){
+    try{
+      if(!(GUIDES[page] || (window.PGSPEC||{})[page])) return;
+      var key='cgo_gd_'+page, today=new Date().toDateString();
+      if(localStorage.getItem(key)!==today) openGuide(page);
+    }catch(e){}
+  }
   function go(page){
+    CURPAGE=page;
     mount=mount||document.getElementById('mount');
     var dash=document.getElementById('dash');
     if(page==='dashboard'){ mount.innerHTML=''; dropNodes(); dash.hidden=false; document.getElementById('topTitle').textContent=(PACK[LANG]||{})['1']||'CGO-FULI'; window.scrollTo(0,0); return; }
     var src=document.querySelector('template[data-cgo-page="'+page+'"]');
     dash.hidden=true;
     if(src){ mount.innerHTML=''; mount.appendChild(src.content.cloneNode(true)); dropNodes(); }
-    else { dropNodes(); mount.innerHTML='<div class="stub"><div style="font-family:Lato,sans-serif;font-weight:900;font-size:20px">'+page+'</div><div style="font-size:12.5px;color:var(--t3);line-height:1.8">This page is loaded only when opened.</div><button class="bar" style="border:1px solid rgba(212,168,67,.4);max-width:220px" data-go="dashboard"><span class="t" style="color:#d4a843">◀ Dashboard</span></button></div>'; }
+    else {
+      /* ★2026-08-09 — 아직 안 만든 기능도 '빈 화면'이 아니라 밝은 페이지로 받는다.
+         어느 창에서 만들 기능인지 함께 보여줘, 눌렀을 때 고장난 것처럼 보이지 않게. */
+      dropNodes();
+      var W=WINDOW_OF[page]||'—', nm=(document.querySelector('#dash [data-go="'+page+'"] span:last-child')||{}).textContent||page;
+      /* ★2026-08-09 — 자료가 있는 기능은 웰니스와 같은 틀로 그린다.
+         자료가 없는 것만 '준비중' 안내를 받는다. */
+      if(window.buildSpecPage){
+        var html = window.buildSpecPage(page, nm);
+        /* ★2026-08-09 — 예전엔 여기서 return 해버려 아래 '입구 안내' 코드를 건너뛰었다.
+           그래서 자료로 그리는 36개 기능에는 안내 팝업이 안 떴다. */
+        if(html){ mount.innerHTML = html; openIntro(page); paint(); window.scrollTo(0,0); return; }
+      }
+      mount.innerHTML=
+        '<div class="pg">'
+        +'<button class="pg-fab" data-back>◀ <span data-k="520">Dashboard</span></button>'
+        +'<div class="pg-h"><h1>'+nm+'</h1><div class="meta">WINDOW '+W+'</div></div>'
+        +'<div class="card" style="text-align:center;padding:42px 20px">'
+        +'<div style="font-size:38px;margin-bottom:14px">🛠️</div>'
+        +'<div style="font-size:14px;font-weight:800;color:var(--ink);margin-bottom:8px" data-k="94">In preparation</div>'
+        +'<div style="font-size:12px;color:var(--ink3);line-height:1.9" data-k="95">This feature is built in a later window. The dashboard tile and its number are already reserved.</div>'
+        +'</div>'
+        +''
+        +'</div>';
+    }
+    /* ★2026-08-09 — 안내는 페이지가 그려지기 '전에' 붙인다.
+       예전엔 120ms 뒤에 띄웠더니 그 사이에 페이지가 한 번 보였다 사라졌다(잔상).
+       이제 같은 작업 안에서 붙이므로 브라우저가 페이지만 그린 화면을 만들 틈이 없다. */
+    openIntro(page);
     paint(); window.scrollTo(0,0);
   }
 
@@ -751,17 +1752,95 @@ main{padding:14px 16px 22px;display:flex;flex-direction:column;gap:10px}
   }
   window.cgoBack = backToDash;
 
+
+  var COND={
+    heart:{e:'💗',t:'Heart Engine Rhythm',s:'The beat of your vitality engine',
+      what:'The pace at which your heart sends blood around the body. It is the base rhythm every other reading in this app is built on.',
+      how:'The camera reads the faint colour change of your face as blood passes beneath the skin. No contact, no wearable — 60 seconds of stillness in decent light.',
+      read:[['Steady, even beat','Your engine is running at a comfortable pace'],['Fast and shallow','Often tension, caffeine or a short night'],['Slow and heavy','Common after deep rest, or when energy is low']],
+      life:['Measure at the same hour each day — the trend matters more than one reading','Avoid coffee and hard exercise in the 30 minutes before','A slow exhale, twice as long as the inhale, settles the beat quickly']},
+    blood:{e:'🩸',t:'Blood-Qi Circulation Balance',s:'Red vitality stem spreading through the body',
+      what:'How evenly warmth and colour reach the far corners of your body — fingertips, ears, the sides of the face.',
+      how:'Facial tone is compared across five zones. Uneven spread shows up as a difference between the centre and the edges of the face.',
+      read:[['Even across zones','Circulation is reaching everywhere it should'],['Centre bright, edges pale','Often cold hands and feet follow this pattern'],['Flushed and uneven','Can follow heat, alcohol or a long stretch of tension']],
+      life:['Warm the hands and feet before measuring in winter','Light movement every hour does more than one long session','Sitting still for hours shows up here within a day or two']},
+    burn:{e:'🦋',t:'Vitality Burn Efficiency',s:'Speed and tension of your energy factor',
+      what:'How quickly your body turns what you eat into usable energy — and how much it holds back in reserve.',
+      how:'Read from the tempo of your pulse together with the tension in the wave. A tight, quick wave burns fast; a broad, easy wave burns slow.',
+      read:[['Quick and clean','Energy is being used efficiently right now'],['Quick and tight','Burning fast — usually borrowed from tomorrow'],['Slow and flat','The body is holding energy back, often after strain']],
+      life:['A fast burn is not always good — it borrows from later','Protein early in the day steadies this more than sugar','If it stays high for days, the body is running on stress']},
+    cleanse:{e:'🌿',t:'Body Cleanse Rhythm',s:'Clean energy that clears out your body',
+      what:'How well your body clears what it no longer needs — the quiet work that happens mostly while you sleep.',
+      how:'Read from tongue coating together with the clarity of facial tone. A heavy coating and a dull tone point to a slower clearing rhythm.',
+      read:[['Clear tone, thin coating','The clearing rhythm is keeping up'],['Dull tone, thick coating','Often follows heavy meals or short sleep'],['Yellow-tinged coating','Commonly seen with heat and dehydration']],
+      life:['Water early in the morning helps more than water late at night','Observe the tongue before brushing, in daylight','A heavy dinner shows here the next morning']},
+    sugar:{e:'🍬',t:'Sugar Charge Balance',s:'Energy absorption and consumption rhythm',
+      what:'The rise and fall of your energy through the day — whether it climbs steadily or spikes and crashes.',
+      how:'Inferred from beat variation across the measurement window. Sharp swings suggest a spiky charge pattern.',
+      read:[['Gentle, even curve','Energy is arriving at a steady pace'],['Sharp rise, sharp fall','The classic spike-and-crash pattern'],['Low and flat','Often a long gap since the last meal']],
+      life:['Eating at regular hours steadies this more than what you eat','A short walk after meals flattens the spike','Measure two hours after eating for the clearest reading']},
+    mind:{e:'🧠',t:'Mind Shield',s:'Inner resilience that withstands external stimuli',
+      what:'How much room you have before pressure starts to show — your buffer against the day.',
+      how:'Read from the small variations between heartbeats. A healthy spread of variation means the body can still adjust; a flat, rigid beat means it is already braced.',
+      read:[['Wide variation','Good room to absorb what the day brings'],['Narrow variation','The buffer is thin — the body is already braced'],['Very flat','Usually a sign of accumulated strain, not a single bad day']],
+      life:['This recovers with sleep faster than with anything else','Four counts in, seven hold, eight out — repeat four times','A single hard day rarely moves this; a hard week does']},
+    breath:{e:'🫁',t:'Clear Breath Index',s:'Stability of breathing and clean energy',
+      what:'Whether your breathing is deep and unhurried, or shallow and quick without you noticing.',
+      how:'Measured while you follow the 4-7-8 guide on screen. How closely your body settles into the rhythm is the reading.',
+      read:[['Settles quickly','Breathing is already close to a resting pattern'],['Takes several rounds','Common when the day has been busy'],['Never quite settles','Often a sign the body is holding tension']],
+      life:['Nose in, mouth out — the exhale is where the settling happens','Shoulders down before you start makes a visible difference','Best done sitting, not lying — lying invites sleep instead']},
+    tongue:{e:'👅',t:'Tongue-Sign Energy',s:'Today\u2019s five-element signs shown on the tongue',
+      what:'What the colour, shape and coating of your tongue suggest about today\u2019s balance — a reading used in Eastern practice for centuries.',
+      how:'A single photo in daylight. Colour, coating thickness and edge shape are each read separately, then combined.',
+      read:[['Pale pink, thin white coat','The reference state most days sit near'],['Red with little coating','Often follows heat, dryness or short sleep'],['Pale with a thick coat','Commonly seen with cold and heaviness']],
+      life:['Observe before eating, drinking or brushing','Daylight by a window beats indoor lighting','Coffee and coloured food change the reading for an hour or two']},
+    fatigue:{e:'😴',t:'All-Nighter Damage',s:'Energy battery level and accumulated fatigue',
+      what:'How much of your reserve you have already spent — not how tired you feel, but what the body shows.',
+      how:'Combined from beat, variation and facial tone. Fatigue shows in the body before it shows in how you feel.',
+      read:[['Full reserve','The battery is holding charge'],['Half spent','Normal by evening; worth noting in the morning'],['Running low','The body is drawing on reserve rather than income']],
+      life:['One good night rarely clears a week of short ones','Morning light does more for the rhythm than an afternoon nap','If this stays low for days, rest is not optional any more']},
+    glow:{e:'✨',t:'Charm Glow Tone',s:'The aura around your complexion and skin',
+      what:'The brightness and evenness of your skin — the part of condition that other people notice first.',
+      how:'Facial tone is measured across zones and compared for brightness, evenness and warmth.',
+      read:[['Bright and even','Blood and rest are both doing their part'],['Even but dull','Often the first sign of a sleep deficit'],['Bright but uneven','Can follow heat, alcohol or irritation']],
+      life:['This follows sleep more closely than any product does','Measure in the same light each time — lighting moves this a lot','Water and rest show here within two days']}
+  };
+  function condHtml(k){
+    var c=COND[k]; if(!c) return '';
+    var must=c.life.map(function(t,i){ return '<div class="cs-li"><b>'+(i+1)+'</b>'+t+'</div>'; }).join('');
+    var obs=c.read.map(function(r){
+      return '<div class="cs-ob"><span class="d"></span><b>'+r[0]+'</b><em>'+r[1]+'</em></div>';
+    }).join('');
+    return '<div class="cs-hd"><span class="cs-e">'+c.e+'</span><span class="cs-t">'+c.t+'</span>'
+      +'<button class="cs-x" data-fsp-close>✕</button></div>'
+      +'<div class="cs-bd">'
+      +'<div class="cs-strip">▣ Single area scan <b>·</b> '+c.t.split(' ')[0]+'</div>'
+      +'<div class="cs-box"><div class="cs-bt">▤ Must-read before measuring</div>'+must
+      +'<div class="cs-warn">⚠ '+c.how+'</div></div>'
+      +'<div class="cs-line">▤ Measurement area: <b>Select</b> · '+c.t+' mode, then measure</div>'
+      +'<div class="cs-sub">Indicators observable via camera:</div>'+obs
+      +'<div class="cs-sub2">If you have health concerns: <b>please consult a healthcare provider</b></div>'
+      +'<div class="cs-note">⚠ '+c.what+' This analysis is for general wellness reference only. It is not intended to diagnose, treat, cure, or prevent any disease.</div>'
+      +'</div>'
+      +'<button class="cs-go" data-mg-open="'+k+'">⚡ '+c.t+' — Start measuring <em>· Total 60 sec</em></button>';
+  }
+
   /* 전체 팝업 — 화면을 통째로 덮는다 */
   var FSP=null;
-  function fsp(html){
+  function fsp(html,sheet){
     if(!FSP){
       FSP=document.createElement('div'); FSP.className='fsp';
       document.body.appendChild(FSP);
       FSP.addEventListener('click',function(e){
+        /* 측정 시작 — 시트를 닫고 자세 안내 팝업으로 넘긴다 */
+        var mo=e.target.closest('[data-mg-open]');
+        if(mo){ var k=mo.getAttribute('data-mg-open'); fspClose(); setTimeout(function(){ mgOpen(k); },90); return; }
         var b=e.target.closest('[data-fsp-close]'); if(b) fspClose();
       });
     }
     FSP.innerHTML='<div class="fsp-in"><div class="fsp-x"><button data-fsp-close>✕</button></div>'+html+'</div>';
+    FSP.classList.toggle('sheet',!!sheet);
+    void FSP.offsetWidth;
     FSP.classList.add('on');
     document.body.style.overflow='hidden';
     FSP.scrollTop=0;
@@ -774,6 +1853,68 @@ main{padding:14px 16px 22px;display:flex;flex-direction:column;gap:10px}
     document.body.style.overflow='';
     if(typeof dropNodes==='function') dropNodes();
   }
+
+  /* ── 측정 안내 프레임 팝업 ────────────────────────────
+     시트가 '무엇을 재는가'라면 이 팝업은 '어떻게 서는가'다.
+     거리·조명·자세가 정확도를 좌우하므로 측정 직전에 한 번 더 보여준다. */
+  var MG_STEP = {
+    heart:  {ic:'\uD83D\uDC64', nm:'Step 1 · Face — 60 sec', cam:'Front camera', dist:'30~40cm',
+             li:['Bright frontal lighting','Remove glasses and hat','Neutral face, look ahead']},
+    blood:  {ic:'\uD83D\uDC64', nm:'Step 1 · Face — 60 sec', cam:'Front camera', dist:'30~40cm',
+             li:['Bright frontal lighting','Bare face is more accurate','Stay still, breathe evenly']},
+    vital:  {ic:'\uD83D\uDC64', nm:'Step 1 · Face — 60 sec', cam:'Front camera', dist:'30~40cm',
+             li:['Bright frontal lighting','Remove glasses and hat','Neutral face, look ahead']},
+    cleanse:{ic:'\uD83D\uDC45', nm:'Step 1 · Tongue — 20 sec', cam:'Front camera', dist:'15~20cm',
+             li:['Stick the tongue out naturally','Avoid coloured food or drink before','Bright, even lighting']},
+    sugar:  {ic:'\uD83D\uDC45', nm:'Step 1 · Tongue — 20 sec', cam:'Front camera', dist:'15~20cm',
+             li:['Stick the tongue out naturally','Not right after a meal','Bright, even lighting']},
+    mind:   {ic:'\uD83D\uDC64', nm:'Step 1 · Face — 60 sec', cam:'Front camera', dist:'30~40cm',
+             li:['Somewhere quiet, without interruption','Neutral face, look ahead','Breathe as you normally would']},
+    breath: {ic:'\uD83E\uDEC1', nm:'Step 1 · Breathing — 60 sec', cam:'Front camera', dist:'30~40cm',
+             li:['Sit upright, shoulders relaxed','Follow the on-screen 4-7-8 guide','Do not hold your breath by force']},
+    tongue: {ic:'\uD83D\uDC45', nm:'Step 1 · Tongue — 20 sec', cam:'Front camera', dist:'15~20cm',
+             li:['Stick the tongue out naturally','Avoid coloured food or drink before','Bright, even lighting']},
+    night:  {ic:'\uD83D\uDC41\uFE0F', nm:'Step 1 · Eyes — 20 sec', cam:'Front camera', dist:'25~35cm',
+             li:['Open your eyes wide','Remove glasses','Bright frontal lighting']},
+    charm:  {ic:'\uD83C\uDFA8', nm:'Step 1 · Skin — 30 sec', cam:'Rear camera', dist:'10~15cm',
+             li:['Bring the camera close to the skin','Bare skin, no cream','Somewhere bright']}
+  };
+  var MG=null, MGOV=null, mgBound=false;
+  function mgEls(){
+    if(!MG) MG=document.getElementById('mgPop');
+    if(!MGOV) MGOV=document.querySelector('[data-mg-ov]');
+    if(MG && !mgBound){
+      mgBound=true;
+      MG.addEventListener('click',function(e){
+        if(e.target.closest('[data-mg-close]')||e.target.closest('[data-mg-ok]')) mgClose();
+      });
+      if(MGOV) MGOV.addEventListener('click',mgClose);
+    }
+    return !!MG;
+  }
+  function mgClose(){ if(MG)MG.classList.remove('on'); if(MGOV)MGOV.classList.remove('on'); }
+  function mgOpen(key){
+    if(!mgEls()) return;
+    var c=(typeof COND!=='undefined')?COND[key]:null; if(!c) return;
+    var s=MG_STEP[key]||MG_STEP.heart;
+    MG.innerHTML =
+      '<div class="mg-hd"><h4>'+c.e+' '+c.t+' — measurement guide</h4>'
+      +'<span class="tot">Total 60 sec</span></div>'
+      +'<div class="mg-bd">'
+      +'<div class="mg-step"><div class="ic">'+s.ic+'</div><div class="nm">'+s.nm+'</div>'
+      +'<div class="mg-cam">\uD83D\uDCF1 '+s.cam+'</div></div>'
+      +'<div class="mg-dist">\uD83D\uDCCF Keep <b>'+s.dist+'</b> from the camera</div>'
+      + s.li.map(function(t){ return '<div class="mg-li"><span class="d"></span><span>'+t+'</span></div>'; }).join('')
+      +'<div class="mg-warn"><div class="wt">\u26A0\uFE0F Common precautions</div>'
+      +'<div class="wl"><span class="d"></span><span>The brighter the place, the higher the accuracy</span></div>'
+      +'<div class="wl"><span class="d"></span><span>This analysis is for reference and does not replace a medical diagnosis</span></div>'
+      +'</div></div>'
+      +'<div class="mg-ft"><button class="mg-ok" data-mg-ok>\u2705 Understood — start measurement</button>'
+      +'<button class="mg-later" data-mg-close>Later</button></div>';
+    MGOV.classList.add('on'); void MG.offsetWidth; MG.classList.add('on');
+  }
+  window.cgoMeasureGuide = mgOpen;
+
   window.cgoPopup=fsp; window.cgoPopupClose=fspClose;
   document.addEventListener('keydown',function(e){ if(e.key==='Escape') fspClose(); });
 
@@ -789,17 +1930,76 @@ main{padding:14px 16px 22px;display:flex;flex-direction:column;gap:10px}
         ['360° space scan on site','Shoot 10 directions → 7-system combined analysis'],
         ['Safety scan + AI chat','Lens-glint detection + Feng Shui·elements·NASA chat']
       ],
-      note:'Recommendations rest on Eastern metaphysics and astronomy — Feng Shui score, element match, NASA planetary data. Planet positions and seasons shift daily, so results shift too.'}
+      note:'Recommendations rest on Eastern metaphysics and astronomy — Feng Shui score, element match, NASA planetary data. Planet positions and seasons shift daily, so results shift too.'},
+
+    wellness:{t:'My Wellness Balance',
+      s:'CHROM rPPG · 5-area bio scan · AI tongue color and coating observation · 50 metaphysics systems integrated.',
+      rate:[
+        ['Multi-feature integration',5,'Combines multiple indicators'],
+        ['Fusion approach',5,'Metaphysics + biological'],
+        ['Tone observation reference',4,'Based on color and coating observation'],
+        ['Accuracy limits',2,'Wellness reference — not a medical device']
+      ],
+      good:['<b>CHROM rPPG</b> — camera optical-signal based · contactless heart-rate reference measurement',
+            '<b>Auto-switch across 5 areas</b> — face → tongue → eyes → skin → hand · observing tongue, eye, skin and hand tone',
+            '<b>AI tongue observation</b> — reference analysis based on tongue color and coating',
+            '<b>4-7-8 breathing + HRV</b> — reference observation of breathing rhythm and HRV changes'],
+      bad:['rPPG error ±10–15% — wellness-reference level',
+           'Vision AI — accuracy varies with lighting and skin tone',
+           'Vitality tone — self-defined index, not academically standardized'],
+      legal:'This system provides <b>general wellness information only. Not intended to diagnose, treat, cure, or prevent any disease.</b> It does not replace medical diagnosis or prescription; if you have abnormal symptoms, always see a specialist.',
+      quote:'“Enjoy with your smartphone — a daily condition report”',
+      cta:'✅ Start self-check'}
   };
   function openGuide(key){
-    var g=GUIDES[key]; if(!g) return;
-    var s=g.steps.map(function(x,i){
-      return '<div class="stp"><b>'+(i+1)+'</b><div><i>'+x[0]+'</i>'+x[1]+'</div></div>'; }).join('');
-    fsp('<h2>'+g.t+'</h2><p class="sub">'+g.s+'</p>'
-      +'<div class="sec"><h3>How to use</h3>'+s+'</div>'
-      +'<div class="sec"><h3>⚖️ Honest notice</h3><div class="stp"><div>'+g.note+'</div></div></div>'
-      +'<button class="go" data-fsp-close>Start</button>'
-      +'<label class="skip"><input type="checkbox"> Don\'t show today</label>');
+    var g=GUIDES[key];
+    /* ★2026-08-09 — 안내를 따로 적지 않은 기능은 그 기능 자료에서 만들어 낸다.
+       그래야 모든 기능에 안내 팝업이 빠짐없이 생긴다. */
+    if(!g){
+      var S=(window.PGSPEC||{})[key]; if(!S) return;
+      var H=S.hero||[];
+      g={ t:H[1]||key, s:H[2]||'',
+          steps:(S.rows&&S.rows[0]&&S.rows[0][2])||[],
+          good:(S.cards&&S.cards[0]&&S.cards[0][2]||[]).map(function(c){ return c[1]+' — '+c[2]; }),
+          note:S.warn||'' };
+    }
+    var b='<h2>'+g.t+'</h2><p class="sub">'+g.s+'</p>';
+
+    if(g.steps){
+      b+='<div class="sec"><h3>How to use</h3>'
+        +g.steps.map(function(x,i){
+          return '<div class="stp"><b>'+(i+1)+'</b><div><i>'+x[0]+'</i>'+x[1]+'</div></div>'; }).join('')
+        +'</div>';
+    }
+    if(g.rate){
+      b+='<div class="sec"><h3>📊 Service feature summary</h3><div class="rate">'
+        +g.rate.map(function(r){
+          var st=''; for(var i=0;i<5;i++) st+= i<r[1]?'★':'☆';
+          return '<div><span class="l">'+r[0]+'</span><span class="st">'+st+'</span><span class="r">'+r[2]+'</span></div>';
+        }).join('')+'</div></div>';
+    }
+    if(g.good){
+      b+='<div class="blk" style="background:#f2fbf8;border:1px solid rgba(18,185,129,.22)">'
+        +'<div class="hd" style="color:#0e8a6a">✅ This app\'s unique strengths</div>'
+        +g.good.map(function(x){ return '<li>·<span>'+x+'</span></li>'; }).join('')+'</div>';
+    }
+    if(g.bad){
+      b+='<div class="blk" style="background:#fffaf2;border:1px solid rgba(240,165,0,.25)">'
+        +'<div class="hd" style="color:#b07d1a">⚠️ Honest limitations</div>'
+        +g.bad.map(function(x){ return '<li>·<span>'+x+'</span></li>'; }).join('')+'</div>';
+    }
+    if(g.legal){
+      b+='<div class="blk" style="background:#fff7f9;border:1px solid rgba(224,86,122,.22)">'
+        +'<div class="hd" style="color:#c0455f">⚖️ Legal notice</div><div style="color:var(--ink2)">'+g.legal+'</div></div>';
+    }
+    if(g.note){
+      b+='<div class="sec"><h3>⚖️ Honest notice</h3><div class="stp"><div>'+g.note+'</div></div></div>';
+    }
+    if(g.quote) b+='<div class="quote">'+g.quote+'</div>';
+
+    b+='<button class="go" data-fsp-close>'+(g.cta||'Start')+'</button>'
+      +'<label class="skip"><input type="checkbox"> Don\'t show today</label>';
+    fsp(b);
   }
 
   /* ── 슬라이드 ── */
@@ -832,6 +2032,27 @@ main{padding:14px 16px 22px;display:flex;flex-direction:column;gap:10px}
         go(g.getAttribute('data-go')); return; }
       var bk=e.target.closest('[data-back]'); if(bk){ backToDash(); return; }
       var gd=e.target.closest('[data-guide]'); if(gd){ openGuide(gd.getAttribute('data-guide')); return; }
+      var sp=e.target.closest('[data-spec]'); if(sp){
+        /* 카드 하나를 눌렀을 때 — 그 항목만 크게 보여준다 */
+        var pr=sp.getAttribute('data-spec').split('|'), S=(window.PGSPEC||{})[pr[0]];
+        if(S){ var found=null;
+          (S.cards||[]).forEach(function(g){ (g[2]||[]).forEach(function(c){ if(c[1]===pr[1]) found=c; }); });
+          if(found){
+            fsp('<div class="cs-hd"><span class="cs-e">'+found[0]+'</span><span class="cs-t">'+found[1]+'</span>'
+              + '<button class="cs-x" data-fsp-close>✕</button></div>'
+              + '<div class="cs-body"><div class="cs-sub2">'+found[2]+'</div>'
+              + '<div class="cs-note">⚠ This is wellness and reference content. It is not intended to diagnose, treat, cure, or prevent any disease.</div>'
+              + '</div><div class="cs-foot"><button class="cs-go" data-fsp-close>Got it</button></div>', 1);
+          }
+        }
+        return; }
+      var mo=e.target.closest('[data-mg-open]');
+      if(mo){ /* 시트를 닫고 측정 안내로 넘긴다 */ fspClose(); setTimeout(function(){ mgOpen(mo.getAttribute('data-mg-open')); },90); return; }
+      var cd=e.target.closest('[data-cond]'); if(cd){ fsp(condHtml(cd.getAttribute('data-cond')),1); return; }
+      var sk=e.target.closest('.fsp .skip input'); if(sk){
+        try{ if(sk.checked && CURPAGE) localStorage.setItem('cgo_gd_'+CURPAGE, new Date().toDateString());
+             else if(CURPAGE) localStorage.removeItem('cgo_gd_'+CURPAGE); }catch(e){}
+        return; }
       var s=e.target.closest('[data-sec]'); if(s){ var key=s.getAttribute('data-sec');
         var b=document.querySelector('[data-body="'+key+'"]');
         if(b){ b.hidden=!b.hidden; s.classList.toggle('open',!b.hidden); } }
@@ -839,5 +2060,104 @@ main{padding:14px 16px 22px;display:flex;flex-direction:column;gap:10px}
   });
 })();
 </script>
+<div class="mg-ov" data-mg-ov></div>
+<div class="mg" id="mgPop" role="dialog" aria-modal="true"></div>
+
+<style>
+/* ★2026-08-09 — 전환 속도계.
+   알약을 누르면 카드로 펼쳐지고, 잡아끌어 자리를 옮길 수 있다.
+   재는 방식: 클릭이 들어온 순간부터 화면 내용이 새 것으로 바뀐 순간까지를
+   브라우저 고정밀 시계(performance.now)로 실제 측정한다. 미리 정한 숫자가 아니다. */
+#spd{position:fixed;left:14px;top:180px;z-index:9998;font-family:'Lato','Noto Sans KR',sans-serif;
+  -webkit-user-select:none;user-select:none;touch-action:none}
+#spd .pill{display:flex;align-items:center;gap:7px;background:rgba(12,22,34,.92);
+  border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:8px 14px;cursor:pointer;
+  box-shadow:0 6px 20px rgba(0,0,0,.3)}
+#spd .dot{width:6px;height:6px;border-radius:50%;background:#34d399;flex:none}
+#spd .pill b{font-size:11px;font-weight:800;color:#e8f0f8;letter-spacing:.02em}
+#spd .card{display:none;background:#fff;border-radius:14px;padding:13px 15px 11px;min-width:186px;
+  box-shadow:0 10px 34px rgba(0,0,0,.28);cursor:grab}
+#spd.open .pill{display:none}
+#spd.open .card{display:block}
+#spd .hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:2px}
+#spd .hd span{font-size:9.5px;font-weight:800;color:#9aa8b4;letter-spacing:.16em}
+#spd .hd button{background:none;border:0;font-size:15px;line-height:1;color:#b9c4cd;cursor:pointer;padding:0 2px}
+#spd .big{font-size:29px;font-weight:300;color:#101b2b;letter-spacing:-.02em;line-height:1.15}
+#spd .big i{font-size:12px;font-style:normal;color:#5b6b7a;margin-left:2px}
+#spd .sub{font-size:9.5px;color:#8b98a4;margin-top:3px;letter-spacing:.01em}
+#spd .bar{height:2px;background:#e8edf1;border-radius:2px;margin-top:9px;overflow:hidden}
+#spd .bar i{display:block;height:100%;background:#34d399;width:0;transition:width .3s}
+</style>
+<div id="spd">
+  <div class="pill"><span class="dot"></span><b>SWITCH SPEED</b></div>
+  <div class="card">
+    <div class="hd"><span>SWITCH SPEED</span><button data-min>–</button></div>
+    <div class="big"><em id="spdV" style="font-style:normal">0.000</em><i>s</i></div>
+    <div class="sub" id="spdS">waiting</div>
+    <div class="bar"><i id="spdB"></i></div>
+  </div>
+</div>
+<script>
+(function(){
+  var el=document.getElementById('spd'), pill=el.querySelector('.pill'), card=el.querySelector('.card');
+  var V=document.getElementById('spdV'), S=document.getElementById('spdS'), B=document.getElementById('spdB');
+  var n=0, best=null, last='—';
+  /* 펼치기 / 접기 */
+  pill.addEventListener('click',function(e){ if(el._moved) return; el.classList.add('open'); });
+  el.querySelector('[data-min]').addEventListener('click',function(e){ e.stopPropagation(); el.classList.remove('open'); });
+
+  /* 잡아끌어 옮기기 — 알약도 카드도 */
+  var sx,sy,ox,oy,down=false;
+  function start(e){
+    var p=e.touches?e.touches[0]:e; down=true; el._moved=false;
+    sx=p.clientX; sy=p.clientY; var r=el.getBoundingClientRect(); ox=r.left; oy=r.top;
+    document.addEventListener('mousemove',move); document.addEventListener('mouseup',end);
+    document.addEventListener('touchmove',move,{passive:false}); document.addEventListener('touchend',end);
+  }
+  function move(e){
+    if(!down) return; var p=e.touches?e.touches[0]:e;
+    var dx=p.clientX-sx, dy=p.clientY-sy;
+    if(Math.abs(dx)+Math.abs(dy)>4){ el._moved=true; if(e.cancelable) e.preventDefault(); }
+    el.style.left=Math.max(4,Math.min(innerWidth-60,ox+dx))+'px';
+    el.style.top =Math.max(4,Math.min(innerHeight-40,oy+dy))+'px';
+  }
+  function end(){ down=false;
+    document.removeEventListener('mousemove',move); document.removeEventListener('mouseup',end);
+    document.removeEventListener('touchmove',move); document.removeEventListener('touchend',end);
+    setTimeout(function(){ el._moved=false; },40);
+  }
+  el.addEventListener('mousedown',start); el.addEventListener('touchstart',start,{passive:true});
+
+  /* 재기 — 클릭이 들어온 순간부터 화면이 바뀐 순간까지 */
+  function show(ms,what){
+    n++; if(best===null||ms<best) best=ms; last=what;
+    V.textContent=(ms/1000).toFixed(3);
+    S.textContent=what+' · '+n+' times · best '+(best/1000).toFixed(3)+'s';
+    B.style.width=Math.min(100,ms/3)+'%';
+    setTimeout(function(){ B.style.width='0'; },420);
+  }
+  function watch(what){
+    /* 화면 내용이 새 것으로 바뀐 순간까지를 잰다.
+       그리기 신호(rAF)를 기다리되, 화면이 멈춰 있어 신호가 안 오면 타이머로 마무리한다. */
+    var t0=performance.now(), done=false;
+    function fin(){ if(done) return; done=true; show(performance.now()-t0,what); }
+    requestAnimationFrame(function(){ requestAnimationFrame(fin); });
+    setTimeout(fin,120);
+  }
+  document.addEventListener('click',function(e){
+    if(el.contains(e.target)) return;
+    var t=e.target.closest('[data-go],[data-back],[data-lang],.tile,.bar,.lang-item,[data-sec]');
+    if(!t) return;
+    var what = t.hasAttribute('data-lang') ? ('lang '+t.getAttribute('data-lang'))
+             : t.hasAttribute('data-back') ? 'dashboard'
+             : (t.getAttribute('data-go')||t.getAttribute('data-sec')||'page');
+    watch(what);
+  },true);
+})();
+</script>
+
 </body>
-</html>
+</html
+
+
+>
