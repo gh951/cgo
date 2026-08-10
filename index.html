@@ -465,6 +465,13 @@ main{padding:14px 16px 22px;display:flex;flex-direction:column;gap:10px}
 .tr-note{font-size:10px;color:#9aa8b4;line-height:1.6;margin-top:10px}
 .tr-clear{background:none;border:0;color:#b9c4cd;font-size:10px;cursor:pointer;padding:2px 0;margin-top:6px}
 
+
+html,body{overflow-x:hidden;max-width:100%;overscroll-behavior-y:contain}
+body{position:relative}
+#spd{max-width:calc(100vw - 12px)}
+.pg,.card,.tr-wrap,main{max-width:100%;box-sizing:border-box}
+img,svg,video{max-width:100%}
+
 </style>
 </head>
 <body>
@@ -672,609 +679,627 @@ main{padding:14px 16px 22px;display:flex;flex-direction:column;gap:10px}
  rows : 줄 목록 [제목, 부제, [이름, 설명] …]
  warn : 맨 아래 주의문 */
 window.PGSPEC = {
- dream:{hero:['🌙','Dream interpretation','Tradition + science + metaphysics, three readings at once',
- [['🔮','Traditional','folklore'],['🧠','Scientific','psychology'],['👑','Exclusive','elements'],['📶','Offline','28 keywords']],'🌙 Start dream interpretation'],
- cards:[['Three reading cards','✦ analysed together',[
- ['🔮','Pure reading','Tradition · folklore · Eastern metaphysics'],
- ['🧠','Scientific reading','Unconscious · archetypes · sleep cognition'],
- ['👑','Exclusive reading','Your elements · Day Master · hour · NASA'],
- ['📊','Fortune score','1-9 with grade'],
- ['🌙','Daily change','The same dream reads differently by hour'],
- ['📶','Works offline','28-keyword database']]]],
- rows:[['How to use','✦ 3 steps',[
- ['Describe your dream','As much detail as you remember'],
- ['Wait a moment','Three readings run at once'],
- ['Read the result','Symbols + fortune + advice']]]],
- warn:'Dream reading is infotainment and wellness reference content. It is not a medical act and does not fix the future. If you have trouble sleeping, please consult a professional.'},
+ dream:{hero:['🌙',700,701,
+ [['🔮',702,703],['🧠',704,705],['👑',706,707],['📶',708,709]],710],
+ cards:[[711,712,[
+ ['🔮',713,714],
+ ['🧠',715,716],
+ ['👑',717,718],
+ ['📊',719,720],
+ ['🌙',721,722],
+ ['📶',723,724]]]],
+ rows:[[725,726,[
+ [727,728],
+ [729,730],
+ [731,732]]]],
+ warn:733},
 
- autocheck:{hero:['🔍','Auto app check','Finds errors itself and suggests fixes · master only',
- [['🔒','Access','master'],['🔍','Scan','by item'],['🔴','Error','found'],['🟢','OK','normal']],'▶ Run scan'],
- cards:[['What is checked','✦ Tap a card',[
- ['🔗','Dead buttons','Every button properly connected'],
- ['🖼️','Broken images','Missing src or href'],
- ['🌐','Translation gaps','Korean left in other languages'],
- ['💾','Local storage','Settings and data can be saved'],
- ['⚡','Performance','Memory and slowdown signals'],
- ['📊','Report','Error · suspicious · normal']]]],
- rows:[['How to use','✦ 3 steps',[
- ['Enter the master password','This tool is not for general users'],
- ['Select items to check','Or select all'],
- ['Run the scan','Results marked in three colours']]]],
- warn:'Master-only diagnostic tool. Results are technical references for maintenance.'},
+ autocheck:{hero:['🔍',734,735,
+ [['🔒',736,737],['🔍',738,739],['🔴',740,741],['🟢',742,743]],744],
+ cards:[[745,746,[
+ ['🔗',747,748],
+ ['🖼️',749,750],
+ ['🌐',751,752],
+ ['💾',753,754],
+ ['⚡',755,756],
+ ['📊',757,758]]]],
+ rows:[[725,726,[
+ [759,760],
+ [761,762],
+ [763,764]]]],
+ warn:765},
 
- howto:{hero:['✦','User guide','35 features · terms · quick start · FAQ',
- [['📖','Guide','35'],['🔤','Glossary','terms'],['❓','FAQ','common'],['⚡','Start','3 steps']],'📖 Open the guide'],
- cards:[['Key terms','✦ explained simply',[
- ['📊','ILI','Integrated Life Index — your energy as 0-100'],
- ['🫀','rPPG','Camera reads blood flow, contactless'],
- ['☯️','Five elements','Wood · Fire · Earth · Metal · Water'],
- ['🧠','BEI','Brain endurance — guessing vs real skill'],
- ['💪','SVI','Skin vitality — rebound elasticity'],
- ['🛡️','MUFE','Post-quantum security, zero storage'],
- ['🛰','VSOP87','NASA JPL planetary orbit theory'],
- ['📜','CSI','Conflict-offset index across 50 systems']]]],
- rows:[['Start in 3 steps','✦ new here?',[
- ['Enter info','Birth date and hour'],
- ['Bio scan','Face · hand · tongue'],
- ['Unlock','All features open']]]],
- warn:'All analyses are for infotainment and wellness reference and are not a medical diagnosis.'},
+ howto:{hero:['✦',766,767,
+ [['📖',768,'35'],['🔤',769,770],['❓',771,772],['⚡',773,774]],775],
+ cards:[[776,777,[
+ ['📊',778,779],
+ ['🫀',780,781],
+ ['☯️',782,783],
+ ['🧠',784,785],
+ ['💪',786,787],
+ ['🛡️',788,789],
+ ['🛰',790,791],
+ ['📜',792,793]]]],
+ rows:[[794,795,[
+ [796,797],
+ [798,799],
+ [800,801]]]],
+ warn:802},
 
- mypage:{hero:['👤','My page','Account · subscription · vault · settings · support',
- [['👤','Profile','account'],['💳','Plan','manage'],['🎁','Vault','points'],['📞','Support','1:1']],'👤 Open my page'],
- cards:[['What you can manage','✦ Tap a card',[
- ['👤','Profile and account','Member info · password · delete'],
- ['💳','Subscription and payment','Status · method · refund'],
- ['🎁','Vault','Coupons · points · event wins'],
- ['⚙️','App settings','Notifications · theme · font · cache'],
- ['📞','Support','AI counsellor · 1:1 email · terms'],
- ['🔒','Security','MUFE quantum defense']]]],
- rows:[['Good to know','✦ 3 points',[
- ['Data stays on your device','Zero storage by default'],
- ['Cancel any time','Before the next billing date'],
- ['Voice input is free','On every plan']]]],
- warn:'For billing and refunds, the platform where you signed up applies (web, App Store, or Google Play).'},
+ mypage:{hero:['👤',803,804,
+ [['👤',805,806],['💳',807,808],['🎁',809,810],['📞',811,'1:1']],812],
+ cards:[[813,746,[
+ ['👤',814,815],
+ ['💳',816,817],
+ ['🎁',809,818],
+ ['⚙️',819,820],
+ ['📞',811,821],
+ ['🔒',822,823]]]],
+ rows:[[824,825,[
+ [826,827],
+ [828,829],
+ [830,831]]]],
+ warn:832},
 
- profile:{hero:['📋','Profile and info','Name · birth date · location · algorithm settings',
- [['👤','Basic','info'],['📍','Location','birth·now'],['⚙️','Weights','algorithm'],['📊','ILI','stats']],'📋 Enter my info'],
- cards:[['What to enter','✦ Tap a card',[
- ['👤','Name and birth date','Solar or lunar'],
- ['⏰','Birth hour','Skip if unknown'],
- ['🗺️','Birthplace','Down to the neighbourhood'],
- ['📍','Current location','For direction and weather'],
- ['⚙️','Algorithm weights','Saju · Zi Wei · astrology · numerology'],
- ['📷','rPPG calibration','Live measurement folded in']]]],
- rows:[['Why it matters','✦ 3 points',[
- ['Birth hour raises accuracy','The hour pillar is computed'],
- ['Location sets direction','Feng Shui and weather'],
- ['Saved on your device','Auto-fills next time']]]],
- warn:'Your name and biometric data are stored only on your device and are not transmitted to any server.'},
+ profile:{hero:['📋',833,834,
+ [['👤',835,836],['📍',837,838],['⚙️',839,840],['📊',778,841]],842],
+ cards:[[843,746,[
+ ['👤',844,845],
+ ['⏰',846,847],
+ ['🗺️',848,849],
+ ['📍',850,851],
+ ['⚙️',852,853],
+ ['📷',854,855]]]],
+ rows:[[856,825,[
+ [857,858],
+ [859,860],
+ [861,862]]]],
+ warn:863},
 
- lotto:{hero:['🎰','Lucky numbers','Saju × five elements × 50 systems × NASA',
- [['🎰','Sets','3·5·7'],['📜','Systems','50'],['🛰','NASA','live'],['📱','Phone','analysis']],'🎰 Generate lucky numbers'],
- cards:[['Three generation stages','✦ pick one',[
- ['✨','Stage 1 · pure metaphysics','From birth date alone'],
- ['🛰','Stage 2 · NASA integrated','Planetary positions folded in'],
- ['🧬','Stage 3 · bio integrated','rPPG values folded in'],
- ['📱','Phone number analysis','Divination energy of your digits'],
- ['🔢','Life number','Sum of your birth-date digits'],
- ['☯️','Element harmony','Numbers that fill what is lacking']]]],
- rows:[['How to use','✦ 3 steps',[
- ['Enter birth date','Or link from the dashboard'],
- ['Choose a stage and count','3, 5 or 7 sets'],
- ['Generate','Numbers matching your energy pattern']]]],
- warn:'For entertainment. These numbers do not predict or guarantee any outcome.'},
+ lotto:{hero:['🎰',864,865,
+ [['🎰',866,'3·5·7'],['📜',867,'50'],['🛰',868,869],['📱',870,871]],872],
+ cards:[[873,874,[
+ ['✨',875,876],
+ ['🛰',877,878],
+ ['🧬',879,880],
+ ['📱',881,882],
+ ['🔢',883,884],
+ ['☯️',885,886]]]],
+ rows:[[725,726,[
+ [887,888],
+ [889,890],
+ [891,892]]]],
+ warn:893},
 
- sports:{hero:['⚽','Sports energy','SRI · 7 engines × NASA × 316 teams',
- [['⚽','Teams','316'],['⚙️','Engines','7'],['🛰','NASA','7 planets'],['📊','SRI','0-100']],'⚡ Analyze energy match'],
- cards:[['7 engines and weights','✦ designed together',[
- ['🛰','Planetary transit','25% — 7 planets live'],
- ['🧭','Qi Men Dun Jia','18% — 12 hours mapping'],
- ['⭐','Zi Wei Dou Shu','15% — fate chart'],
- ['🌟','Nine Star Ki','14% — sun altitude × time'],
- ['☱','I Ching','12% — 64 hexagram patterns'],
- ['☯','Saju','8% — elements + HRV'],
- ['🌌','Taiyi','8% — Jupiter-Saturn angles']]]],
- rows:[['How to use','✦ 4 steps',[
- ['Enter info','Your Day Master is set'],
- ['Pick teams','Chips or autocomplete from 316'],
- ['Choose sport and time','Chips change by sport'],
- ['Run the analysis','Data 60% + resonance 40%']]]],
- warn:'An energy-information service unrelated to betting or gambling. It does not predict match outcomes.'},
+ sports:{hero:['⚽',894,895,
+ [['⚽',896,'316'],['⚙️',897,'7'],['🛰',868,898],['📊',899,'0-100']],900],
+ cards:[[901,902,[
+ ['🛰',903,904],
+ ['🧭',905,906],
+ ['⭐',907,908],
+ ['🌟',909,910],
+ ['☱',911,912],
+ ['☯',913,914],
+ ['🌌',915,916]]]],
+ rows:[[725,917,[
+ [796,918],
+ [919,920],
+ [921,922],
+ [923,924]]]],
+ warn:925},
 
- stock:{hero:['📈','Stock energy','50 systems × NASA planets × five elements',
- [['🏢','Stocks','36,000+'],['🛰','NASA','planets'],['📜','Systems','50'],['⭐','Match','Saju']],'📈 Search a stock'],
- cards:[['What is analysed','✦ Tap a card',[
- ['🏢','Founding date','The company chart'],
- ['☯️','Element match','Your elements × stock elements'],
- ['🛰','Planetary energy','7 planets, direct or retrograde'],
- ['🌍','Sector radar','By element'],
- ['🗓️','30-day events','Planetary events × market'],
- ['🔮','Overall summary','Combined energy reading']]]],
- rows:[['How to use','✦ 3 steps',[
- ['Enter your info','Day Master is set'],
- ['Search a company','AI finds the founding date'],
- ['Read the match','Score + element relation']]]],
- warn:'This is divination and astronomical-energy reference, not investment advice. It does not recommend buying or selling any security. All decisions and responsibility rest with the investor.'},
+ stock:{hero:['📈',926,927,
+ [['🏢',928,'36,000+'],['🛰',868,929],['📜',867,'50'],['⭐',930,913]],931],
+ cards:[[932,746,[
+ ['🏢',933,934],
+ ['☯️',935,936],
+ ['🛰',937,938],
+ ['🌍',939,940],
+ ['🗓️',941,942],
+ ['🔮',943,944]]]],
+ rows:[[725,726,[
+ [945,946],
+ [947,948],
+ [949,950]]]],
+ warn:951},
 
- family:{hero:['👨‍👩‍👧','Family ILI','Health · location · fortune at a glance',
- [['👥','Members','add'],['📍','Location','share'],['🚨','SOS','3 sec'],['📊','ILI','trend']],'👨‍👩‍👧 Open family centre'],
- cards:[['What you can do','✦ Tap a card',[
- ['👥','Add members','Register family with relationship'],
- ['📍','Location sharing','App link or map link'],
- ['🚨','Emergency SOS','Press and hold 3 seconds'],
- ['🌿','Condition sharing','Summary card after the report'],
- ['🌟','Exchange fortunes','Send today reading'],
- ['📋','Alert feed','Changes and reminders']]]],
- rows:[['How to use','✦ 3 steps',[
- ['Add a member','Name, relationship, phone'],
- ['Choose a linking method','App or map link'],
- ['Monitor together','ILI trend per person']]]],
- warn:'Wellness reference only, not medical information. All data is stored on your device.'},
+ family:{hero:['👨‍👩‍👧',952,953,
+ [['👥',954,955],['📍',837,956],['🚨',957,958],['📊',778,959]],960],
+ cards:[[961,746,[
+ ['👥',962,963],
+ ['📍',964,965],
+ ['🚨',966,967],
+ ['🌿',968,969],
+ ['🌟',970,971],
+ ['📋',972,973]]]],
+ rows:[[725,726,[
+ [974,975],
+ [976,977],
+ [978,979]]]],
+ warn:980},
 
- star:{hero:['⭐','Star station','Energy currency for AI and photo analysis',
- [['⭐','Stars','top up'],['🆓','Voice','free'],['📊','Plans','6'],['🎁','Bonus','+35%']],'⭐ Top up stars'],
- cards:[['Plans','✦ choose one',[
- ['🆓','Taster','Non-member · tops up daily'],
- ['⭐','Star plan','Each of 35 features once a day'],
- ['💎','VIP Premium','All features unlimited'],
- ['💧',' Basic','₩500/mo · AI 30 · photos 30'],
- ['💠',' Pro','₩5,000/mo · AI 350 · photos 350'],
- ['👑',' Unlimited','₩10,000/mo · no limits']]]],
- rows:[['How stars work','✦ 3 points',[
- ['Voice is always free','Unlimited on every plan'],
- ['Stars pay for AI and photos','Analysis and recognition'],
- ['Top up any time','Bonus grows with the amount']]]],
- warn:'All analyses are divination reference. Pricing is subject to change before launch.'},
+ star:{hero:['⭐',981,982,
+ [['⭐',983,984],['🆓',985,986],['📊',987,'6'],['🎁',988,'+35%']],989],
+ cards:[[987,990,[
+ ['🆓',991,992],
+ ['⭐',993,994],
+ ['💎',995,996],
+ ['💧',997,998],
+ ['💠',999,1000],
+ ['👑',1001,1002]]]],
+ rows:[[1003,825,[
+ [1004,1005],
+ [1006,1007],
+ [1008,1009]]]],
+ warn:1010},
 
- vip:{hero:['💎','VIP Premium','Quantum stocks · resonance numbers · SRI Pro · AI Master',
- [['💎','Services','4'],['📜','Systems','50'],['🛰','NASA','deep'],['🤖','AI','18 engines']],'💎 Enter VIP'],
- cards:[['VIP-only services','✦ Tap a card',[
- ['📈','Quantum stocks','Best 5 matches from 36,000+'],
- ['🎰','Resonance numbers','Precise numbers from 50 systems'],
- ['⚽','SRI Pro','In-depth player-matchup analysis'],
- ['🤖','AI Master','18-engine scientific reasoning'],
- ['🔭','Buy timing','NASA optimal windows'],
- ['🔮','Life advice','Deep chain-of-thought reading']]]],
- rows:[['How to use','✦ 3 steps',[
- ['Enter the access code','VIP members only'],
- ['Choose a service','Four deep-analysis tools'],
- ['Read the report','Verified VIP report format']]]],
- warn:'VIP analysis is deep reference content. Stock sections are not investment advice.'},
+ vip:{hero:['💎',995,1011,
+ [['💎',1012,'4'],['📜',867,'50'],['🛰',868,1013],['🤖',1014,1015]],1016],
+ cards:[[1017,746,[
+ ['📈',1018,1019],
+ ['🎰',1020,1021],
+ ['⚽',1022,1023],
+ ['🤖',1024,1025],
+ ['🔭',1026,1027],
+ ['🔮',1028,1029]]]],
+ rows:[[725,726,[
+ [1030,1031],
+ [1032,1033],
+ [1034,1035]]]],
+ warn:1036},
 
- "music-v2":{hero:['🎵','Frequency music','Biosignals × 50 systems × NASA × Solfeggio',
- [['🎼','Tracks','16'],['🎹','Solfeggio','6'],['⏰','Hours','12'],['🌸','Seasons','4']],'🎵 Get recommendations'],
- cards:[['Per-element frequency','✦ 5-element mapping',[
- ['🌳','Wood (木)','Major scale · 120-140 BPM · 528Hz'],
- ['🔥','Fire (火)','Pentatonic · 140-170 BPM · 417Hz'],
- ['🪨','Earth (土)','Dorian · 80-100 BPM · 396Hz'],
- ['⚔️','Metal (金)','Minor scale · 60-90 BPM · 741Hz'],
- ['💧','Water (水)','Minor pentatonic · 60-80 BPM · 852Hz'],
- ['✨','Solfeggio','396 · 417 · 528 · 639 · 741 · 852']]]],
- rows:[['How it recommends','✦ two stages',[
- ['Stage 1','Perpetual calendar × NASA — instant from birth date'],
- ['Stage 2','Biosignals × metaphysics — after the bio scan'],
- ['Every 10 minutes','The seed changes, so does the list']]]],
- warn:'An entertainment and wellness aid. It does not guarantee medical effects. Playback links to external search; copyrights belong to their owners.'},
+ "music-v2":{hero:['🎵',1037,1038,
+ [['🎼',1039,'16'],['🎹',1040,'6'],['⏰',1041,'12'],['🌸',1042,'4']],1043],
+ cards:[[1044,1045,[
+ ['🌳',1046,1047],
+ ['🔥',1048,1049],
+ ['🪨',1050,1051],
+ ['⚔️',1052,1053],
+ ['💧',1054,1055],
+ ['✨',1040,'396 · 417 · 528 · 639 · 741 · 852']]]],
+ rows:[[1056,1057,[
+ [1058,1059],
+ [1060,1061],
+ [1062,1063]]]],
+ warn:1064},
 
- food:{hero:['🍱','Food compatibility','Photo → elements × biosignals × constitution',
- [['📷','Photo','AI read'],['☯️','Elements','match'],['🚫','Allergy','blocked'],['⏰','Timing','by hour']],'🍱 Start food analysis'],
- cards:[['Five-element food matching','✦ taste for your Day Master',[
- ['🌳','Wood (木) · sour','Vinegar, plum, spinach, greens'],
- ['🔥','Fire (火) · bitter','Bellflower, mugwort, red foods'],
- ['🪨','Earth (土) · sweet','Pumpkin, sweet potato, honey'],
- ['⚔️','Metal (金) · spicy','Garlic, ginger, scallion, white foods'],
- ['💧','Water (水) · salty','Black beans, seaweed, seafood'],
- ['🚫','Restricted','Allergies pre-blocked']]]],
- rows:[['How to use','✦ 5 steps',[
- ['Enter info','Day Master and elements are set'],
- ['Bio scan','BPM and HRV raise accuracy'],
- ['Wellness profile','5 steps — lifestyle and restrictions'],
- ['Photo or name','AI recognises the food'],
- ['Read the match','Score + eat/avoid + timing']]]],
- warn:'This is a custom recommendation based on traditional medicine, five elements and modern nutrition. For diagnosis or treatment, consult a doctor.'},
+ food:{hero:['🍱',1065,1066,
+ [['📷',1067,1068],['☯️',1069,1070],['🚫',1071,1072],['⏰',1073,1074]],1075],
+ cards:[[1076,1077,[
+ ['🌳',1078,1079],
+ ['🔥',1080,1081],
+ ['🪨',1082,1083],
+ ['⚔️',1084,1085],
+ ['💧',1086,1087],
+ ['🚫',1088,1089]]]],
+ rows:[[725,1090,[
+ [796,1091],
+ [798,1092],
+ [1093,1094],
+ [1095,1096],
+ [949,1097]]]],
+ warn:1098},
 
- shop:{hero:['🛍️','Element shopping','Saju × 12 systems × AI design × OEM',
- [['👕','Items','19'],['🎨','AI design','prompt'],['📦','OEM','7-14 days'],['📐','Measure','auto']],'🛍️ Browse my elements'],
- cards:[['19-item lifestyle coverage','✦ Tap a card',[
- ['👕','Apparel','T-shirt · pajamas · jacket · hoodie'],
- ['🤵','Suits','Suit set and jacket'],
- ['🏃','Activewear','Tracksuit and joggers'],
- ['💍','Jewelry','Ring · necklace · bracelet'],
- ['👟','Footwear','Sneakers · slippers · indoor'],
- ['🏠','Home living','Pillow · cushion · tableware'],
- ['🪑','Furniture','Table · dining table · chair'],
- ['📦','Made to order','Full sets and 24-hour sets']]]],
- rows:[['Order in 3 steps','✦ OEM custom',[
- ['Copy the AI prompt','Based on your elements and ILI'],
- ['Generate and upload','Free image tools work well'],
- ['Choose item and size','Delivered in 7-14 days']]]],
- warn:'These are design concepts; actual products may differ at launch. Pricing and launch dates will be announced later.'},
+ shop:{hero:['🛍️',1099,1100,
+ [['👕',1101,'19'],['🎨',1102,1103],['📦',1104,1105],['📐',1106,1107]],1108],
+ cards:[[1109,746,[
+ ['👕',1110,1111],
+ ['🤵',1112,1113],
+ ['🏃',1114,1115],
+ ['💍',1116,1117],
+ ['👟',1118,1119],
+ ['🏠',1120,1121],
+ ['🪑',1122,1123],
+ ['📦',1124,1125]]]],
+ rows:[[1126,1127,[
+ [1128,1129],
+ [1130,1131],
+ [1132,1133]]]],
+ warn:1134},
 
- "travel-yeogi":{hero:['✈️','Stays and destinations','Five elements × Feng Shui × NASA',
- [['🌍','Countries','59'],['🏙','Cities','153'],['🏯','Systems','7'],['🔍','Safety','scan']],'✈️ Find destinations'],
- cards:[['7 space systems','✦ choose one',[
- ['🧠','Space psychology','Lighting · colour · flow'],
- ['🌿','Terroir','Geology · water · sunlight'],
- ['⛩️','Kanso','Emptiness · simplicity · ki'],
- ['🕌','Vastu','5 elements · 8 directions'],
- ['🏡','Yangzhai','Gate · master room · kitchen'],
- ['🏯','Feng Shui','Dragon veins · qi · luopan'],
- ['🪶','Native','4-direction elements']]]],
- rows:[['How to use','✦ 5 steps',[
- ['Choose a system','One is most accurate'],
- ['Country and city, or GPS','59 countries, 153 cities'],
- ['Run match analysis','Score + Saju↔city elements'],
- ['360° space scan on site','10 directions, 7 systems'],
- ['Safety scan and AI chat','Lens-glint detection aid']]]],
- warn:'Recommendations are based on Eastern divination and astronomy. The safety scan is an aid with no 100% detection guarantee.'},
+ "travel-yeogi":{hero:['✈️',1135,1136,
+ [['🌍',1137,'59'],['🏙',1138,'153'],['🏯',867,'7'],['🔍',1139,1140]],1141],
+ cards:[[1142,990,[
+ ['🧠',1143,1144],
+ ['🌿',1145,1146],
+ ['⛩️',1147,1148],
+ ['🕌',1149,1150],
+ ['🏡',1151,1152],
+ ['🏯',1153,1154],
+ ['🪶',1155,1156]]]],
+ rows:[[725,1090,[
+ [1157,1158],
+ [1159,1160],
+ [1161,1162],
+ [1163,1164],
+ [1165,1166]]]],
+ warn:1167},
 
- "cgo-navi":{hero:['🧭','My navigation','Lucky-direction compass × GPS × AR',
- [['🧭','Compass','AR'],['📍','GPS','live'],['☯️','Elements','4 lenses'],['📊','Score','today']],'🧭 Start compass'],
- cards:[['What this compass shows','✦ Tap a card',[
- ['🧭','Lucky-direction compass','The arrow points to today direction'],
- ['📍','GPS lucky direction','Computed from your location'],
- ['📊','Five-element score','Today directional fortune'],
- ['🔮','4-lens fusion','Elements · Qimen · Nine Star · planets']]]],
- rows:[['How to use','✦ 3 steps',[
- ['Allow camera and location','Mobile and HTTPS'],
- ['Turn toward the arrow','Until it reads Front'],
- ['Take a step','Mindful of the lucky direction']]]],
- warn:'A fortune feature for everyday fun. Not scientific navigation or prophecy. Compass and GPS are device sensors and can have errors.'},
+ "cgo-navi":{hero:['🧭',1168,1169,
+ [['🧭',1170,1171],['📍',1172,869],['☯️',1069,1173],['📊',1174,1175]],1176],
+ cards:[[1177,746,[
+ ['🧭',1178,1179],
+ ['📍',1180,1181],
+ ['📊',1182,1183],
+ ['🔮',1184,1185]]]],
+ rows:[[725,726,[
+ [1186,1187],
+ [1188,1189],
+ [1190,1191]]]],
+ warn:1192},
 
- gmd:{hero:['📸','Feng Shui camera','360° scan × 7 global space systems',
- [['📸','Shots','10'],['🏯','Systems','7'],['🛰','NASA','live'],['📊','Score','space']],'🧭 Start 360° scan'],
- cards:[['10-direction shooting order','✦ stand in the centre',[
- ['⬆','North','Start here'],
- ['➡','East','Then clockwise'],
- ['⬇','South','Keep turning'],
- ['⬅','West','Full circle'],
- ['↗','Corners','NE · SE · SW · NW'],
- ['⬆⬇','Ceiling and floor','Up and down']]]],
- rows:[['How to use','✦ 3 steps',[
- ['Stand in the centre','Of the room or space'],
- ['Shoot following the arrow','The compass guides you'],
- ['Read the score','7 systems + NASA combined']]]],
- warn:'Space energy analysis is reference content. Results are not saved (zero storage).'},
+ gmd:{hero:['📸',1193,1194,
+ [['📸',1195,'10'],['🏯',867,'7'],['🛰',868,869],['📊',1174,1196]],1197],
+ cards:[[1198,1199,[
+ ['⬆',1200,1201],
+ ['➡',1202,1203],
+ ['⬇',1204,1205],
+ ['⬅',1206,1207],
+ ['↗',1208,1209],
+ ['⬆⬇',1210,1211]]]],
+ rows:[[725,726,[
+ [1212,1213],
+ [1214,1215],
+ [1216,1217]]]],
+ warn:1218},
 
- msp52:{hero:['🎴','MSP52','Personality archetype × 52-card mapping',
- [['🎴','Cards','52'],['🧠','Types','16'],['📝','Items','48·92·144'],['🔗','Fusion','tarot']],'🎴 Start MSP52'],
- cards:[['What it reads','✦ Tap a card',[
- ['🧠','Archetype code','Your 16-type lens'],
- ['🎴','Card mapping','52-card correspondence'],
- ['💬','Communication','How you speak and listen'],
- ['💼','Work style','How you get things done'],
- ['💕','Relationships','How you connect'],
- ['🌱','Growth','Where you stretch next']]]],
- rows:[['How to use','✦ 3 steps',[
- ['Choose a length','48, 92 or 144 items'],
- ['Answer intuitively','First instinct is best'],
- ['Read the mapping','Type + card + advice']]]],
- warn:'Personality types are reference to aid self-understanding. They do not label or define people.'},
+ msp52:{hero:['🎴',1219,1220,
+ [['🎴',1221,'52'],['🧠',1222,'16'],['📝',1101,'48·92·144'],['🔗',1223,1224]],1225],
+ cards:[[1226,746,[
+ ['🧠',1227,1228],
+ ['🎴',1229,1230],
+ ['💬',1231,1232],
+ ['💼',1233,1234],
+ ['💕',1235,1236],
+ ['🌱',1237,1238]]]],
+ rows:[[725,726,[
+ [1239,1240],
+ [1241,1242],
+ [1243,1244]]]],
+ warn:1245},
 
- tnbti:{hero:['🧬','TNBTI','Tarot × personality × metaphysics triple fusion',
- [['🃏','Tarot','78'],['🧠','Type','16'],['📜','Systems','50'],['🔗','Fusion','triple']],'🧬 Run triple fusion'],
- cards:[['Three inputs','✦ cross-computed',[
- ['🧠','Archetype code','The base lens'],
- ['🃏','Tarot card','Current situation and flow'],
- ['📜','Metaphysics','Up to 3 systems'],
- ['✨','Fusion mode','Pure · live · biometric'],
- ['🤖','AI docent','Reads it back to you'],
- ['🌟','Self-reflection','Today advice and keywords']]]],
- rows:[['How to use','✦ 4 steps',[
- ['Set your archetype','Take the test or pick directly'],
- ['Draw one card','With your heart'],
- ['Choose a system','One is most accurate'],
- ['Run the engine','Triple fusion result']]]],
- warn:'A psychological and divinatory reference tool for self-understanding. It does not determine your future.'},
+ tnbti:{hero:['🧬',1246,1247,
+ [['🃏',1248,'78'],['🧠',1249,'16'],['📜',867,'50'],['🔗',1223,1250]],1251],
+ cards:[[1252,1253,[
+ ['🧠',1227,1254],
+ ['🃏',1255,1256],
+ ['📜',1257,1258],
+ ['✨',1259,1260],
+ ['🤖',1261,1262],
+ ['🌟',1263,1264]]]],
+ rows:[[725,917,[
+ [1265,1266],
+ [1267,1268],
+ [1157,1158],
+ [1269,1270]]]],
+ warn:1271},
 
- fusion3:{hero:['🔗','Fusion 3','Metaphysics × cosmos × your body right now',
- [['📜','Systems','50'],['🛰','NASA','live'],['🫀','rPPG','bio'],['📊','ILI','index']],'🔗 Run 3-layer fusion'],
- cards:[['Three layers','✦ weighted together',[
- ['📜','Innate metaphysics','Your chart'],
- ['🛰','Cosmos now','Geomagnetism · moon · planets'],
- ['🫀','Biosignals','Heart rate · HRV · complexion'],
- ['🧮','Multi-engine','Each engine scores'],
- ['🔗','CSI','Weighted into one index'],
- ['🎯','Result','Overall + by area']]]],
- rows:[['How to use','✦ 3 steps',[
- ['Enter info','Chart is built'],
- ['Allow live data','Cosmos layer activates'],
- ['Complete bio scan','Body layer activates']]]],
- warn:'Infotainment and wellness reference content, not a scientific prediction or medical diagnosis.'},
+ fusion3:{hero:['🔗',1272,1273,
+ [['📜',867,'50'],['🛰',868,869],['🫀',780,1274],['📊',778,1275]],1276],
+ cards:[[1277,1278,[
+ ['📜',1279,1280],
+ ['🛰',1281,1282],
+ ['🫀',1283,1284],
+ ['🧮',1285,1286],
+ ['🔗',792,1287],
+ ['🎯',1288,1289]]]],
+ rows:[[725,726,[
+ [796,1290],
+ [1291,1292],
+ [1293,1294]]]],
+ warn:1295},
 
- naming:{hero:['✍️','Naming','Saju five elements × hanja name recommendations',
- [['✍️','Names','curated'],['☯️','Elements','balance'],['🔢','Strokes','numerology'],['🏢','Company','naming']],'✨ Start naming'],
- cards:[['What it covers','✦ Tap a card',[
- ['👶','Person name','Saju-matched hanja names'],
- ['🔍','Check my name','Forbidden characters and conflicts'],
- ['🏪','Shop name','Industry and representative fit'],
- ['🏢','Company','6 systems combined'],
- ['🔢','Numerology','Stroke count harmony'],
- ['☯️','Element balance','Fills what is lacking']]]],
- rows:[['How to use','✦ 3 steps',[
- ['Enter surname and birth date','Or link from the dashboard'],
- ['Choose what to name','Person, shop, company, brand'],
- ['Review the list','With element and numerology notes']]]],
- warn:'Name study is traditional reference content and does not guarantee any outcome.'},
+ naming:{hero:['✍️',1296,1297,
+ [['✍️',1298,1299],['☯️',1069,1300],['🔢',1301,1302],['🏢',1303,1304]],1305],
+ cards:[[1306,746,[
+ ['👶',1307,1308],
+ ['🔍',1309,1310],
+ ['🏪',1311,1312],
+ ['🏢',1303,1313],
+ ['🔢',1314,1315],
+ ['☯️',1316,1317]]]],
+ rows:[[725,726,[
+ [1318,888],
+ [1319,1320],
+ [1321,1322]]]],
+ warn:1323},
 
- couple:{hero:['💑','Couple compatibility','rPPG × Saju × live video',
- [['📡','Live','video'],['🫀','rPPG','both'],['☯️','Saju','both'],['💞','Score','match']],'💑 Start compatibility'],
- cards:[['What is compared','✦ Tap a card',[
- ['💞','Mutual complementarity','How you fill each other'],
- ['💍','Marriage luck','Long-term flow'],
- ['👶','Children luck','Family energy'],
- ['💬','Communication','How you talk'],
- ['💰','Money','Shared economy'],
- ['❤️','Health','Constitution fit']]]],
- rows:[['Two ways to use','✦ pick one',[
- ['Live video','Create a room, share the code, see each other'],
- ['Info entry','Just enter their birth date and name'],
- ['Read the result','Score + relationship tips']]]],
- warn:'Compatibility reading is infotainment and reference content.'},
+ couple:{hero:['💑',1324,1325,
+ [['📡',1326,1327],['🫀',780,1328],['☯️',913,1328],['💞',1174,1070]],1329],
+ cards:[[1330,746,[
+ ['💞',1331,1332],
+ ['💍',1333,1334],
+ ['👶',1335,1336],
+ ['💬',1231,1337],
+ ['💰',1338,1339],
+ ['❤️',1340,1341]]]],
+ rows:[[1342,874,[
+ [1343,1344],
+ [1345,1346],
+ [731,1347]]]],
+ warn:1348},
 
- diag:{hero:['🩺','Diagnosis board','Five-element constitution × biosignals',
- [['☯️','Elements','5'],['🫀','rPPG','bio'],['👅','Tongue','observation'],['📊','Index','combined']],'🩺 Open diagnosis board'],
- cards:[['What is read','✦ Tap a card',[
- ['☯️','Yin-Yang balance','Warm-cool tendency'],
- ['🌳','Element constitution','Based on Saju elements'],
- ['👅','Tongue observation','Colour and coating'],
- ['🫀','Heart vitality','Measured BPM and HRV'],
- ['🌟','Constellation','Season and organ energy'],
- ['🕉️','Vedic','Ayanamsa constitution']]]],
- rows:[['How to use','✦ 3 steps',[
- ['Enter your info','Chart is built'],
- ['Complete the bio scan','Measured values fold in'],
- ['Read the board','10 integrated indicators']]]],
- warn:'General wellness information only. Not intended to diagnose, treat, cure, or prevent any disease.'},
+ diag:{hero:['🩺',1349,1350,
+ [['☯️',1069,'5'],['🫀',780,1274],['👅',1351,1352],['📊',1353,1354]],1355],
+ cards:[[1356,746,[
+ ['☯️',1357,1358],
+ ['🌳',1359,1360],
+ ['👅',1361,1362],
+ ['🫀',1363,1364],
+ ['🌟',1365,1366],
+ ['🕉️',1367,1368]]]],
+ rows:[[725,726,[
+ [945,1290],
+ [1369,1370],
+ [1371,1372]]]],
+ warn:1373},
 
- algo:{hero:['✨','Saju · pure metaphysics','50 systems analysed from your birth date and hour',
- [['📜','Systems','50'],['☯️','Elements','5'],['🀄','Day Master','pillar'],['📊','Score','CSI']],'✨ Run 50-system analysis'],
- cards:[['What is analysed','✦ Tap a card',[
- ['☯️','Four Pillars','Day Master · elements · fortune cycle'],
- ['⭐','Zi Wei Dou Shu','Fate chart and palace scores'],
- ['🧭','Qi Men Dun Jia','Direction and timing'],
- ['🔮','Nine Star Ki','Nine stars and directions'],
- ['☰','I Ching','64 hexagrams'],
- ['🔢','Numerology','Life path number'],
- ['✍️','Name studies','Stroke count and sound'],
- ['♈','Sun sign','12 zodiac signs'],
- ['🌀','Taiyi','Macro flow'],
- ['📊','CSI','Conflict-offset index']]]],
- rows:[['How to use','✦ 3 steps',[
- ['Complete your info','Name, birth date and hour'],
- ['Start the analysis','50 systems run at once'],
- ['Read the result','Overall score + per-system reading']]]],
- warn:'Infotainment and wellness reference content. Not medical, legal, or investment advice.'},
+ algo:{hero:['✨',1374,1375,
+ [['📜',867,'50'],['☯️',1069,'5'],['🀄',1376,1377],['📊',1174,792]],1378],
+ cards:[[932,746,[
+ ['☯️',1379,1380],
+ ['⭐',907,1381],
+ ['🧭',905,1382],
+ ['🔮',909,1383],
+ ['☰',911,1384],
+ ['🔢',1314,1385],
+ ['✍️',1386,1387],
+ ['♈',1388,1389],
+ ['🌀',915,1390],
+ ['📊',792,1391]]]],
+ rows:[[725,726,[
+ [1392,1393],
+ [1394,1395],
+ [731,1396]]]],
+ warn:1397},
 
- "algo-v2":{hero:['📊','Health board','50 systems × NASA × weather, live',
- [['🛰','NASA','real-time'],['🌤','Weather','live'],['📜','Systems','50'],['⚡','Energy','today']],'📊 Run live analysis'],
- cards:[['Live data used','✦ updated every visit',[
- ['🛰','Planetary transit','NASA JPL, 0.01° error'],
- ['🌤','Weather','Pressure · temperature · humidity'],
- ['🧭','Direction','Compass bearing'],
- ['☯️','Elements','Your Saju baseline'],
- ['📊','Overall','Today energy score'],
- ['💡','Advice','Direction · time · colour']]]],
- rows:[['How to use','✦ 3 steps',[
- ['Enter info and allow permissions','Location and weather'],
- ['Start the analysis','Live values are folded in'],
- ['Check today score','It changes daily']]]],
- warn:'Satellite and weather use real public data, but the divination reading is for fun and reference. Not a scientific prediction or medical diagnosis.'},
+ "algo-v2":{hero:['📊',1398,1399,
+ [['🛰',868,1400],['🌤',1401,869],['📜',867,'50'],['⚡',1402,1175]],1403],
+ cards:[[1404,1405,[
+ ['🛰',903,1406],
+ ['🌤',1401,1407],
+ ['🧭',1408,1409],
+ ['☯️',1069,1410],
+ ['📊',1411,1412],
+ ['💡',1413,1414]]]],
+ rows:[[725,726,[
+ [1415,1416],
+ [1394,1417],
+ [1418,1419]]]],
+ warn:1420},
 
- "c14-v2":{hero:['🃏','Tarot','78 cards · AI reading · spreads from 1 to 12',
- [['🃏','Cards','78'],['🎴','Spreads','6'],['🤖','AI','reading'],['🌙','Daily','new card']],'🃏 Draw a card'],
- cards:[['Choose a spread','✦ by your question',[
- ['1️⃣','One card','Today fortune · yes/no'],
- ['3️⃣','Three cards','Past · present · future'],
- ['5️⃣','In-depth','Cause · surroundings · advice'],
- ['7️⃣','Celtic variant','Weekly · relationships'],
- ['🔟','Celtic Cross','Full context and outcome'],
- ['📅','Horoscope','A card for each month']]]],
- rows:[['How to read tarot well','✦ important',[
- ['Quiet place, clear question','Bring it to mind'],
- ['Open questions work better','How and why, not yes/no'],
- ['Do not redraw the same question','1–2 times a day'],
- ['Cards are a mirror, not a verdict','Choices are always yours']]]],
- warn:'For entertainment and self-reflection. Tarot does not fix the future.'},
+ "c14-v2":{hero:['🃏',1248,1421,
+ [['🃏',1221,'78'],['🎴',1422,'6'],['🤖',1014,1423],['🌙',1424,1425]],1426],
+ cards:[[1427,1428,[
+ ['1️⃣',1429,1430],
+ ['3️⃣',1431,1432],
+ ['5️⃣',1433,1434],
+ ['7️⃣',1435,1436],
+ ['🔟',1437,1438],
+ ['📅',1439,1440]]]],
+ rows:[[1441,1442,[
+ [1443,1444],
+ [1445,1446],
+ [1447,1448],
+ [1449,1450]]]],
+ warn:1451},
 
- report:{hero:['📜','Detailed report','18 fields bound into one illustrated volume',
- [['📚','Fields','18'],['🀄','Eastern','10'],['♈','Western','8'],['🧬','rPPG','measured']],'📜 Open the report'],
- cards:[['18 fields','✦ Tap a card',[
- ['☯️','Four Pillars','Day Master · elements'],
- ['☉','Sun sign','Core self'],
- ['⭐','Zi Wei Dou Shu','Destiny map'],
- ['🌐','Natal chart','Ascendant · Moon · planets'],
- ['🧭','Qi Men Dun Jia','Space-time advantage'],
- ['🛰','Transit','Real-time planets'],
- ['⚡','Liuren','Event fortune'],
- ['🔢','Numerology','Soul number'],
- ['🏔️','Feng Shui','Spatial energy'],
- ['✡️','Kabbalah','Sephirot'],
- ['✍️','Name studies','Numeric harmony'],
- ['🏛️','Houses','12 life areas'],
- ['🌀','Taiyi','Era energy'],
- ['💞','Synastry','Compatibility'],
- ['☰','I Ching','Primary hexagram'],
- ['🃏','Tarot','Renewed daily'],
- ['👤','Physiognomy','Camera-linked'],
- ['🖐️','Palmistry','Camera-linked']]]],
- rows:[['How it works','✦ auto-generated',[
- ['Enter name and birth date','The report generates itself'],
- ['Complete the bio scan','Fields 17 and 18 fill in'],
- ['Updated daily','Tarot and transits recompute']]]],
- warn:'This report is infotainment and wellness reference content. Do not use it as the sole basis for medical, legal, or financial decisions.'},
+ report:{hero:['📜',1452,1453,
+ [['📚',1454,'18'],['🀄',1455,'10'],['♈',1456,'8'],['🧬',780,1457]],1458],
+ cards:[[1459,746,[
+ ['☯️',1379,1460],
+ ['☉',1388,1461],
+ ['⭐',907,1462],
+ ['🌐',1463,1464],
+ ['🧭',905,1465],
+ ['🛰',1466,1467],
+ ['⚡',1468,1469],
+ ['🔢',1314,1470],
+ ['🏔️',1153,1471],
+ ['✡️',1472,1473],
+ ['✍️',1386,1474],
+ ['🏛️',1475,1476],
+ ['🌀',915,1477],
+ ['💞',1478,1479],
+ ['☰',911,1480],
+ ['🃏',1248,1481],
+ ['👤',1482,1483],
+ ['🖐️',1484,1483]]]],
+ rows:[[1485,1486,[
+ [1487,1488],
+ [1369,1489],
+ [1490,1491]]]],
+ warn:1492},
 
- tianziren:{hero:['🌏','Heaven-Earth-Human','Cosmic order × earthly energy × your body',
- [['天','Cosmos','NASA'],['地','Earth','location'],['人','Human','rPPG'],['⚡','Fusion','live']],'🌌 Get my luck signal'],
- cards:[['Three layers','✦ fused into one',[
- ['🛸','Heaven (天)','Real-time planetary path'],
- ['🌍','Earth (地)','Location and direction energy'],
- ['🧑','Human (人)','Biometric energy'],
- ['⚡','Fusion','Today overall flow']]]],
- rows:[['How to use','✦ 3 steps',[
- ['Enter your info','Birth date and hour'],
- ['Allow location','Earth layer activates'],
- ['Check today flow','Three layers combined']]]],
- warn:'Infotainment and wellness reference content, not a scientific prediction.'},
+ tianziren:{hero:['🌏',1493,1494,
+ [['天',1495,868],['地',1496,1497],['人',1498,780],['⚡',1223,869]],1499],
+ cards:[[1277,1500,[
+ ['🛸',1501,1502],
+ ['🌍',1503,1504],
+ ['🧑',1505,1506],
+ ['⚡',1223,1507]]]],
+ rows:[[725,726,[
+ [945,797],
+ [1508,1509],
+ [1510,1511]]]],
+ warn:1512},
 
- gwansang:{hero:['🙂','Face reading','Perpetual calendar × 12 palaces × warm AI reading',
- [['📷','Front shot','33 sec'],['🏯','Palaces','12'],['🐾','Animal type','match'],['💰','Wealth','flow']],'📷 Start face measurement · about 33 sec'],
- cards:[['What face reading reads','✦ Tap a card for details',[
- ['⚖️','Five-feature balance','Eyes · nose · mouth · ears · brows'],
- ['🏯','12-palace fortune','Life · wealth · career palaces'],
- ['🐾','Animal face type','The energy that resembles you'],
- ['🎭','Personality','Innate disposition'],
- ['💕','Love luck','The flow of connections'],
- ['💰','Wealth luck','Wealth energy'],
- ['🩸','Complexion','rPPG measurement'],
- ['🌳','Face type','Five-shape theory'],
- ['📜','Day Master','Perpetual calendar'],
- ['✨','Overall','AI integrated reading']]]],
- rows:[['How to measure','✦ about 33 sec',[
- ['Enter your info first','Birth date and time'],
- ['Front-on, well lit','Do not cover your forehead'],
- ['Hold still','33 seconds']]]],
- warn:'Face Reading is based on the tradition of face reading and is infotainment and wellness reference content. It may not be used to diagnose, treat, or prevent any disease, and it does not determine the future.'},
+ gwansang:{hero:['🙂',1513,1514,
+ [['📷',1515,1516],['🏯',1517,'12'],['🐾',1518,1070],['💰',1519,1520]],1521],
+ cards:[[1522,1523,[
+ ['⚖️',1524,1525],
+ ['🏯',1526,1527],
+ ['🐾',1528,1529],
+ ['🎭',1530,1531],
+ ['💕',1532,1533],
+ ['💰',1534,1535],
+ ['🩸',1536,1537],
+ ['🌳',1538,1539],
+ ['📜',1376,1540],
+ ['✨',1411,1541]]]],
+ rows:[[1542,1543,[
+ [1544,1545],
+ [1546,1547],
+ [1548,1549]]]],
+ warn:1550},
 
- sonkeum:{hero:['🖐','Palm reading','Both hands · innate and acquired lines',
- [['🫲','Left','nature'],['🫱','Right','nurture'],['📷','Shot','30 sec'],['📅','Stages','early·mid·late']],'🤲 Start both-hands measurement · about 30 sec'],
- cards:[['What the palm reads','✦ Tap a card for details',[
- ['🫲','Left hand (nature)','Innate destiny · past'],
- ['🫱','Right hand (nurture)','Present · future effort'],
- ['💗','Life line','Vitality and vigor'],
- ['💕','Heart line','Love · emotion'],
- ['🧠','Head line','Intellect · thought'],
- ['🧭','Fate line','Life direction'],
- ['💰','Wealth line','Money'],
- ['💍','Marriage luck','Connections'],
- ['📅','Life stages','Early · middle · late'],
- ['🔄','Change','Nature → nurture']]]],
- rows:[['How to measure','✦ both hands, about 30 sec',[
- ['Open your palm','Bright light'],['Left hand first','Then right hand'],['Hold still','15 sec each']]]],
- warn:'Palm reading is based on traditional chiromancy and is infotainment and wellness reference content. It may not be used to diagnose, treat, or prevent any disease, nor to predict lifespan.'},
+ sonkeum:{hero:['🖐',1551,1552,
+ [['🫲',1553,1554],['🫱',1555,1556],['📷',1557,1558],['📅',1559,1560]],1561],
+ cards:[[1562,1523,[
+ ['🫲',1563,1564],
+ ['🫱',1565,1566],
+ ['💗',1567,1568],
+ ['💕',1569,1570],
+ ['🧠',1571,1572],
+ ['🧭',1573,1574],
+ ['💰',1575,1338],
+ ['💍',1333,1576],
+ ['📅',1577,1578],
+ ['🔄',1579,1580]]]],
+ rows:[[1542,1581,[
+ [1582,1583],[1584,1585],[1548,1586]]]],
+ warn:1587},
 
- "rppg-ar":{hero:['📡','rPPG AR makeup','World-first camera rPPG × FaceMesh 468 × five elements',
- [['🎨','Colors','130'],['📐','Landmarks','468'],['✨','MAI','score'],['📸','Save','one tap']],'🎥 Start AR mode'],
- cards:[['6 measured metrics','✦ CHROM rPPG',[
- ['⚖️','Skin evenness','Makeup evenness'],
- ['✨','Glow','Skin radiance index'],
- ['🎭','Tone match rate','Skin-tone correction'],
- ['💧','Glow and moisture','Moisture-glow index'],
- ['📐','FaceMesh accuracy','Landmark tracking rate'],
- ['🌳','5-element balance','rPPG scan']]]],
- rows:[['How to use','✦ 3 steps',[
- ['Before-makeup photo','Bare face — the baseline'],
- ['After-makeup analysis','30-sec scan, bright light'],
- ['Apply AR makeup','Pick a colour, capture and save']]]],
- warn:'This is infotainment and beauty reference content, not a medical device.'},
+ "rppg-ar":{hero:['📡',1588,1589,
+ [['🎨',1590,'130'],['📐',1591,'468'],['✨',1592,1593],['📸',1594,1595]],1596],
+ cards:[[1597,1598,[
+ ['⚖️',1599,1600],
+ ['✨',1601,1602],
+ ['🎭',1603,1604],
+ ['💧',1605,1606],
+ ['📐',1607,1608],
+ ['🌳',1609,1610]]]],
+ rows:[[725,726,[
+ [1611,1612],
+ [1613,1614],
+ [1615,1616]]]],
+ warn:1617},
 
- svi:{hero:['🩸','Skin elasticity (SVI)','Optical rebound wave × five elements',
- [['💪','SVI','index'],['⏱','Scan','30 sec'],['🔬','Areas','6 zones'],['⏳','Skin age','rhythm']],'💪 Start skin elasticity analysis'],
- cards:[['What is measured','✦ optical rebound',[
- ['✨','Skin radiance','Surface radiance index'],
- ['💪','Elasticity index','Real-time rebound wave'],
- ['🔬','Texture evenness','Surface uniformity'],
- ['❤️','Vitality energy','Vitality energy index'],
- ['⏳','Skin-age rhythm','Wellness reference'],
- ['⚖️','Left-right balance','Symmetry score']]]],
- rows:[['How to measure','✦ 30 sec',[
- ['30 min after washing','Let cosmetics absorb'],
- ['Bright light, face the screen','Natural or fluorescent'],
- ['Press and release your cheek','The rebound wave is recorded'],
- ['Check your guide','Water · exercise · food by element']]]],
- warn:'SVI is a wellness and beauty reference index and does not replace a diagnosis. Results may differ with lighting and camera quality.'},
+ svi:{hero:['🩸',1618,1619,
+ [['💪',786,1275],['⏱',738,1558],['🔬',1620,1621],['⏳',1622,1623]],1624],
+ cards:[[1625,1626,[
+ ['✨',1627,1628],
+ ['💪',1629,1630],
+ ['🔬',1631,1632],
+ ['❤️',1633,1634],
+ ['⏳',1635,1636],
+ ['⚖️',1637,1638]]]],
+ rows:[[1542,1639,[
+ [1640,1641],
+ [1642,1643],
+ [1644,1645],
+ [1646,1647]]]],
+ warn:1648},
 
- "cgo-photo":{hero:['📷','Energy photo analysis','Photo colour and energy read as five elements',
- [['🎨','Colors','pixel'],['🌳','Elements','5'],['💫','Match','with me'],['🖌','Advice','colors']],'📷 Turn on camera'],
- cards:[['What this analysis shows','✦ Tap a card',[
- ['🎨','Colour pixel analysis','Pixel by pixel'],
- ['🌳','Element distribution','Wood·Fire·Earth·Metal·Water'],
- ['💫','Match with me','Generative · controlling'],
- ['🖌','Colour recommendations','Which colours suit you']]]],
- rows:[['How to use','✦ 3 steps',[
- ['Turn on camera','Allow permission'],
- ['Capture the moment','A person, object or scene'],
- ['Check compatibility','Match score + matching colours']]]],
- warn:'A fun five-element match from a photo colour and energy. For reference, not scientific analysis. The photo is analysed on-device, not stored or sent.'},
+ "cgo-photo":{hero:['📷',1649,1650,
+ [['🎨',1590,1651],['🌳',1069,'5'],['💫',930,1652],['🖌',1413,1653]],1654],
+ cards:[[1655,746,[
+ ['🎨',1656,1657],
+ ['🌳',1658,1659],
+ ['💫',1660,1661],
+ ['🖌',1662,1663]]]],
+ rows:[[725,726,[
+ [1664,1665],
+ [1666,1667],
+ [1668,1669]]]],
+ warn:1670},
 
- "c39-dementia":{hero:['🧠','Cognitive wellness check','Memory · attention · language screening with rPPG',
- [['📝','Questions','10·20·50'],['💗','rPPG','live'],['👨‍👩‍👧','Guardian','alerts'],['💊','Meds','reminder']],
- '🧠 Start check','· 5~15 min','🛡 Camera video is processed on-device only — deleted immediately when done'],
- cards:[['Areas measured','✦ Tap a card for details',
- [['🧭','Orientation','Time and place awareness'],['🧠','Memory','Immediate and delayed recall'],
- ['🔢','Calculation','Numeric working memory'],['🗣','Language','Naming and repetition'],
- ['🖼','Visuospatial','Copying and construction'],['⚡','Attention','Focus and switching'],
- ['🎨','Stroop','Interference control'],['📖','Story recall','Sequence and detail'],
- ['💗','Inner resilience','HRV under cognitive load'],['📊','Trend','Change over sessions']]]],
- rows:[['Course options','✦ longer means more accumulated data',
- [['Quick · 10 questions','About 60 sec · basic rhythm · 50% confidence'],
- ['Standard · 20 questions','About 2 min · deep rhythm · 80% confidence'],
- ['Full · 50 questions','About 5 min · 95% confidence']]],
- ['Care card','✦ guardian · warnings · medication · food',
- [['Guardian info','Registered family receive daily-change alerts'],
- ['12 warning behaviours','Coping manual from public psychology and care material'],
- ['Medication management','Alerts the phone at dose time · guardian after 30 min'],
- ['Brain foods and exercise','12 curated picks from public nutrition material']]]],
- warn:'This is a general wellness self-check for cognitive health. It is not intended to diagnose, treat, cure, or prevent any disease, including dementia. If you are concerned about changes in cognitive function, please consult a neurologist or psychiatrist.'},
+ "c39-dementia":{hero:['🧠',1671,1672,
+ [['📝',1673,'10·20·50'],['💗',780,869],['👨‍👩‍👧',1674,1675],['💊',1676,1677]],
+ 1678,1679,1680],
+ cards:[[1681,1523,
+ [['🧭',1682,1683],['🧠',1684,1685],
+ ['🔢',1686,1687],['🗣',1688,1689],
+ ['🖼',1690,1691],['⚡',1692,1693],
+ ['🎨',1694,1695],['📖',1696,1697],
+ ['💗',1698,1699],['📊',1700,1701]]]],
+ rows:[[1702,1703,
+ [[1704,1705],
+ [1706,1707],
+ [1708,1709]]],
+ [1710,1711,
+ [[1712,1713],
+ [1714,1715],
+ [1716,1717],
+ [1718,1719]]]],
+ warn:1720},
 
- scalp:{hero:['🧴','Scalp care','5-area camera scan × rPPG inner-resilience fusion',
- [['🧑‍🦱','Crown','30s'],['↖️','Hairline L','20s'],['↗️','Hairline R','20s'],['📏','Midline','20s'],['🌫️','Back','20s']],
- '📸 Start self-check','· 2 min 40 sec','🛡 Camera video is processed on-device only — no server transfer'],
- cards:[['What the scan reads','✦ Tap a card for details',
- [['🔬','Follicle density','Estimated from magnified image'],['🌡','Scalp heat','Warmth and redness observation'],
- ['💧','Oil balance','Sebum tendency by area'],['🧬','Hair thickness','L/M/C/U type reference'],
- ['🍃','Flaking','Dryness and shedding signs'],['💗','Stress link','rPPG inner-resilience fusion']]]],
- rows:[['Self-check steps','✦ 3 steps before the camera',
- [['Step 1 · Condition','Pick what concerns you from 8 items'],
- ['Step 2 · Type','Choose the one closest to you from 8 tension types'],
- ['Step 3 · Detail','4 follow-up questions on speed, scalp, hair, care']]]],
- warn:'This tool is not a medical diagnostic, treatment, or disease-prediction device. It is for lifestyle self-tracking and wellness-care reference for scalp and hair. For medical judgement, consult a dermatologist or hair-care specialist.'},
+ scalp:{hero:['🧴',1721,1722,
+ [['🧑‍🦱',1723,'30s'],['↖️',1724,'20s'],['↗️',1725,'20s'],['📏',1726,'20s'],['🌫️',1727,'20s']],
+ 1728,1729,1730],
+ cards:[[1731,1523,
+ [['🔬',1732,1733],['🌡',1734,1735],
+ ['💧',1736,1737],['🧬',1738,1739],
+ ['🍃',1740,1741],['💗',1742,1743]]]],
+ rows:[[1744,1745,
+ [[1746,1747],
+ [1748,1749],
+ [1750,1751]]]],
+ warn:1752},
 
- iq:{hero:['💡','My IQ','5-domain cognition × rPPG inner-resilience fusion',
- [['🔷','Pattern',''],['🧊','Spatial',''],['📖','Verbal',''],['🔢','Numeric',''],['🧠','Memory','']],
- '📸 Start measuring','· 8~45 min','🛡 Measurement video is never sent externally · deleted immediately when done'],
- cards:[['Levels','✦ Tap a card for details',
- [['⚡','Quick · 25','About 8 min · a light try'],['🧩','Mensa · 35','About 25 min · pure figure patterns'],
- ['📐','Standard · 35','About 15 min · balanced 5-area'],['🎯','Full · 50','About 25 min · full analysis'],
- ['👑','In-depth · 80','About 45 min · the ultimate all-in-one']]]],
- rows:[['What you get','✦ score · endurance · aptitude',
- [['Estimated IQ','Own scale (beta) — not a Mensa or clinical test'],
- ['Brain Endurance Index','Accuracy + reaction time + HRV — separates guessing from skill'],
- ['5-area distribution','Strengths and weaknesses by domain'],
- ['Career aptitude','Reference suggestions from the distribution']]]],
- warn:'FULI own scale (beta). Not a Mensa or clinical IQ test, and not for diagnosis, admissions or hiring decisions. Please treat it as fun and self-check.'},
+ iq:{hero:['💡',1753,1754,
+ [['🔷',1755,''],['🧊',1756,''],['📖',1757,''],['🔢',1758,''],['🧠',1684,'']],
+ 1759,1760,1761],
+ cards:[[1762,1523,
+ [['⚡',1763,1764],['🧩',1765,1766],
+ ['📐',1767,1768],['🎯',1769,1770],
+ ['👑',1771,1772]]]],
+ rows:[[1773,1774,
+ [[1775,1776],
+ [1777,1778],
+ [1779,1780],
+ [1781,1782]]]],
+ warn:1783},
 
- "c44-eye":{hero:['👁️','My eye health','Pupil tracking · blink analysis · under-eye rPPG',
- [['👁️','Eye movement',''],['📏','Distance',''],['👀','Blink',''],['⚡','Response',''],['🎯','Stability','']],
- '📸 Start measuring','· 1~2 min','🛡 Measurement video is never sent externally · deleted immediately when done'],
- cards:[['What it measures','✦ Tap a card for details',
- [['👁️','Pupil tracking','Fine movement of the pupil'],['⚡','Reaction speed','Response to 25 visual cues'],
- ['💗','Under-eye rPPG','Micro blood flow and fatigue'],['📏','Distance lock','Auto-locks if 30–40cm drifts'],
- ['👀','Blink rate','Per-minute count'],['🎯','Clarity index','Distance + clarity + AI fusion']]]],
- rows:[['Before you measure','✦ 5 things',
- [['Bright place','Lighting or natural light'],['Whole face in the circle','No shadows on the face'],
- ['One eye at a time','Cover the other eye'],['Keep 30–40cm','Auto-locks if it drifts'],
- ['React quickly','Response time is recorded']]]],
- warn:'An eye-health self-check aid, not a medical device and not a formal eyesight test. It does not replace an ophthalmologist diagnosis. If you have abnormal eye symptoms, always see a specialist.'},
+ "c44-eye":{hero:['👁️',1784,1785,
+ [['👁️',1786,''],['📏',1787,''],['👀',1788,''],['⚡',1789,''],['🎯',1790,'']],
+ 1759,1791,1761],
+ cards:[[1792,1523,
+ [['👁️',1793,1794],['⚡',1795,1796],
+ ['💗',1797,1798],['📏',1799,1800],
+ ['👀',1801,1802],['🎯',1803,1804]]]],
+ rows:[[1805,1806,
+ [[1807,1808],[1809,1810],
+ [1811,1812],[1813,1814],
+ [1815,1816]]]],
+ warn:1817},
 
- "cgo-sleep":{hero:['🌙','Good sleep','Pre-sleep rPPG × 4-7-8 breathing feedback',
- [['💗','Measure','40s'],['🫁','Breathe','4-7-8'],['📊','Compare','before/after'],['🎵','Sounds','50']],
- '📸 Measure and start','· about 2 min','🛡 Biosignals are processed on-device only, not stored or sent'],
- cards:[['Sleep guide','✦ evidence-based · tap for details',
- [['🏃','Exercise','Aerobic 30 min, 3–5 times a week'],['👐','Acupressure','Shenmen · Anmian · Sanyinjiao'],
- ['🍵','Food','Kiwi · tart cherry · warm milk'],['🩺','Habits','Morning light · cool room 18–20°C'],
- ['🧘','Self-hypnosis','Guided relaxation + suggestion'],['🎵','Sound therapy','6 themes · Solfeggio']]]],
- rows:[['3 steps','✦ measure → breathe → compare',
- [['Step 1 · Measure before bed','40 sec rPPG reads vitality beat, resilience and tension'],
- ['Step 2 · 4-7-8 breathing','Inhale 4 · hold 7 · exhale 8 — reps adjust to your tension'],
- ['Step 3 · Before/after','Shows honestly whether you actually settled']]]],
- warn:'Biosignals are processed on-device only, not stored or sent. This is a wellness relaxation tool, not medical diagnosis or treatment. If sleep problems last over 2 weeks, consult a professional.'}
+ "cgo-sleep":{hero:['🌙',1818,1819,
+ [['💗',1106,'40s'],['🫁',1820,'4-7-8'],['📊',1821,1822],['🎵',1823,'50']],
+ 1824,1825,1826],
+ cards:[[1827,1828,
+ [['🏃',1829,1830],['👐',1831,1832],
+ ['🍵',1833,1834],['🩺',1835,1836],
+ ['🧘',1837,1838],['🎵',1839,1840]]]],
+ rows:[[774,1841,
+ [[1842,1843],
+ [1844,1845],
+ [1846,1847]]]],
+ warn:1848}
 };
 </script>
 
 
 <script>
+/* ★2026-08-10 — 자료의 영어를 파일 안에 둔다.
+   번호만 남기고 글자를 밖으로 빼면 영어 화면이 빈칸이 된다.
+   영어는 받아올 것이 없어야 한다는 원칙(0프레임)을 지킨다.
+   다른 언어는 팩이 이 번호를 덮어쓴다. */
+window.PGEN={"700":"Dream interpretation","701":"Tradition + science + metaphysics, three readings at once","702":"Traditional","703":"folklore","704":"Scientific","705":"psychology","706":"Exclusive","707":"elements","708":"Offline","709":"28 keywords","710":"🌙 Start dream interpretation","711":"Three reading cards","712":"✦ analysed together","713":"Pure reading","714":"Tradition · folklore · Eastern metaphysics","715":"Scientific reading","716":"Unconscious · archetypes · sleep cognition","717":"Exclusive reading","718":"Your elements · Day Master · hour · NASA","719":"Fortune score","720":"1-9 with grade","721":"Daily change","722":"The same dream reads differently by hour","723":"Works offline","724":"28-keyword database","725":"How to use","726":"✦ 3 steps","727":"Describe your dream","728":"As much detail as you remember","729":"Wait a moment","730":"Three readings run at once","731":"Read the result","732":"Symbols + fortune + advice","733":"Dream reading is infotainment and wellness reference content. It is not a medical act and does not fix the future. If you have trouble sleeping, please consult a professional.","734":"Auto app check","735":"Finds errors itself and suggests fixes · master only","736":"Access","737":"master","738":"Scan","739":"by item","740":"Error","741":"found","742":"OK","743":"normal","744":"▶ Run scan","745":"What is checked","746":"✦ Tap a card","747":"Dead buttons","748":"Every button properly connected","749":"Broken images","750":"Missing src or href","751":"Translation gaps","752":"Korean left in other languages","753":"Local storage","754":"Settings and data can be saved","755":"Performance","756":"Memory and slowdown signals","757":"Report","758":"Error · suspicious · normal","759":"Enter the master password","760":"This tool is not for general users","761":"Select items to check","762":"Or select all","763":"Run the scan","764":"Results marked in three colours","765":"Master-only diagnostic tool. Results are technical references for maintenance.","766":"User guide","767":"35 features · terms · quick start · FAQ","768":"Guide","769":"Glossary","770":"terms","771":"FAQ","772":"common","773":"Start","774":"3 steps","775":"📖 Open the guide","776":"Key terms","777":"✦ explained simply","778":"ILI","779":"Integrated Life Index — your energy as 0-100","780":"rPPG","781":"Camera reads blood flow, contactless","782":"Five elements","783":"Wood · Fire · Earth · Metal · Water","784":"BEI","785":"Brain endurance — guessing vs real skill","786":"SVI","787":"Skin vitality — rebound elasticity","788":"MUFE","789":"Post-quantum security, zero storage","790":"VSOP87","791":"NASA JPL planetary orbit theory","792":"CSI","793":"Conflict-offset index across 50 systems","794":"Start in 3 steps","795":"✦ new here?","796":"Enter info","797":"Birth date and hour","798":"Bio scan","799":"Face · hand · tongue","800":"Unlock","801":"All features open","802":"All analyses are for infotainment and wellness reference and are not a medical diagnosis.","803":"My page","804":"Account · subscription · vault · settings · support","805":"Profile","806":"account","807":"Plan","808":"manage","809":"Vault","810":"points","811":"Support","812":"👤 Open my page","813":"What you can manage","814":"Profile and account","815":"Member info · password · delete","816":"Subscription and payment","817":"Status · method · refund","818":"Coupons · points · event wins","819":"App settings","820":"Notifications · theme · font · cache","821":"AI counsellor · 1:1 email · terms","822":"Security","823":"MUFE quantum defense","824":"Good to know","825":"✦ 3 points","826":"Data stays on your device","827":"Zero storage by default","828":"Cancel any time","829":"Before the next billing date","830":"Voice input is free","831":"On every plan","832":"For billing and refunds, the platform where you signed up applies (web, App Store, or Google Play).","833":"Profile and info","834":"Name · birth date · location · algorithm settings","835":"Basic","836":"info","837":"Location","838":"birth·now","839":"Weights","840":"algorithm","841":"stats","842":"📋 Enter my info","843":"What to enter","844":"Name and birth date","845":"Solar or lunar","846":"Birth hour","847":"Skip if unknown","848":"Birthplace","849":"Down to the neighbourhood","850":"Current location","851":"For direction and weather","852":"Algorithm weights","853":"Saju · Zi Wei · astrology · numerology","854":"rPPG calibration","855":"Live measurement folded in","856":"Why it matters","857":"Birth hour raises accuracy","858":"The hour pillar is computed","859":"Location sets direction","860":"Feng Shui and weather","861":"Saved on your device","862":"Auto-fills next time","863":"Your name and biometric data are stored only on your device and are not transmitted to any server.","864":"Lucky numbers","865":"Saju × five elements × 50 systems × NASA","866":"Sets","867":"Systems","868":"NASA","869":"live","870":"Phone","871":"analysis","872":"🎰 Generate lucky numbers","873":"Three generation stages","874":"✦ pick one","875":"Stage 1 · pure metaphysics","876":"From birth date alone","877":"Stage 2 · NASA integrated","878":"Planetary positions folded in","879":"Stage 3 · bio integrated","880":"rPPG values folded in","881":"Phone number analysis","882":"Divination energy of your digits","883":"Life number","884":"Sum of your birth-date digits","885":"Element harmony","886":"Numbers that fill what is lacking","887":"Enter birth date","888":"Or link from the dashboard","889":"Choose a stage and count","890":"3, 5 or 7 sets","891":"Generate","892":"Numbers matching your energy pattern","893":"For entertainment. These numbers do not predict or guarantee any outcome.","894":"Sports energy","895":"SRI · 7 engines × NASA × 316 teams","896":"Teams","897":"Engines","898":"7 planets","899":"SRI","900":"⚡ Analyze energy match","901":"7 engines and weights","902":"✦ designed together","903":"Planetary transit","904":"25% — 7 planets live","905":"Qi Men Dun Jia","906":"18% — 12 hours mapping","907":"Zi Wei Dou Shu","908":"15% — fate chart","909":"Nine Star Ki","910":"14% — sun altitude × time","911":"I Ching","912":"12% — 64 hexagram patterns","913":"Saju","914":"8% — elements + HRV","915":"Taiyi","916":"8% — Jupiter-Saturn angles","917":"✦ 4 steps","918":"Your Day Master is set","919":"Pick teams","920":"Chips or autocomplete from 316","921":"Choose sport and time","922":"Chips change by sport","923":"Run the analysis","924":"Data 60% + resonance 40%","925":"An energy-information service unrelated to betting or gambling. It does not predict match outcomes.","926":"Stock energy","927":"50 systems × NASA planets × five elements","928":"Stocks","929":"planets","930":"Match","931":"📈 Search a stock","932":"What is analysed","933":"Founding date","934":"The company chart","935":"Element match","936":"Your elements × stock elements","937":"Planetary energy","938":"7 planets, direct or retrograde","939":"Sector radar","940":"By element","941":"30-day events","942":"Planetary events × market","943":"Overall summary","944":"Combined energy reading","945":"Enter your info","946":"Day Master is set","947":"Search a company","948":"AI finds the founding date","949":"Read the match","950":"Score + element relation","951":"This is divination and astronomical-energy reference, not investment advice. It does not recommend buying or selling any security. All decisions and responsibility rest with the investor.","952":"Family ILI","953":"Health · location · fortune at a glance","954":"Members","955":"add","956":"share","957":"SOS","958":"3 sec","959":"trend","960":"👨‍👩‍👧 Open family centre","961":"What you can do","962":"Add members","963":"Register family with relationship","964":"Location sharing","965":"App link or map link","966":"Emergency SOS","967":"Press and hold 3 seconds","968":"Condition sharing","969":"Summary card after the report","970":"Exchange fortunes","971":"Send today reading","972":"Alert feed","973":"Changes and reminders","974":"Add a member","975":"Name, relationship, phone","976":"Choose a linking method","977":"App or map link","978":"Monitor together","979":"ILI trend per person","980":"Wellness reference only, not medical information. All data is stored on your device.","981":"Star station","982":"Energy currency for AI and photo analysis","983":"Stars","984":"top up","985":"Voice","986":"free","987":"Plans","988":"Bonus","989":"⭐ Top up stars","990":"✦ choose one","991":"Taster","992":"Non-member · tops up daily","993":"Star plan","994":"Each of 35 features once a day","995":"VIP Premium","996":"All features unlimited","997":" Basic","998":"₩500/mo · AI 30 · photos 30","999":" Pro","1000":"₩5,000/mo · AI 350 · photos 350","1001":" Unlimited","1002":"₩10,000/mo · no limits","1003":"How stars work","1004":"Voice is always free","1005":"Unlimited on every plan","1006":"Stars pay for AI and photos","1007":"Analysis and recognition","1008":"Top up any time","1009":"Bonus grows with the amount","1010":"All analyses are divination reference. Pricing is subject to change before launch.","1011":"Quantum stocks · resonance numbers · SRI Pro · AI Master","1012":"Services","1013":"deep","1014":"AI","1015":"18 engines","1016":"💎 Enter VIP","1017":"VIP-only services","1018":"Quantum stocks","1019":"Best 5 matches from 36,000+","1020":"Resonance numbers","1021":"Precise numbers from 50 systems","1022":"SRI Pro","1023":"In-depth player-matchup analysis","1024":"AI Master","1025":"18-engine scientific reasoning","1026":"Buy timing","1027":"NASA optimal windows","1028":"Life advice","1029":"Deep chain-of-thought reading","1030":"Enter the access code","1031":"VIP members only","1032":"Choose a service","1033":"Four deep-analysis tools","1034":"Read the report","1035":"Verified VIP report format","1036":"VIP analysis is deep reference content. Stock sections are not investment advice.","1037":"Frequency music","1038":"Biosignals × 50 systems × NASA × Solfeggio","1039":"Tracks","1040":"Solfeggio","1041":"Hours","1042":"Seasons","1043":"🎵 Get recommendations","1044":"Per-element frequency","1045":"✦ 5-element mapping","1046":"Wood (木)","1047":"Major scale · 120-140 BPM · 528Hz","1048":"Fire (火)","1049":"Pentatonic · 140-170 BPM · 417Hz","1050":"Earth (土)","1051":"Dorian · 80-100 BPM · 396Hz","1052":"Metal (金)","1053":"Minor scale · 60-90 BPM · 741Hz","1054":"Water (水)","1055":"Minor pentatonic · 60-80 BPM · 852Hz","1056":"How it recommends","1057":"✦ two stages","1058":"Stage 1","1059":"Perpetual calendar × NASA — instant from birth date","1060":"Stage 2","1061":"Biosignals × metaphysics — after the bio scan","1062":"Every 10 minutes","1063":"The seed changes, so does the list","1064":"An entertainment and wellness aid. It does not guarantee medical effects. Playback links to external search; copyrights belong to their owners.","1065":"Food compatibility","1066":"Photo → elements × biosignals × constitution","1067":"Photo","1068":"AI read","1069":"Elements","1070":"match","1071":"Allergy","1072":"blocked","1073":"Timing","1074":"by hour","1075":"🍱 Start food analysis","1076":"Five-element food matching","1077":"✦ taste for your Day Master","1078":"Wood (木) · sour","1079":"Vinegar, plum, spinach, greens","1080":"Fire (火) · bitter","1081":"Bellflower, mugwort, red foods","1082":"Earth (土) · sweet","1083":"Pumpkin, sweet potato, honey","1084":"Metal (金) · spicy","1085":"Garlic, ginger, scallion, white foods","1086":"Water (水) · salty","1087":"Black beans, seaweed, seafood","1088":"Restricted","1089":"Allergies pre-blocked","1090":"✦ 5 steps","1091":"Day Master and elements are set","1092":"BPM and HRV raise accuracy","1093":"Wellness profile","1094":"5 steps — lifestyle and restrictions","1095":"Photo or name","1096":"AI recognises the food","1097":"Score + eat/avoid + timing","1098":"This is a custom recommendation based on traditional medicine, five elements and modern nutrition. For diagnosis or treatment, consult a doctor.","1099":"Element shopping","1100":"Saju × 12 systems × AI design × OEM","1101":"Items","1102":"AI design","1103":"prompt","1104":"OEM","1105":"7-14 days","1106":"Measure","1107":"auto","1108":"🛍️ Browse my elements","1109":"19-item lifestyle coverage","1110":"Apparel","1111":"T-shirt · pajamas · jacket · hoodie","1112":"Suits","1113":"Suit set and jacket","1114":"Activewear","1115":"Tracksuit and joggers","1116":"Jewelry","1117":"Ring · necklace · bracelet","1118":"Footwear","1119":"Sneakers · slippers · indoor","1120":"Home living","1121":"Pillow · cushion · tableware","1122":"Furniture","1123":"Table · dining table · chair","1124":"Made to order","1125":"Full sets and 24-hour sets","1126":"Order in 3 steps","1127":"✦ OEM custom","1128":"Copy the AI prompt","1129":"Based on your elements and ILI","1130":"Generate and upload","1131":"Free image tools work well","1132":"Choose item and size","1133":"Delivered in 7-14 days","1134":"These are design concepts; actual products may differ at launch. Pricing and launch dates will be announced later.","1135":"Stays and destinations","1136":"Five elements × Feng Shui × NASA","1137":"Countries","1138":"Cities","1139":"Safety","1140":"scan","1141":"✈️ Find destinations","1142":"7 space systems","1143":"Space psychology","1144":"Lighting · colour · flow","1145":"Terroir","1146":"Geology · water · sunlight","1147":"Kanso","1148":"Emptiness · simplicity · ki","1149":"Vastu","1150":"5 elements · 8 directions","1151":"Yangzhai","1152":"Gate · master room · kitchen","1153":"Feng Shui","1154":"Dragon veins · qi · luopan","1155":"Native","1156":"4-direction elements","1157":"Choose a system","1158":"One is most accurate","1159":"Country and city, or GPS","1160":"59 countries, 153 cities","1161":"Run match analysis","1162":"Score + Saju↔city elements","1163":"360° space scan on site","1164":"10 directions, 7 systems","1165":"Safety scan and AI chat","1166":"Lens-glint detection aid","1167":"Recommendations are based on Eastern divination and astronomy. The safety scan is an aid with no 100% detection guarantee.","1168":"My navigation","1169":"Lucky-direction compass × GPS × AR","1170":"Compass","1171":"AR","1172":"GPS","1173":"4 lenses","1174":"Score","1175":"today","1176":"🧭 Start compass","1177":"What this compass shows","1178":"Lucky-direction compass","1179":"The arrow points to today direction","1180":"GPS lucky direction","1181":"Computed from your location","1182":"Five-element score","1183":"Today directional fortune","1184":"4-lens fusion","1185":"Elements · Qimen · Nine Star · planets","1186":"Allow camera and location","1187":"Mobile and HTTPS","1188":"Turn toward the arrow","1189":"Until it reads Front","1190":"Take a step","1191":"Mindful of the lucky direction","1192":"A fortune feature for everyday fun. Not scientific navigation or prophecy. Compass and GPS are device sensors and can have errors.","1193":"Feng Shui camera","1194":"360° scan × 7 global space systems","1195":"Shots","1196":"space","1197":"🧭 Start 360° scan","1198":"10-direction shooting order","1199":"✦ stand in the centre","1200":"North","1201":"Start here","1202":"East","1203":"Then clockwise","1204":"South","1205":"Keep turning","1206":"West","1207":"Full circle","1208":"Corners","1209":"NE · SE · SW · NW","1210":"Ceiling and floor","1211":"Up and down","1212":"Stand in the centre","1213":"Of the room or space","1214":"Shoot following the arrow","1215":"The compass guides you","1216":"Read the score","1217":"7 systems + NASA combined","1218":"Space energy analysis is reference content. Results are not saved (zero storage).","1219":"MSP52","1220":"Personality archetype × 52-card mapping","1221":"Cards","1222":"Types","1223":"Fusion","1224":"tarot","1225":"🎴 Start MSP52","1226":"What it reads","1227":"Archetype code","1228":"Your 16-type lens","1229":"Card mapping","1230":"52-card correspondence","1231":"Communication","1232":"How you speak and listen","1233":"Work style","1234":"How you get things done","1235":"Relationships","1236":"How you connect","1237":"Growth","1238":"Where you stretch next","1239":"Choose a length","1240":"48, 92 or 144 items","1241":"Answer intuitively","1242":"First instinct is best","1243":"Read the mapping","1244":"Type + card + advice","1245":"Personality types are reference to aid self-understanding. They do not label or define people.","1246":"TNBTI","1247":"Tarot × personality × metaphysics triple fusion","1248":"Tarot","1249":"Type","1250":"triple","1251":"🧬 Run triple fusion","1252":"Three inputs","1253":"✦ cross-computed","1254":"The base lens","1255":"Tarot card","1256":"Current situation and flow","1257":"Metaphysics","1258":"Up to 3 systems","1259":"Fusion mode","1260":"Pure · live · biometric","1261":"AI docent","1262":"Reads it back to you","1263":"Self-reflection","1264":"Today advice and keywords","1265":"Set your archetype","1266":"Take the test or pick directly","1267":"Draw one card","1268":"With your heart","1269":"Run the engine","1270":"Triple fusion result","1271":"A psychological and divinatory reference tool for self-understanding. It does not determine your future.","1272":"Fusion 3","1273":"Metaphysics × cosmos × your body right now","1274":"bio","1275":"index","1276":"🔗 Run 3-layer fusion","1277":"Three layers","1278":"✦ weighted together","1279":"Innate metaphysics","1280":"Your chart","1281":"Cosmos now","1282":"Geomagnetism · moon · planets","1283":"Biosignals","1284":"Heart rate · HRV · complexion","1285":"Multi-engine","1286":"Each engine scores","1287":"Weighted into one index","1288":"Result","1289":"Overall + by area","1290":"Chart is built","1291":"Allow live data","1292":"Cosmos layer activates","1293":"Complete bio scan","1294":"Body layer activates","1295":"Infotainment and wellness reference content, not a scientific prediction or medical diagnosis.","1296":"Naming","1297":"Saju five elements × hanja name recommendations","1298":"Names","1299":"curated","1300":"balance","1301":"Strokes","1302":"numerology","1303":"Company","1304":"naming","1305":"✨ Start naming","1306":"What it covers","1307":"Person name","1308":"Saju-matched hanja names","1309":"Check my name","1310":"Forbidden characters and conflicts","1311":"Shop name","1312":"Industry and representative fit","1313":"6 systems combined","1314":"Numerology","1315":"Stroke count harmony","1316":"Element balance","1317":"Fills what is lacking","1318":"Enter surname and birth date","1319":"Choose what to name","1320":"Person, shop, company, brand","1321":"Review the list","1322":"With element and numerology notes","1323":"Name study is traditional reference content and does not guarantee any outcome.","1324":"Couple compatibility","1325":"rPPG × Saju × live video","1326":"Live","1327":"video","1328":"both","1329":"💑 Start compatibility","1330":"What is compared","1331":"Mutual complementarity","1332":"How you fill each other","1333":"Marriage luck","1334":"Long-term flow","1335":"Children luck","1336":"Family energy","1337":"How you talk","1338":"Money","1339":"Shared economy","1340":"Health","1341":"Constitution fit","1342":"Two ways to use","1343":"Live video","1344":"Create a room, share the code, see each other","1345":"Info entry","1346":"Just enter their birth date and name","1347":"Score + relationship tips","1348":"Compatibility reading is infotainment and reference content.","1349":"Diagnosis board","1350":"Five-element constitution × biosignals","1351":"Tongue","1352":"observation","1353":"Index","1354":"combined","1355":"🩺 Open diagnosis board","1356":"What is read","1357":"Yin-Yang balance","1358":"Warm-cool tendency","1359":"Element constitution","1360":"Based on Saju elements","1361":"Tongue observation","1362":"Colour and coating","1363":"Heart vitality","1364":"Measured BPM and HRV","1365":"Constellation","1366":"Season and organ energy","1367":"Vedic","1368":"Ayanamsa constitution","1369":"Complete the bio scan","1370":"Measured values fold in","1371":"Read the board","1372":"10 integrated indicators","1373":"General wellness information only. Not intended to diagnose, treat, cure, or prevent any disease.","1374":"Saju · pure metaphysics","1375":"50 systems analysed from your birth date and hour","1376":"Day Master","1377":"pillar","1378":"✨ Run 50-system analysis","1379":"Four Pillars","1380":"Day Master · elements · fortune cycle","1381":"Fate chart and palace scores","1382":"Direction and timing","1383":"Nine stars and directions","1384":"64 hexagrams","1385":"Life path number","1386":"Name studies","1387":"Stroke count and sound","1388":"Sun sign","1389":"12 zodiac signs","1390":"Macro flow","1391":"Conflict-offset index","1392":"Complete your info","1393":"Name, birth date and hour","1394":"Start the analysis","1395":"50 systems run at once","1396":"Overall score + per-system reading","1397":"Infotainment and wellness reference content. Not medical, legal, or investment advice.","1398":"Health board","1399":"50 systems × NASA × weather, live","1400":"real-time","1401":"Weather","1402":"Energy","1403":"📊 Run live analysis","1404":"Live data used","1405":"✦ updated every visit","1406":"NASA JPL, 0.01° error","1407":"Pressure · temperature · humidity","1408":"Direction","1409":"Compass bearing","1410":"Your Saju baseline","1411":"Overall","1412":"Today energy score","1413":"Advice","1414":"Direction · time · colour","1415":"Enter info and allow permissions","1416":"Location and weather","1417":"Live values are folded in","1418":"Check today score","1419":"It changes daily","1420":"Satellite and weather use real public data, but the divination reading is for fun and reference. Not a scientific prediction or medical diagnosis.","1421":"78 cards · AI reading · spreads from 1 to 12","1422":"Spreads","1423":"reading","1424":"Daily","1425":"new card","1426":"🃏 Draw a card","1427":"Choose a spread","1428":"✦ by your question","1429":"One card","1430":"Today fortune · yes/no","1431":"Three cards","1432":"Past · present · future","1433":"In-depth","1434":"Cause · surroundings · advice","1435":"Celtic variant","1436":"Weekly · relationships","1437":"Celtic Cross","1438":"Full context and outcome","1439":"Horoscope","1440":"A card for each month","1441":"How to read tarot well","1442":"✦ important","1443":"Quiet place, clear question","1444":"Bring it to mind","1445":"Open questions work better","1446":"How and why, not yes/no","1447":"Do not redraw the same question","1448":"1–2 times a day","1449":"Cards are a mirror, not a verdict","1450":"Choices are always yours","1451":"For entertainment and self-reflection. Tarot does not fix the future.","1452":"Detailed report","1453":"18 fields bound into one illustrated volume","1454":"Fields","1455":"Eastern","1456":"Western","1457":"measured","1458":"📜 Open the report","1459":"18 fields","1460":"Day Master · elements","1461":"Core self","1462":"Destiny map","1463":"Natal chart","1464":"Ascendant · Moon · planets","1465":"Space-time advantage","1466":"Transit","1467":"Real-time planets","1468":"Liuren","1469":"Event fortune","1470":"Soul number","1471":"Spatial energy","1472":"Kabbalah","1473":"Sephirot","1474":"Numeric harmony","1475":"Houses","1476":"12 life areas","1477":"Era energy","1478":"Synastry","1479":"Compatibility","1480":"Primary hexagram","1481":"Renewed daily","1482":"Physiognomy","1483":"Camera-linked","1484":"Palmistry","1485":"How it works","1486":"✦ auto-generated","1487":"Enter name and birth date","1488":"The report generates itself","1489":"Fields 17 and 18 fill in","1490":"Updated daily","1491":"Tarot and transits recompute","1492":"This report is infotainment and wellness reference content. Do not use it as the sole basis for medical, legal, or financial decisions.","1493":"Heaven-Earth-Human","1494":"Cosmic order × earthly energy × your body","1495":"Cosmos","1496":"Earth","1497":"location","1498":"Human","1499":"🌌 Get my luck signal","1500":"✦ fused into one","1501":"Heaven (天)","1502":"Real-time planetary path","1503":"Earth (地)","1504":"Location and direction energy","1505":"Human (人)","1506":"Biometric energy","1507":"Today overall flow","1508":"Allow location","1509":"Earth layer activates","1510":"Check today flow","1511":"Three layers combined","1512":"Infotainment and wellness reference content, not a scientific prediction.","1513":"Face reading","1514":"Perpetual calendar × 12 palaces × warm AI reading","1515":"Front shot","1516":"33 sec","1517":"Palaces","1518":"Animal type","1519":"Wealth","1520":"flow","1521":"📷 Start face measurement · about 33 sec","1522":"What face reading reads","1523":"✦ Tap a card for details","1524":"Five-feature balance","1525":"Eyes · nose · mouth · ears · brows","1526":"12-palace fortune","1527":"Life · wealth · career palaces","1528":"Animal face type","1529":"The energy that resembles you","1530":"Personality","1531":"Innate disposition","1532":"Love luck","1533":"The flow of connections","1534":"Wealth luck","1535":"Wealth energy","1536":"Complexion","1537":"rPPG measurement","1538":"Face type","1539":"Five-shape theory","1540":"Perpetual calendar","1541":"AI integrated reading","1542":"How to measure","1543":"✦ about 33 sec","1544":"Enter your info first","1545":"Birth date and time","1546":"Front-on, well lit","1547":"Do not cover your forehead","1548":"Hold still","1549":"33 seconds","1550":"Face Reading is based on the tradition of face reading and is infotainment and wellness reference content. It may not be used to diagnose, treat, or prevent any disease, and it does not determine the future.","1551":"Palm reading","1552":"Both hands · innate and acquired lines","1553":"Left","1554":"nature","1555":"Right","1556":"nurture","1557":"Shot","1558":"30 sec","1559":"Stages","1560":"early·mid·late","1561":"🤲 Start both-hands measurement · about 30 sec","1562":"What the palm reads","1563":"Left hand (nature)","1564":"Innate destiny · past","1565":"Right hand (nurture)","1566":"Present · future effort","1567":"Life line","1568":"Vitality and vigor","1569":"Heart line","1570":"Love · emotion","1571":"Head line","1572":"Intellect · thought","1573":"Fate line","1574":"Life direction","1575":"Wealth line","1576":"Connections","1577":"Life stages","1578":"Early · middle · late","1579":"Change","1580":"Nature → nurture","1581":"✦ both hands, about 30 sec","1582":"Open your palm","1583":"Bright light","1584":"Left hand first","1585":"Then right hand","1586":"15 sec each","1587":"Palm reading is based on traditional chiromancy and is infotainment and wellness reference content. It may not be used to diagnose, treat, or prevent any disease, nor to predict lifespan.","1588":"rPPG AR makeup","1589":"World-first camera rPPG × FaceMesh 468 × five elements","1590":"Colors","1591":"Landmarks","1592":"MAI","1593":"score","1594":"Save","1595":"one tap","1596":"🎥 Start AR mode","1597":"6 measured metrics","1598":"✦ CHROM rPPG","1599":"Skin evenness","1600":"Makeup evenness","1601":"Glow","1602":"Skin radiance index","1603":"Tone match rate","1604":"Skin-tone correction","1605":"Glow and moisture","1606":"Moisture-glow index","1607":"FaceMesh accuracy","1608":"Landmark tracking rate","1609":"5-element balance","1610":"rPPG scan","1611":"Before-makeup photo","1612":"Bare face — the baseline","1613":"After-makeup analysis","1614":"30-sec scan, bright light","1615":"Apply AR makeup","1616":"Pick a colour, capture and save","1617":"This is infotainment and beauty reference content, not a medical device.","1618":"Skin elasticity (SVI)","1619":"Optical rebound wave × five elements","1620":"Areas","1621":"6 zones","1622":"Skin age","1623":"rhythm","1624":"💪 Start skin elasticity analysis","1625":"What is measured","1626":"✦ optical rebound","1627":"Skin radiance","1628":"Surface radiance index","1629":"Elasticity index","1630":"Real-time rebound wave","1631":"Texture evenness","1632":"Surface uniformity","1633":"Vitality energy","1634":"Vitality energy index","1635":"Skin-age rhythm","1636":"Wellness reference","1637":"Left-right balance","1638":"Symmetry score","1639":"✦ 30 sec","1640":"30 min after washing","1641":"Let cosmetics absorb","1642":"Bright light, face the screen","1643":"Natural or fluorescent","1644":"Press and release your cheek","1645":"The rebound wave is recorded","1646":"Check your guide","1647":"Water · exercise · food by element","1648":"SVI is a wellness and beauty reference index and does not replace a diagnosis. Results may differ with lighting and camera quality.","1649":"Energy photo analysis","1650":"Photo colour and energy read as five elements","1651":"pixel","1652":"with me","1653":"colors","1654":"📷 Turn on camera","1655":"What this analysis shows","1656":"Colour pixel analysis","1657":"Pixel by pixel","1658":"Element distribution","1659":"Wood·Fire·Earth·Metal·Water","1660":"Match with me","1661":"Generative · controlling","1662":"Colour recommendations","1663":"Which colours suit you","1664":"Turn on camera","1665":"Allow permission","1666":"Capture the moment","1667":"A person, object or scene","1668":"Check compatibility","1669":"Match score + matching colours","1670":"A fun five-element match from a photo colour and energy. For reference, not scientific analysis. The photo is analysed on-device, not stored or sent.","1671":"Cognitive wellness check","1672":"Memory · attention · language screening with rPPG","1673":"Questions","1674":"Guardian","1675":"alerts","1676":"Meds","1677":"reminder","1678":"🧠 Start check","1679":"· 5~15 min","1680":"🛡 Camera video is processed on-device only — deleted immediately when done","1681":"Areas measured","1682":"Orientation","1683":"Time and place awareness","1684":"Memory","1685":"Immediate and delayed recall","1686":"Calculation","1687":"Numeric working memory","1688":"Language","1689":"Naming and repetition","1690":"Visuospatial","1691":"Copying and construction","1692":"Attention","1693":"Focus and switching","1694":"Stroop","1695":"Interference control","1696":"Story recall","1697":"Sequence and detail","1698":"Inner resilience","1699":"HRV under cognitive load","1700":"Trend","1701":"Change over sessions","1702":"Course options","1703":"✦ longer means more accumulated data","1704":"Quick · 10 questions","1705":"About 60 sec · basic rhythm · 50% confidence","1706":"Standard · 20 questions","1707":"About 2 min · deep rhythm · 80% confidence","1708":"Full · 50 questions","1709":"About 5 min · 95% confidence","1710":"Care card","1711":"✦ guardian · warnings · medication · food","1712":"Guardian info","1713":"Registered family receive daily-change alerts","1714":"12 warning behaviours","1715":"Coping manual from public psychology and care material","1716":"Medication management","1717":"Alerts the phone at dose time · guardian after 30 min","1718":"Brain foods and exercise","1719":"12 curated picks from public nutrition material","1720":"This is a general wellness self-check for cognitive health. It is not intended to diagnose, treat, cure, or prevent any disease, including dementia. If you are concerned about changes in cognitive function, please consult a neurologist or psychiatrist.","1721":"Scalp care","1722":"5-area camera scan × rPPG inner-resilience fusion","1723":"Crown","1724":"Hairline L","1725":"Hairline R","1726":"Midline","1727":"Back","1728":"📸 Start self-check","1729":"· 2 min 40 sec","1730":"🛡 Camera video is processed on-device only — no server transfer","1731":"What the scan reads","1732":"Follicle density","1733":"Estimated from magnified image","1734":"Scalp heat","1735":"Warmth and redness observation","1736":"Oil balance","1737":"Sebum tendency by area","1738":"Hair thickness","1739":"L/M/C/U type reference","1740":"Flaking","1741":"Dryness and shedding signs","1742":"Stress link","1743":"rPPG inner-resilience fusion","1744":"Self-check steps","1745":"✦ 3 steps before the camera","1746":"Step 1 · Condition","1747":"Pick what concerns you from 8 items","1748":"Step 2 · Type","1749":"Choose the one closest to you from 8 tension types","1750":"Step 3 · Detail","1751":"4 follow-up questions on speed, scalp, hair, care","1752":"This tool is not a medical diagnostic, treatment, or disease-prediction device. It is for lifestyle self-tracking and wellness-care reference for scalp and hair. For medical judgement, consult a dermatologist or hair-care specialist.","1753":"My IQ","1754":"5-domain cognition × rPPG inner-resilience fusion","1755":"Pattern","1756":"Spatial","1757":"Verbal","1758":"Numeric","1759":"📸 Start measuring","1760":"· 8~45 min","1761":"🛡 Measurement video is never sent externally · deleted immediately when done","1762":"Levels","1763":"Quick · 25","1764":"About 8 min · a light try","1765":"Mensa · 35","1766":"About 25 min · pure figure patterns","1767":"Standard · 35","1768":"About 15 min · balanced 5-area","1769":"Full · 50","1770":"About 25 min · full analysis","1771":"In-depth · 80","1772":"About 45 min · the ultimate all-in-one","1773":"What you get","1774":"✦ score · endurance · aptitude","1775":"Estimated IQ","1776":"Own scale (beta) — not a Mensa or clinical test","1777":"Brain Endurance Index","1778":"Accuracy + reaction time + HRV — separates guessing from skill","1779":"5-area distribution","1780":"Strengths and weaknesses by domain","1781":"Career aptitude","1782":"Reference suggestions from the distribution","1783":"FULI own scale (beta). Not a Mensa or clinical IQ test, and not for diagnosis, admissions or hiring decisions. Please treat it as fun and self-check.","1784":"My eye health","1785":"Pupil tracking · blink analysis · under-eye rPPG","1786":"Eye movement","1787":"Distance","1788":"Blink","1789":"Response","1790":"Stability","1791":"· 1~2 min","1792":"What it measures","1793":"Pupil tracking","1794":"Fine movement of the pupil","1795":"Reaction speed","1796":"Response to 25 visual cues","1797":"Under-eye rPPG","1798":"Micro blood flow and fatigue","1799":"Distance lock","1800":"Auto-locks if 30–40cm drifts","1801":"Blink rate","1802":"Per-minute count","1803":"Clarity index","1804":"Distance + clarity + AI fusion","1805":"Before you measure","1806":"✦ 5 things","1807":"Bright place","1808":"Lighting or natural light","1809":"Whole face in the circle","1810":"No shadows on the face","1811":"One eye at a time","1812":"Cover the other eye","1813":"Keep 30–40cm","1814":"Auto-locks if it drifts","1815":"React quickly","1816":"Response time is recorded","1817":"An eye-health self-check aid, not a medical device and not a formal eyesight test. It does not replace an ophthalmologist diagnosis. If you have abnormal eye symptoms, always see a specialist.","1818":"Good sleep","1819":"Pre-sleep rPPG × 4-7-8 breathing feedback","1820":"Breathe","1821":"Compare","1822":"before/after","1823":"Sounds","1824":"📸 Measure and start","1825":"· about 2 min","1826":"🛡 Biosignals are processed on-device only, not stored or sent","1827":"Sleep guide","1828":"✦ evidence-based · tap for details","1829":"Exercise","1830":"Aerobic 30 min, 3–5 times a week","1831":"Acupressure","1832":"Shenmen · Anmian · Sanyinjiao","1833":"Food","1834":"Kiwi · tart cherry · warm milk","1835":"Habits","1836":"Morning light · cool room 18–20°C","1837":"Self-hypnosis","1838":"Guided relaxation + suggestion","1839":"Sound therapy","1840":"6 themes · Solfeggio","1841":"✦ measure → breathe → compare","1842":"Step 1 · Measure before bed","1843":"40 sec rPPG reads vitality beat, resilience and tension","1844":"Step 2 · 4-7-8 breathing","1845":"Inhale 4 · hold 7 · exhale 8 — reps adjust to your tension","1846":"Step 3 · Before/after","1847":"Shows honestly whether you actually settled","1848":"Biosignals are processed on-device only, not stored or sent. This is a wellness relaxation tool, not medical diagnosis or treatment. If sleep problems last over 2 weeks, consult a professional."};
+</script>
+<script>
 window.buildSpecPage = function(key, name){
+  /* ★2026-08-10 — 자료의 글자는 번호로 적혀 있다.
+     번호는 그대로 data-k 자리로 바꾼다 → 언어를 바꾸면 여기도 함께 바뀐다.
+     번호가 아닌 것(이모지 등)은 그대로 둔다. */
+  function T(v){
+    if(typeof v==='number'){
+      var t=(window.PGEN||{})[v]||'';
+      return '<span data-k="'+v+'">'+t+'</span>';
+    }
+    return v==null?'':v;
+  }
+
  var s = (window.PGSPEC||{})[key]; if(!s) return null;
  var H = s.hero||[], out = '<div class="pg">'
  + '<button class="pg-fab" data-back>◀ <span data-k="520">Dashboard</span></button>'
@@ -1282,36 +1307,36 @@ window.buildSpecPage = function(key, name){
 
  /* 맨 위 진한 상자 — 이 기능이 무엇을 하는지 한눈에 */
  out += '<div class="hz"><div class="hz-box">'
- + '<div class="hz-t">'+(H[0]||'✨')+' <span>'+(H[1]||name)+'</span></div>';
- if(H[2]) out += '<div class="hz-p" style="margin:0 0 12px">'+H[2]+'</div>';
+ + '<div class="hz-t">'+(H[0]||'✨')+' <span>'+T(H[1]||name)+'</span></div>';
+ if(H[2]) out += '<div class="hz-p" style="margin:0 0 12px">'+T(H[2])+'</div>';
  if(H[3] && H[3].length){
  out += '<div class="hz-6">'+H[3].map(function(x){
- return '<div><div class="e">'+x[0]+'</div><div class="n">'+x[1]+'</div>'+(x[2]?'<div class="s">'+x[2]+'</div>':'')+'</div>';
+ return '<div><div class="e">'+T(x[0])+'</div><div class="n">'+T(x[1])+'</div>'+(x[2]?'<div class="s">'+T(x[2])+'</div>':'')+'</div>';
  }).join('')+'</div>';
  }
- if(H[4]) out += '<button class="hz-go" data-measure>'+H[4]+(H[5]?'<span class="sub">'+H[5]+'</span>':'')+'</button>';
- if(H[6]) out += '<div class="hz-p">'+H[6]+'</div>';
+ if(H[4]) out += '<button class="hz-go" data-measure>'+T(H[4])+(H[5]?'<span class="sub">'+T(H[5])+'</span>':'')+'</button>';
+ if(H[6]) out += '<div class="hz-p">'+T(H[6])+'</div>';
  out += '</div></div>';
 
  /* 카드 묶음 */
  (s.cards||[]).forEach(function(g){
- out += '<div class="h-sec"><h2><span>'+g[0]+'</span>'+(g[1]?'<em>'+g[1]+'</em>':'')+'</h2><div class="h-g5">'
+ out += '<div class="h-sec"><h2><span>'+T(g[0])+'</span>'+(g[1]?'<em>'+T(g[1])+'</em>':'')+'</h2><div class="h-g5">'
  + g[2].map(function(c){
- return '<div class="h-c" data-spec="'+key+'|'+c[1].replace(/"/g,'&quot;')+'" style="cursor:pointer"><div class="e">'+c[0]+'</div><div class="n">'+c[1]+'</div><div class="d">'+c[2]+'</div></div>';
+ return '<div class="h-c" data-spec="'+key+'|'+c[1]+'" style="cursor:pointer"><div class="e">'+T(c[0])+'</div><div class="n">'+T(c[1])+'</div><div class="d">'+T(c[2])+'</div></div>';
  }).join('')
  + '</div></div>';
  });
 
  /* 줄 목록 */
  (s.rows||[]).forEach(function(g){
- out += '<div class="h-sec"><h2><span>'+g[0]+'</span>'+(g[1]?'<em>'+g[1]+'</em>':'')+'</h2><div class="h-rows">'
+ out += '<div class="h-sec"><h2><span>'+T(g[0])+'</span>'+(g[1]?'<em>'+T(g[1])+'</em>':'')+'</h2><div class="h-rows">'
  + g[2].map(function(r,i){
- return '<div><span class="hd">'+(i+1)+'</span><div><b>'+r[0]+'</b><span>'+r[1]+'</span></div></div>';
+ return '<div><span class="hd">'+(i+1)+'</span><div><b>'+T(r[0])+'</b><span>'+T(r[1])+'</span></div></div>';
  }).join('')
  + '</div></div>';
  });
 
- if(s.warn) out += '<div class="h-warn">⚠️ '+s.warn+'</div>';
+ if(s.warn) out += '<div class="h-warn">⚠️ '+T(s.warn)+'</div>';
  return out + '</div>';
 };
 </script>
