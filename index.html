@@ -1777,6 +1777,14 @@ window.buildSpecPage = function(key, name){
  ④ 사전은 최소 — 화면 자리는 번호, 사전은 결과 텍스트 전용. */
 (function(){
  var LANG='en', PACK={}, NODES=null, LOADED={};
+ /* 번역 파일을 고칠 때마다 이 숫자를 올린다 — 그러면 모두가 새 팩을 받는다 */
+ var CGO_BUILD='20260810a';
+ try{
+   for(var _i=localStorage.length-1;_i>=0;_i--){
+     var _k=localStorage.key(_i);
+     if(_k && _k.indexOf('cgo_lp_')===0 && _k.indexOf('cgo_lp_'+CGO_BUILD+'_')!==0) localStorage.removeItem(_k);
+   }
+ }catch(e){}
 
  /* ★ 자리 목록을 기억해 둔다.
  예전엔 칠할 때마다 자리마다 closest('template')을 물었다.
@@ -1800,7 +1808,11 @@ window.buildSpecPage = function(key, name){
  if(l==='en'){ LANG='en'; PACK.en=null; restore(); mark(); return; }
  LANG=l;
  if(PACK[l]) { mark(); paint(); return; }
- var cached=null; try{ cached=localStorage.getItem('cgo_lp_'+l); }catch(e){}
+ /* ★2026-08-10 — 판 번호(BUILD)를 붙인다.
+    예전엔 열쇠에 판 구분이 없어, 한 번 담아둔 옛 팩이 영원히 이겼다.
+    번역 파일을 아무리 고쳐도 화면이 안 바뀌던 이유가 이것이다.
+    판이 다르면 버리고 새로 받는다. */
+ var cached=null; try{ cached=localStorage.getItem('cgo_lp_'+CGO_BUILD+'_'+l); }catch(e){}
  if(cached){
  try{
  var cj=JSON.parse(cached);
@@ -1808,7 +1820,7 @@ window.buildSpecPage = function(key, name){
  }catch(e){}
  }
  fetch('lang/'+l+'.json').then(function(r){return r.json();}).then(function(j){
- PACK[l]=j; try{ localStorage.setItem('cgo_lp_'+l, JSON.stringify(j)); }catch(e){}
+ PACK[l]=j; try{ localStorage.setItem('cgo_lp_'+CGO_BUILD+'_'+l, JSON.stringify(j)); }catch(e){}
  mark(); paint();
  }).catch(function(){
  /* ★ 팩을 못 읽으면 이전 언어가 그대로 남아 섞인다.
@@ -2214,7 +2226,11 @@ window.buildSpecPage = function(key, name){
  document.getElementById('btnLang').onclick=function(){ show('gate'); };
  Array.prototype.forEach.call(document.querySelectorAll('.lg'),function(b){
  b.onclick=function(){ var l=b.getAttribute('data-lang'); if(!l)return;
- setLang(l); show('app'); go('dashboard'); };
+ /* ★2026-08-10 — 보던 페이지로 돌아간다.
+    예전엔 무조건 대시보드로 보내, 기능 페이지에서 언어를 바꾸면 그 페이지가 사라졌다.
+    번역을 확인하려면 페이지를 열고 언어를 바꾸는 게 자연스러운데 그게 막혀 있었다. */
+ var back=window.CGO_CURPAGE||'dashboard';
+ setLang(l); show('app'); go(back); };
  });
  document.body.addEventListener('click',function(e){
  var g=e.target.closest('[data-go]'); if(g){
