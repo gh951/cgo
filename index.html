@@ -2420,11 +2420,25 @@ window.buildSpecPage = function(key, name){
   };
 
   function close(){
+    /* ★2026-08-10 — 닫기가 확실히 되도록 고쳤다.
+       ① 카메라 잠금을 먼저 푼다. 잠근 채로 끄면 다음에 카메라가 안 열린다.
+       ② 화면에 남은 촬영 창을 하나도 빠짐없이 없앤다.
+       ③ 중간에 무엇이 실패해도 나머지는 계속 진행한다. */
     try{ if(raf) cancelAnimationFrame(raf); }catch(e){}
     try{ if(timer) clearInterval(timer); }catch(e){}
-    try{ if(stream) stream.getTracks().forEach(function(t){ t.stop(); }); }catch(e){}
+    try{
+      if(stream) stream.getVideoTracks().forEach(function(t){
+        try{ t.applyConstraints({advanced:[{exposureMode:'continuous',whiteBalanceMode:'continuous'}]}); }catch(e){}
+      });
+    }catch(e){}
+    try{ if(stream) stream.getTracks().forEach(function(t){ try{ t.stop(); }catch(e){} }); }catch(e){}
     stream=null; raf=null; timer=null;
-    if(OV){ OV.remove(); OV=null; }   /* 통째로 버린다 */
+    try{
+      var all=document.querySelectorAll('.cam-ov');
+      for(var i=0;i<all.length;i++){ try{ all[i].remove(); }catch(e){} }
+    }catch(e){}
+    OV=null;
+    try{ document.body.style.overflow=''; }catch(e){}
   }
   window.cgoCamClose=close;
 
@@ -2473,7 +2487,14 @@ function distCm(lms,vw){
   }catch(e){ return null; }
 }
 
+  /* ★2026-08-10 — 촬영 전에 전체 안내를 먼저 보여준다.
+     처음 쓰는 사람은 몇 부위를 어떤 거리로 얼마나 재는지 모른다. */
   window.cgoCam=function(page){
+    if(window.cgoCamGuide && !window.__cgoGuided){
+      window.__cgoGuided=1;
+      window.cgoCamGuide(page, function(){ window.__cgoGuided=0; window.cgoCam(page); });
+      return;
+    }
     var flow=FLOW[page]||[['📷','Measurement','측정',30]];
     var step=0, t=flow[0][3], running=false, t0=0;
     close();
@@ -2733,6 +2754,22 @@ function distCm(lms,vw){
       BR.style.transform='scale('+ph[bp][2]+')';
     }
 
+    /* ★2026-08-10 — 단계마다 준비 화면을 먼저.
+       시계가 먼저 돌면 쫓기고, 쫓기면 정확도가 떨어진다.
+       누른 뒤 5초 자리잡기 시간을 준다. */
+    function ask(){
+      if(!window.cgoStepReady){ run(); return; }
+      window.cgoStepReady(page, step, flow.length, function(){
+        GO.disabled=true;
+        var n=5;
+        HINT.textContent='자리를 잡아주세요 · '+n;
+        var iv=setInterval(function(){
+          n--;
+          if(n>0){ HINT.textContent='자리를 잡아주세요 · '+n; }
+          else { clearInterval(iv); HINT.textContent=''; run(); }
+        },1000);
+      }, close);
+    }
     function run(){
       /* 좌표 잡기 준비 — 없으면 화면 가운데로 물러난다(멈추지 않는다) */
       if(window.cgoLoadFM) window.cgoLoadFM().then(function(){ initFM(); });
@@ -2745,7 +2782,7 @@ function distCm(lms,vw){
         breath();
         if(el>=dur){
           clearInterval(timer); timer=null; running=false;
-          if(step<flow.length-1){ step++; buf=[]; peaks=[]; paintStep(); }
+          if(step<flow.length-1){ step++; buf=[]; peaks=[]; paintStep(); GO.disabled=false; GO.textContent='▶ Start'; ask(); }
           else finish();
         }
       },100);
@@ -2761,11 +2798,23 @@ function distCm(lms,vw){
       if(window.cgoResult) window.cgoResult(page,{bpm:bpm,hrv:hrv,q:q,src:src,dist:dist,lock:lock});
     }
 
-    GO.addEventListener('click',run);
+    GO.addEventListener('click',ask);
     if(SK) SK.addEventListener('click',function(){
       if(step<flow.length-1){ step++; buf=[]; peaks=[]; paintStep(); } else finish();
     });
-    OV.querySelector('[data-x]').addEventListener('click',close);
+    /* ★2026-08-10 — 나가는 길을 여러 개 둔다.
+       ✕ 하나만 있으면 그것이 막혔을 때 갇힌다. */
+    OV.querySelector('[data-x]').addEventListener('click',function(e){ e.preventDefault(); e.stopPropagation(); close(); });
+    OV.addEventListener('click',function(e){ if(e.target===OV) close(); });          /* 바깥을 눌러도 */
+    (function(){
+      function esc(ev){ if(ev.key==='Escape'){ close(); document.removeEventListener('keydown',esc); } }
+      document.addEventListener('keydown',esc);
+    })();
+    /* 화면을 벗어나면(다른 앱으로 가면) 카메라를 놓아준다 */
+    (function(){
+      function vis(){ if(document.hidden){ try{ close(); }catch(e){} document.removeEventListener('visibilitychange',vis); } }
+      document.addEventListener('visibilitychange',vis);
+    })();
 
     paintStep();
     navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:{ideal:640}},audio:false})
@@ -2773,9 +2822,14 @@ function distCm(lms,vw){
         stream=s; V.srcObject=s;
         /* 1초 기다려 카메라가 스스로 맞춘 뒤 잠근다 */
         setTimeout(function(){ OV.dataset.lock = lockCam(s) ? '1' : '0'; }, 1000);
+        /* ★2026-08-10 — 카메라가 열리면 1단계 준비 화면을 바로 띄운다.
+           빈 화면을 보고 뭘 해야 할지 몰라 헤매지 않게. */
+        setTimeout(function(){ try{ if(OV && !running) ask(); }catch(e){} }, 400);
       })
       .catch(function(){
         HINT.textContent='Camera permission is needed. Allow it in your browser settings and try again.';
+        /* ★2026-08-10 — 못 열면 8초 뒤 스스로 닫는다. 빈 화면에 갇히지 않게. */
+        setTimeout(function(){ try{ close(); }catch(e){} }, 8000);
         GO.disabled=true;
       });
   };
@@ -3081,6 +3135,199 @@ window.cgoLocale=function(){
   else boot();
   setInterval(function(){ try{ sat(); }catch(e){} }, 20000);   /* 위성은 빨리 움직인다 */
   setInterval(function(){ try{ weather(); }catch(e){} }, 600000);
+})();
+</script>
+
+
+<style>
+/* ★2026-08-10 — 처음 쓰는 사람을 위한 두 겹 안내.
+   ① 들어가기 전: 전체 순서와 방법을 한눈에
+   ② 단계마다: 준비되면 누르는 화면 — 시간에 쫓기지 않게 */
+.gd-ov{position:fixed;inset:0;z-index:210;background:rgba(4,10,20,.72);
+  display:flex;align-items:flex-end;justify-content:center;animation:fade .18s ease-out}
+@media(min-width:560px){.gd-ov{align-items:center}}
+.gd{width:min(430px,100%);max-height:92vh;display:flex;flex-direction:column;
+  background:linear-gradient(180deg,#0b1a2e,#081524);color:#dbe7f2;
+  border:1px solid rgba(125,211,252,.22);border-radius:20px 20px 0 0;overflow:hidden}
+@media(min-width:560px){.gd{border-radius:20px}}
+.gd-h{padding:17px 19px 13px;border-bottom:1px solid rgba(125,211,252,.14);
+  display:flex;align-items:baseline;gap:9px;flex:none}
+.gd-h b{font-size:14.5px;font-weight:800;color:#a5e8dc}
+.gd-h span{margin-left:auto;font-size:11px;color:#7dd3fc;font-weight:700}
+.gd-b{overflow-y:auto;-webkit-overflow-scrolling:touch;padding:15px 19px 8px}
+.gd-s{background:rgba(125,211,252,.06);border:1px solid rgba(125,211,252,.14);
+  border-radius:13px;padding:13px 15px;margin-bottom:13px}
+.gd-s .t{font-size:12.5px;font-weight:800;color:#f0b3c8;margin-bottom:8px}
+.gd-s .l{font-size:11.5px;line-height:1.85;color:#b9cbdb}
+.gd-s .l b{color:#dbe7f2}
+.gd-ttl{font-size:11.5px;font-weight:800;color:#9fb4c6;letter-spacing:.02em;margin:16px 0 9px}
+.gd-i{border-top:1px solid rgba(125,211,252,.1);padding:12px 0 11px;display:flex;gap:11px}
+.gd-i:first-of-type{border-top:0}
+.gd-i .e{font-size:19px;flex:none;width:26px;text-align:center}
+.gd-i .c{flex:1;min-width:0}
+.gd-i .n{display:flex;align-items:baseline;gap:7px;margin-bottom:5px}
+.gd-i .n b{font-size:12.5px;font-weight:800;color:#dbe7f2}
+.gd-i .n em{font-style:normal;font-size:10.5px;color:#7dd3fc;font-weight:700}
+.gd-i .n .cam{margin-left:auto;font-size:9.5px;color:#8b9fb0;flex:none}
+.gd-i .d{font-size:11px;line-height:1.75;color:#9fb4c6}
+.gd-i .d .hi{color:#f0b3c8}
+.gd-w{background:rgba(240,179,200,.07);border:1px solid rgba(240,179,200,.18);
+  border-radius:12px;padding:12px 14px;margin:14px 0 4px}
+.gd-w .t{font-size:11.5px;font-weight:800;color:#f0b3c8;margin-bottom:7px}
+.gd-w .l{font-size:10.5px;line-height:1.8;color:#a8bccc}
+.gd-f{flex:none;padding:13px 19px calc(15px + env(safe-area-inset-bottom));
+  border-top:1px solid rgba(125,211,252,.14);display:flex;gap:9px}
+.gd-f button{flex:1;border:0;border-radius:12px;padding:14px;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit}
+.gd-f .go{background:linear-gradient(135deg,#2f8f5b,#227a4a);color:#fff}
+.gd-f .lt{flex:0 0 92px;background:rgba(255,255,255,.07);color:#9fb4c6}
+
+/* 단계별 준비 화면 */
+.rd-ov{position:fixed;inset:0;z-index:215;background:rgba(4,10,20,.78);
+  display:flex;align-items:center;justify-content:center;padding:18px;animation:fade .18s ease-out}
+.rd{width:min(400px,100%);background:linear-gradient(180deg,#0b1a2e,#081524);
+  border:1px solid rgba(125,211,252,.22);border-radius:19px;overflow:hidden;color:#dbe7f2}
+.rd-h{padding:15px 18px 12px;border-bottom:1px solid rgba(125,211,252,.14);display:flex;gap:11px;align-items:center}
+.rd-h .e{font-size:22px}
+.rd-h .c{flex:1;min-width:0}
+.rd-h .k{font-size:9.5px;font-weight:800;letter-spacing:.14em;color:#7dd3fc;margin-bottom:3px}
+.rd-h .n{font-size:14px;font-weight:800}
+.rd-b{padding:15px 18px 6px}
+.rd-l{display:flex;gap:9px;align-items:flex-start;margin-bottom:11px}
+.rd-l .d{flex:none;width:19px;height:19px;border-radius:50%;background:rgba(240,179,200,.15);
+  display:flex;align-items:center;justify-content:center;font-size:10px;margin-top:1px}
+.rd-l .x{flex:1;font-size:12px;line-height:1.7;color:#c5d5e3}
+.rd-l .x b{color:#a5e8dc}
+.rd-tip{background:rgba(212,168,67,.08);border-radius:11px;padding:11px 13px;margin:4px 0 0;
+  font-size:11px;line-height:1.7;color:#d8c493}
+.rd-f{padding:13px 18px calc(15px + env(safe-area-inset-bottom));display:flex;gap:9px}
+.rd-f button{border:0;border-radius:12px;padding:14px;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit}
+.rd-f .go{flex:1;background:linear-gradient(135deg,#2f8f5b,#227a4a);color:#fff}
+.rd-f .st{flex:0 0 86px;background:rgba(240,179,200,.12);color:#f0b3c8}
+</style>
+<script>
+/* ★2026-08-10 — 측정 안내. 처음 보는 사람이 헤매지 않도록.
+   ① 전체 안내 — 몇 부위를 어떤 거리로 얼마나 재는지 미리 보여준다
+   ② 단계 안내 — 준비되면 누른다. 시계가 먼저 돌지 않는다. */
+(function(){
+  var GUIDE={
+    wellness:{ttl:'C-24 종합 건강 스캔 안내', tot:'총 2분 40초',
+      steps:[
+        ['👤','얼굴','60초','전면 카메라','카메라와 <b>30~40cm</b> 거리 유지<br>밝은 정면 조명 · 안경·모자 제거 · 무표정 유지<br><span class="hi">화면 아래 호흡 타임라인을 따라 4-7-8 호흡 1회</span>'],
+        ['👅','혀','20초','전면 카메라','카메라와 <b>15~20cm</b> 거리 유지<br>혀를 최대한 내밀어 전체가 보이도록<br><span class="hi">식사 30분 후 측정 권장</span>'],
+        ['👁','눈','20초','전면 카메라','카메라와 <b>15~20cm</b> 거리 유지<br>위를 약간 봐서 흰자가 잘 보이게<br><span class="hi">콘택트렌즈 제거 권장</span>'],
+        ['🎨','피부','30초','전면 카메라','카메라와 <b>10~15cm</b> 거리 유지<br>이마 또는 뺨 안쪽을 카메라에 가까이<br><span class="hi">크림·화장 없는 상태 권장</span>'],
+        ['✋','손등','15초','후면 카메라','카메라와 <b>20~25cm</b> 거리 유지<br>손등이 화면에 꽉 차도록 정면으로<br><span class="hi">매니큐어 제거 권장</span>'],
+        ['🤚','손바닥','15초','후면 카메라','카메라와 <b>20~25cm</b> 거리 유지<br>손바닥을 평평하게 펴서 정면으로<br><span class="hi">손금이 잘 보이도록 조명 확인</span>']
+      ]},
+    scalp:{ttl:'C-39 두피 케어 스캔 안내', tot:'총 2분 40초',
+      steps:[
+        ['👤','얼굴 (rPPG)','30초','전면 카메라','카메라와 <b>30~40cm</b> 거리 유지<br>가만히 앉아 안정된 상태로'],
+        ['👅','혀','20초','전면 카메라','카메라와 <b>15~20cm</b> 거리 유지<br>혀 전체가 보이도록'],
+        ['🧑‍🦱','정수리','30초','후면 카메라','두피와 <b>5~10cm</b> 거리<br>머리를 숙여 정수리가 위에서 보이도록'],
+        ['↖️','좌측 헤어라인','20초','후면 카메라','두피와 <b>5~10cm</b> 거리<br>오른쪽으로 살짝 기울여 왼쪽 이마가 보이게'],
+        ['↗️','우측 헤어라인','20초','후면 카메라','두피와 <b>5~10cm</b> 거리<br>왼쪽으로 살짝 기울여 오른쪽 이마가 보이게'],
+        ['📏','가르마','20초','후면 카메라','두피와 <b>5~10cm</b> 거리<br>머리를 갈라 두피 선이 잘 보이게'],
+        ['🌫️','뒷머리','20초','후면 카메라','두피와 <b>5~10cm</b> 거리<br><span class="hi">거울을 쓰거나 도와줄 사람이 있으면 쉽습니다</span>']
+      ]},
+    'c44-eye':{ttl:'C-44 눈 건강 측정 안내', tot:'총 1분',
+      steps:[
+        ['👁','왼쪽 눈','30초','전면 카메라','카메라와 <b>30~40cm</b> 거리 유지<br>오른쪽 눈을 가리세요<br><span class="hi">화면 신호에 빠르게 반응</span>'],
+        ['👁','오른쪽 눈','30초','전면 카메라','카메라와 <b>30~40cm</b> 거리 유지<br>왼쪽 눈을 가리세요']
+      ]},
+    svi:{ttl:'피부 탄력(SVI) 측정 안내', tot:'총 30초',
+      steps:[['🎨','볼','30초','전면 카메라','카메라와 <b>10~15cm</b> 거리 유지<br>손가락으로 볼을 눌렀다 떼세요<br><span class="hi">세안 30분 후 · 밝은 곳에서</span>']]},
+    'cgo-sleep':{ttl:'수면 전 측정 안내', tot:'총 40초',
+      steps:[['👤','얼굴','40초','전면 카메라','카메라와 <b>30~40cm</b> 거리 유지<br>이마와 볼이 보이게<br><span class="hi">40초 동안 가만히</span>']]},
+    'c39-dementia':{ttl:'인지 셀프체크 측정 안내', tot:'총 60초',
+      steps:[['👤','얼굴','60초','전면 카메라','카메라와 <b>30~40cm</b> 거리 유지<br>문항을 푸는 동안 얼굴이 화면에 있게<br><span class="hi">안경·마스크 제거</span>']]},
+    iq:{ttl:'IQ 측정 안내', tot:'총 60초',
+      steps:[['👤','얼굴','60초','전면 카메라','카메라와 <b>30~40cm</b> 거리 유지<br>문항을 푸는 동안 얼굴이 화면에 있게']]},
+    gwansang:{ttl:'관상 측정 안내', tot:'총 33초',
+      steps:[['🙂','얼굴','33초','전면 카메라','카메라와 <b>30~40cm</b> 거리 유지<br>정면 · 밝은 조명 · 이마를 가리지 않게<br><span class="hi">무표정으로 33초 유지</span>']]},
+    sonkeum:{ttl:'손금 측정 안내', tot:'총 30초',
+      steps:[
+        ['🫲','왼손','15초','후면 카메라','카메라와 <b>20~25cm</b> 거리 유지<br>손바닥을 펴서 손금이 잘 보이게'],
+        ['🫱','오른손','15초','후면 카메라','카메라와 <b>20~25cm</b> 거리 유지<br>같은 자세로']
+      ]},
+    couple:{ttl:'커플 궁합 측정 안내', tot:'총 30초',
+      steps:[['👤','얼굴','30초','전면 카메라','카메라와 <b>30~40cm</b> 거리 유지<br>두 사람이 번갈아 측정합니다']]},
+    diag:{ttl:'진단 보드 측정 안내', tot:'총 50초',
+      steps:[
+        ['👤','얼굴','30초','전면 카메라','카메라와 <b>30~40cm</b> 거리 유지'],
+        ['👅','혀','20초','전면 카메라','카메라와 <b>15~20cm</b> 거리 유지<br>혀 전체가 보이도록']
+      ]},
+    'rppg-ar':{ttl:'AR 메이크업 측정 안내', tot:'총 35초',
+      steps:[
+        ['📷','메이크업 전','5초','전면 카메라','맨얼굴을 정면으로<br><span class="hi">기준이 되는 사진입니다</span>'],
+        ['🎥','메이크업 후','30초','전면 카메라','카메라와 <b>30~40cm</b> 거리 유지<br>밝은 곳에서']
+      ]}
+  };
+  var COMMON=['밝은 곳에서 측정할수록 정확도가 높아집니다',
+              '각 단계는 자동으로 순서대로 진행됩니다',
+              '측정 중 흔들리면 해당 단계가 다시 시작됩니다',
+              '본 분석은 참고용이며 의학적 진단을 대체하지 않습니다'];
+
+  /* ① 전체 안내 */
+  window.cgoCamGuide=function(page, onGo){
+    var g=GUIDE[page];
+    if(!g){ onGo(); return; }
+    var seen=false; try{ seen=localStorage.getItem('cgo_gd_'+page)===new Date().toDateString(); }catch(e){}
+    if(seen){ onGo(); return; }
+
+    var ov=document.createElement('div'); ov.className='gd-ov';
+    var steps=g.steps.map(function(s,i){
+      return '<div class="gd-i"><div class="e">'+s[0]+'</div><div class="c">'
+        +'<div class="n"><b>'+s[1]+'</b><em>— '+s[2]+'</em><span class="cam">📷 '+s[3]+'</span></div>'
+        +'<div class="d">'+s[4]+'</div></div></div>';
+    }).join('');
+    ov.innerHTML='<div class="gd">'
+      +'<div class="gd-h"><b>📋 '+g.ttl+'</b><span>'+g.tot+'</span></div>'
+      +'<div class="gd-b">'
+      +'<div class="gd-s"><div class="t">🫁 4-7-8 호흡법이란?</div><div class="l">'
+      +'마음을 안정시켜 측정 정확도를 높이는 호흡법입니다.<br>'
+      +'① 코로 <b>4초</b> 들이쉬기 → ② <b>7초</b> 숨 멈추기 → ③ 입으로 <b>8초</b> 내쉬기<br>'
+      +'얼굴 측정 시작 후 화면 아래 타임라인을 따라 한 번만 진행됩니다.</div></div>'
+      +'<div class="gd-ttl">📋 측정 순서 및 방법</div>'+steps
+      +'<div class="gd-w"><div class="t">⚠ 공통 주의사항</div><div class="l">'
+      +COMMON.map(function(c){return '• '+c;}).join('<br>')+'</div></div>'
+      +'</div>'
+      +'<div class="gd-f"><button class="go" data-go>✅ 이해했습니다 — 스캔 시작</button>'
+      +'<button class="lt" data-later>나중에</button></div></div>';
+    document.body.appendChild(ov);
+    ov.querySelector('[data-go]').onclick=function(){
+      try{ localStorage.setItem('cgo_gd_'+page, new Date().toDateString()); }catch(e){}
+      ov.remove(); onGo();
+    };
+    ov.querySelector('[data-later]').onclick=function(){ ov.remove(); };
+    ov.onclick=function(e){ if(e.target===ov) ov.remove(); };
+  };
+
+  /* ② 단계별 준비 — 시계가 먼저 돌지 않는다 */
+  window.cgoStepReady=function(page, idx, total, onGo, onStop){
+    var g=GUIDE[page];
+    var s=(g&&g.steps[idx]) || ['📷','측정','','',''];
+    var first=(idx===0);
+    var lines=[];
+    if(first) lines.push('안녕하세요! '+total+'부위 종합 검사 함께 시작할게요 🌸');
+    lines.push('<b>'+s[1]+'</b>부터 측정해요');
+    var d=(s[4]||'').replace(/<br>/g,'|').split('|');
+    d.forEach(function(x){ if(x.trim()) lines.push(x); });
+
+    var ov=document.createElement('div'); ov.className='rd-ov';
+    ov.innerHTML='<div class="rd">'
+      +'<div class="rd-h"><span class="e">'+s[0]+'</span><div class="c">'
+      +'<div class="k">CGO-FULI · '+(idx+1)+'/'+total+' 단계</div>'
+      +'<div class="n">'+s[1]+' 측정 · '+s[2]+'</div></div></div>'
+      +'<div class="rd-b">'
+      +lines.map(function(x){ return '<div class="rd-l"><span class="d">🌸</span><span class="x">'+x+'</span></div>'; }).join('')
+      +'<div class="rd-tip">💡 준비되면 [네, 시작할게요] 버튼을 눌러주세요. 카메라 켜진 후 <b>5초 위치 조정 시간</b>이 있어요</div>'
+      +'</div>'
+      +'<div class="rd-f"><button class="go" data-go>✅ 네, 시작할게요</button>'
+      +'<button class="st" data-stop>✕ 중단</button></div></div>';
+    document.body.appendChild(ov);
+    ov.querySelector('[data-go]').onclick=function(){ ov.remove(); onGo(); };
+    ov.querySelector('[data-stop]').onclick=function(){ ov.remove(); if(onStop) onStop(); };
+  };
 })();
 </script>
 
