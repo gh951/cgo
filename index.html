@@ -93,7 +93,7 @@ main{padding:14px 16px 22px;display:flex;flex-direction:column;gap:10px}
 .tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:9px}
 /* ★2026-08-09 — 전체 기능 타일만 민트로 구분한다.
  마이페이지·프로필은 금색, 39개 기능 타일은 민트 — 성격이 다른 곳을 색으로 나눈다. */
-.tile{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;aspect-ratio:1/1;padding:10px 7px;border-radius:16px;border:1px solid rgba(45,212,191,.34);background:linear-gradient(180deg,rgba(45,212,191,.13),rgba(45,212,191,.045));cursor:pointer;font:inherit;color:var(--txt);font-size:12.5px;font-weight:700;text-align:center;line-height:1.3;letter-spacing:-.1px;transition:border-color .14s,transform .14s,background .14s}
+.tile{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;aspect-ratio:1/1;padding:10px 7px;border-radius:16px;border:1px solid rgba(45,212,191,.34);background:linear-gradient(180deg,rgba(45,212,191,.13),rgba(45,212,191,.045));cursor:pointer;font:inherit;color:var(--t1);font-size:12.5px;font-weight:700;text-align:center;line-height:1.3;letter-spacing:-.1px;transition:border-color .14s,transform .14s,background .14s}
 .tile:active{transform:scale(.96)}
 .tile:hover{border-color:rgba(45,212,191,.7);background:linear-gradient(180deg,rgba(45,212,191,.22),rgba(45,212,191,.08))}
 .tile .ico{font-size:32px;line-height:1;filter:saturate(1.05)}
@@ -440,6 +440,30 @@ main{padding:14px 16px 22px;display:flex;flex-direction:column;gap:10px}
 .rs-act button{flex:1;padding:13px;border-radius:11px;border:0;font-size:12.5px;font-weight:800;cursor:pointer}
 .rs-act .ag{background:#eaf7f4;color:#0e5a4e}
 .rs-act .ok{background:#101b2b;color:#fff}
+
+
+/* ★2026-08-10 · 흐름 — 잰 값을 날짜별로 쌓는다.
+   한 번의 값보다 '지난주보다 어떤가'가 훨씬 믿을 만하다.
+   같은 조건(거리·잠금·좌표)에서 잰 것만 견주므로 비교가 성립한다. */
+.tr-wrap{background:#fff;border:1px solid rgba(16,27,43,.07);border-radius:14px;padding:16px 16px 14px;margin-bottom:14px}
+.tr-hd{display:flex;align-items:baseline;gap:8px;margin-bottom:12px}
+.tr-hd b{font-size:13px;font-weight:800;color:#12474f}
+.tr-hd em{font-size:10px;font-style:normal;color:#7f9a92;margin-left:auto}
+.tr-chart{position:relative;height:96px;margin-bottom:10px}
+.tr-chart svg{width:100%;height:100%;overflow:visible}
+.tr-empty{text-align:center;padding:22px 12px;color:#8b98a4;font-size:11.5px;line-height:1.7}
+.tr-legend{display:flex;gap:14px;font-size:9.5px;color:#7f9a92;margin-bottom:10px}
+.tr-legend span{display:flex;align-items:center;gap:5px}
+.tr-legend i{width:14px;height:2px;border-radius:2px;display:block}
+.tr-rows{border-top:1px solid rgba(16,27,43,.06);padding-top:4px}
+.tr-rows div{display:flex;align-items:center;gap:9px;padding:9px 0;font-size:11.5px;color:#4a5a68;
+  border-bottom:1px solid rgba(16,27,43,.04)}
+.tr-rows div:last-child{border-bottom:0}
+.tr-rows .dt{color:#8b98a4;font-size:10.5px;min-width:74px}
+.tr-rows .qq{margin-left:auto;font-size:9.5px;padding:2px 7px;border-radius:999px;background:#eef6f3;color:#0e5a4e}
+.tr-rows .qq.low{background:#fdf0ec;color:#a8563c}
+.tr-note{font-size:10px;color:#9aa8b4;line-height:1.6;margin-top:10px}
+.tr-clear{background:none;border:0;color:#b9c4cd;font-size:10px;cursor:pointer;padding:2px 0;margin-top:6px}
 
 </style>
 </head>
@@ -1747,6 +1771,7 @@ window.buildSpecPage = function(key, name){
  return (performance.now()-t0).toFixed(1);
  }
  function setLang(l){
+ window.CGO_LANG=l;                    /* 시각 표기도 고른 언어를 따르게 */
  if(l==='en'){ LANG='en'; PACK.en=null; restore(); mark(); return; }
  LANG=l;
  if(PACK[l]) { mark(); paint(); return; }
@@ -1818,7 +1843,18 @@ window.buildSpecPage = function(key, name){
  if(page==='dashboard'){ mount.innerHTML=''; dropNodes(); dash.hidden=false; document.getElementById('topTitle').textContent=(PACK[LANG]||{})['1']||'CGO-FULI'; window.scrollTo(0,0); return; }
  var src=document.querySelector('template[data-cgo-page="'+page+'"]');
  dash.hidden=true;
- if(src){ mount.innerHTML=''; mount.appendChild(src.content.cloneNode(true)); dropNodes(); }
+ if(src){
+      mount.innerHTML=''; mount.appendChild(src.content.cloneNode(true)); dropNodes();
+      /* ★2026-08-10 — 틀에서 만든 페이지에도 흐름을 붙인다.
+         웰니스처럼 가장 많이 재는 기능이 여기 있는데 빠져 있었다. */
+      try{
+        if(window.cgoTrendGet && window.cgoTrendHtml && window.cgoTrendGet(page).length){
+          var pg=mount.querySelector('.pg');
+          if(pg){ var w=document.createElement('div');
+            w.innerHTML=window.cgoTrendHtml(page); pg.appendChild(w.firstChild); }
+        }
+      }catch(e){}
+    }
  else {
  /* ★2026-08-09 — 아직 안 만든 기능도 '빈 화면'이 아니라 밝은 페이지로 받는다.
  어느 창에서 만들 기능인지 함께 보여줘, 눌렀을 때 고장난 것처럼 보이지 않게. */
@@ -1830,7 +1866,16 @@ window.buildSpecPage = function(key, name){
  var html = window.buildSpecPage(page, nm);
  /* ★2026-08-09 — 예전엔 여기서 return 해버려 아래 '입구 안내' 코드를 건너뛰었다.
  그래서 자료로 그리는 36개 기능에는 안내 팝업이 안 떴다. */
- if(html){ mount.innerHTML = html; openIntro(page); paint(); window.scrollTo(0,0); return; }
+ if(html){
+          /* 잰 적이 있으면 흐름을 페이지 아래에도 붙인다 */
+          try{
+            if(window.cgoTrendGet && window.cgoTrendHtml && window.cgoTrendGet(page).length){
+              var mk=html.lastIndexOf('</div>');
+              if(mk>0) html = html.slice(0,mk) + window.cgoTrendHtml(page) + html.slice(mk);
+            }
+          }catch(e){}
+          mount.innerHTML = html; openIntro(page); paint(); window.scrollTo(0,0); return;
+        }
  }
  mount.innerHTML=
  '<div class="pg">'
@@ -2317,6 +2362,51 @@ window.buildSpecPage = function(key, name){
   }
   window.cgoCamClose=close;
 
+
+/* ★2026-08-10 · 카메라 잠금 — 자동 밝기·색보정을 멈춘다.
+   되는 기기만 잠기고, 안 되면 조용히 물러난다(멈추지 않는다). */
+function lockCam(s){
+  try{
+    var tr=s.getVideoTracks()[0]; if(!tr||!tr.getCapabilities) return false;
+    var cap=tr.getCapabilities()||{}, on={};
+    if(cap.exposureMode && cap.exposureMode.indexOf('manual')>=0) on.exposureMode='manual';
+    else if(cap.exposureMode && cap.exposureMode.indexOf('continuous')>=0) on.exposureMode='continuous';
+    if(cap.whiteBalanceMode && cap.whiteBalanceMode.indexOf('manual')>=0) on.whiteBalanceMode='manual';
+    if(cap.focusMode && cap.focusMode.indexOf('manual')>=0) on.focusMode='manual';
+    if(!Object.keys(on).length) return false;
+    tr.applyConstraints({advanced:[on]});
+    return true;
+  }catch(e){ return false; }
+}
+
+/* ★ 거리 — 눈 사이 너비로 잰다.
+   화면에서 넓게 보이면 가깝고, 좁으면 멀다. 자도 줄자도 필요 없다.
+
+   ⚠️ 재는 자리와 실제 길이는 반드시 짝으로 움직인다.
+      눈동자 한가운데(468·473)  →  63mm   ← refineLandmarks:true 일 때만 나온다
+      눈꼬리 바깥(33·263)       →  92mm   ← 지금 쓰는 자리
+      짝을 어긋내면 거리가 통째로 어긋나고, 그 값이 흐름에도 그대로 쌓인다.
+
+   FOCAL은 앞카메라의 화각을 뜻한다. 가로 화각 약 70°를 가정한 값이며,
+   FaceMesh 설정을 바꾸거나 다른 카메라를 쓰면 여기도 함께 봐야 한다. */
+var FOCAL_RATIO = 0.75;                 /* 가로 화각 ≈ 70° */
+var EYE_IRIS_MM = 63;                   /* 눈동자 사이 */
+var EYE_CANTHUS_MM = 92;                /* 눈꼬리 바깥 사이 */
+
+function distCm(lms,vw){
+  try{
+    if(!lms || !vw) return null;
+    var a,b,mm;
+    if(lms[468] && lms[473]){ a=lms[468]; b=lms[473]; mm=EYE_IRIS_MM; }      /* 눈동자 */
+    else if(lms[33] && lms[263]){ a=lms[33]; b=lms[263]; mm=EYE_CANTHUS_MM; } /* 눈꼬리 */
+    else return null;
+    var px=Math.abs(b.x-a.x)*vw;
+    if(px<8) return null;
+    var cm=Math.round(mm * (FOCAL_RATIO*vw) / px / 10);
+    return (cm>=10 && cm<=200) ? cm : null;
+  }catch(e){ return null; }
+}
+
   window.cgoCam=function(page){
     var flow=FLOW[page]||[['📷','Measurement','측정',30]];
     var step=0, t=flow[0][3], running=false, t0=0;
@@ -2338,6 +2428,9 @@ window.buildSpecPage = function(key, name){
       +'<div><div class="k">HEART</div><div class="v" data-bpm>--<em>bpm</em></div></div>'
       +'<div><div class="k">RESILIENCE</div><div class="v" data-hrv>--<em>ms</em></div></div>'
       +'<div><div class="k">SIGNAL</div><div class="v" data-sig>--<em>%</em></div></div>'
+      +'<div><div class="k">DISTANCE</div><div class="v" data-dist>--<em>cm</em></div></div>'
+      +'<div><div class="k">LIGHT</div><div class="v" data-lux>--<em>lv</em></div></div>'
+      +'<div><div class="k">CAMERA</div><div class="v" data-lock>--</div></div>'
       +'</div>'
       +'<div class="cam-act"><button class="go">Start</button>'
       +(flow.length>1?'<button class="sk">Skip</button>':'')+'</div></div>';
@@ -2348,12 +2441,13 @@ window.buildSpecPage = function(key, name){
     var GO=OV.querySelector('.go'), SK=OV.querySelector('.sk'), GUIDE=OV.querySelector('.cam-guide');
     var BPM=OV.querySelector('[data-bpm]'), HRV=OV.querySelector('[data-hrv]'), SIG=OV.querySelector('[data-sig]');
     var BR=OV.querySelector('.cam-breath .b'), BT=OV.querySelector('.cam-breath .t');
+    var DIST=OV.querySelector('[data-dist]'), LUX=OV.querySelector('[data-lux]'), LOCKV=OV.querySelector('[data-lock]');
 
     function paintStep(){
       var f=flow[step];
       TI.textContent=f[0]+' '+f[1]+' — '+f[3]+' sec';
       HINT.textContent = step===0
-        ? 'Bright place · 30–40 cm from the camera · hold still'
+        ? 'Bright place · 25–55 cm from the camera · hold still'
         : 'Fit '+f[1].toLowerCase()+' in the ring and hold still';
       STEP.innerHTML = flow.map(function(x,i){
         return '<span class="dot'+(i<step?' done':i===step?' on':'')+'"></span>';
@@ -2362,36 +2456,202 @@ window.buildSpecPage = function(key, name){
       GO.disabled=false; GO.textContent='Start';
     }
 
-    /* 얼굴 색의 미세한 변화를 읽는다 — 값은 실제 화면에서 계산된다 */
-    var cvs=document.createElement('canvas'); cvs.width=64; cvs.height=64;
+    /* ★2026-08-10 · 특허 4요소 융합.
+       ① 좌표   FaceMesh 468로 이마·좌볼·우볼 세 자리를 고정 — 움직여도 같은 곳
+       ② 스펙트럼 CHROM — 빨강·초록·파랑을 갈라 맥 신호만 뽑는다
+       ③ 환경   주변 밝기를 재서 조명 흔들림을 빼고, 신호 품질을 매긴다
+       ④ 융합   세 값을 묶어 맥의 리듬과 흔들림 폭을 셈한다
+       좌표를 못 잡으면 화면 가운데로 물러난다 — 멈추지 않는다. */
+    var cvs=document.createElement('canvas'); cvs.width=96; cvs.height=64;
     var ctx=cvs.getContext('2d',{willReadFrequently:true});
-    var buf=[], peaks=[], lastP=0;
+    var buf=[], peaks=[], lastP=0, lms=null, lmsT=0, fm=null, fmN=0;
+    var lastBpm=null, lastBpmT=0;
+    var bcv=document.createElement('canvas'); bcv.width=32; bcv.height=16;
+    var bctx=bcv.getContext('2d',{willReadFrequently:true});
+
+    /* ① 좌표 — 얼굴 세 자리를 잡는다 */
+    function initFM(){
+      if(fm || !window.FaceMesh) return;
+      try{
+        fm=new window.FaceMesh({locateFile:function(f){
+          return 'https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/'+f; }});
+        fm.setOptions({maxNumFaces:1,refineLandmarks:false,
+          minDetectionConfidence:.7,minTrackingConfidence:.7});
+        fm.onResults(function(r){
+          if(r.multiFaceLandmarks && r.multiFaceLandmarks[0]){
+            lms=r.multiFaceLandmarks[0]; lmsT=performance.now();
+          }
+        });
+      }catch(e){ fm=null; }
+    }
+    function patches(vw,vh){
+      /* 이마 · 좌볼 · 우볼 — 눈·코·입은 뺀다(그늘과 움직임이 섞인다) */
+      if(!lms || performance.now()-lmsT>700) return null;
+      function P(i){ var p=lms[i]; return p?{x:p.x*vw,y:p.y*vh}:null; }
+      var l=P(234), r=P(454), mid=P(9), chin=P(152), brow=P(151), top=P(10);
+      if(!(l&&r&&mid&&chin&&brow&&top)) return null;
+      var fw=Math.abs(r.x-l.x), out=[];
+      var fh=Math.abs(brow.y-top.y);
+      if(fh>8) out.push({x:mid.x-fw*0.21,y:brow.y-fh*0.85,w:fw*0.42,h:fh*0.55});
+      var cw=fw*0.20, cy=mid.y+Math.abs(chin.y-mid.y)*0.42;
+      out.push({x:l.x+fw*0.14, y:cy-cw/2, w:cw, h:cw});
+      out.push({x:r.x-fw*0.14-cw, y:cy-cw/2, w:cw, h:cw});
+      out=out.filter(function(p){
+        p.x=Math.max(0,Math.min(p.x,vw-4)); p.y=Math.max(0,Math.min(p.y,vh-4));
+        p.w=Math.max(4,Math.min(p.w,vw-p.x)); p.h=Math.max(4,Math.min(p.h,vh-p.y));
+        return p.w>=8&&p.h>=8;
+      });
+      return out.length>=2 ? out : null;
+    }
+
+    /* ③ 환경 — 주변 밝기를 기록해 조명 흔들림을 빼는 데 쓴다 */
+    var envBuf=[];
+
     function sample(){
       if(!running){ raf=null; return; }
       try{
-        ctx.drawImage(V, V.videoWidth*0.3, V.videoHeight*0.25, V.videoWidth*0.4, V.videoHeight*0.4, 0,0,64,64);
-        var d=ctx.getImageData(0,0,64,64).data, r=0,g=0,b=0,n=0;
-        for(var i=0;i<d.length;i+=16){ r+=d[i]; g+=d[i+1]; b+=d[i+2]; n++; }
-        r/=n; g/=n; b/=n;
-        var v=(3*r-2*g)/255;                    /* 색 대비로 맥의 흔들림을 뽑는다 */
-        var now=performance.now();
-        buf.push({t:now,v:v}); if(buf.length>300) buf.shift();
-        if(buf.length>30){
-          var m=0; for(var j=0;j<buf.length;j++) m+=buf[j].v; m/=buf.length;
-          var prev=buf[buf.length-2].v, cur=v;
-          if(prev<m && cur>=m && now-lastP>380){ peaks.push(now); lastP=now; if(peaks.length>12) peaks.shift(); }
-          if(peaks.length>3){
-            var gaps=[]; for(var k=1;k<peaks.length;k++) gaps.push(peaks[k]-peaks[k-1]);
-            var avg=gaps.reduce(function(a,c){return a+c;},0)/gaps.length;
-            var bpm=Math.round(60000/avg);
-            if(bpm>40&&bpm<180) BPM.innerHTML=bpm+'<em>bpm</em>';
-            var sd=0; for(var q=0;q<gaps.length;q++) sd+=Math.pow(gaps[q]-avg,2);
-            HRV.innerHTML=Math.round(Math.sqrt(sd/gaps.length))+'<em>ms</em>';
+        var vw=V.videoWidth, vh=V.videoHeight;
+        if(vw>0){
+          /* 좌표 잡기 — 네 프레임마다 (무겁지 않게) */
+          if(fm && (fmN++ % 4===0)){ try{ fm.send({image:V}); }catch(e){} }
+
+          var pt=patches(vw,vh), src='fixed';
+          ctx.clearRect(0,0,96,64);
+          if(pt){
+            src='coord';
+            var w=Math.floor(96/pt.length);
+            for(var i=0;i<pt.length;i++){
+              ctx.drawImage(V, pt[i].x,pt[i].y,pt[i].w,pt[i].h, i*w,0,w,64);
+            }
+          } else {
+            ctx.drawImage(V, vw*0.3,vh*0.25,vw*0.4,vh*0.4, 0,0,96,64);
           }
-          var br=(r+g+b)/3;
-          var q2=Math.max(0,Math.min(100,Math.round(100-Math.abs(br-128)*0.7)));
-          SIG.innerHTML=q2+'<em>%</em>';
-          GUIDE.classList.toggle('ok', q2>60);
+
+          var d=ctx.getImageData(0,0,96,64).data, r=0,g=0,b=0,n=0;
+          for(var j=0;j<d.length;j+=16){ r+=d[j]; g+=d[j+1]; b+=d[j+2]; n++; }
+          r/=n; g/=n; b/=n;
+
+          /* ★ 배경 대조 — 방 조명이 깜빡이면 얼굴도 배경도 함께 깜빡인다.
+             배경의 흔들림을 얼굴에서 덜어내면 조명 성분이 사라지고 맥만 남는다.
+             (심장은 배경에 없다) */
+          var bg=null;
+          try{
+            bctx.drawImage(V, 0, 0, vw*0.16, vh*0.30, 0,0,16,16);
+            bctx.drawImage(V, vw*0.84, 0, vw*0.16, vh*0.30, 16,0,16,16);
+            var bd=bctx.getImageData(0,0,32,16).data, br2=0,bg2=0,bb2=0,bn=0;
+            for(var z=0;z<bd.length;z+=8){ br2+=bd[z]; bg2+=bd[z+1]; bb2+=bd[z+2]; bn++; }
+            bg={r:br2/bn, g:bg2/bn, b:bb2/bn};
+          }catch(e){}
+
+          var now=performance.now();
+          envBuf.push((r+g+b)/3); if(envBuf.length>90) envBuf.shift();
+          buf.push({t:now, r:r,g:g,b:b, br:bg?bg.r:null, bgg:bg?bg.g:null, bb:bg?bg.b:null});
+          if(buf.length>300) buf.shift();
+
+          /* 거리 — 두 눈 사이로 잰다 */
+          var dcm=distCm(lms,vw);
+          if(dcm){ DIST.innerHTML=dcm+'<em>cm</em>'; OV.dataset.dist=dcm; }
+
+          if(buf.length>45){
+            var W=buf.slice(-45);
+
+            /* ★ 배경 빼기 — 무작정 빼면 진짜 맥까지 깎인다.
+               두 신호가 얼마나 닮았는지로 덜어낼 비율을 그때그때 정한다.
+               닮지 않았으면(다른 빛을 받으면) 빼지 않는다. */
+            function clean(key,bkey){
+              var f=W.map(function(x){return x[key];});
+              var mb=0,mf=0,ok=0;
+              for(var i=0;i<W.length;i++){ if(W[i][bkey]!=null){ mb+=W[i][bkey]; ok++; } mf+=f[i]; }
+              mf/=W.length;
+              if(ok<W.length*0.8) return f.map(function(v){return v-mf;});
+              mb/=ok;
+              var cov=0, vb=0;
+              for(var i2=0;i2<W.length;i2++){
+                var db=W[i2][bkey]-mb, df=f[i2]-mf;
+                cov+=db*df; vb+=db*db;
+              }
+              var k = vb>0.001 ? cov/vb : 0;
+              var corr = vb>0.001 ? Math.abs(cov)/Math.sqrt(vb*W.reduce(function(p,x){return p+Math.pow(x[key]-mf,2);},0)+1e-9) : 0;
+              if(corr<0.35) k=0;                 /* 안 닮았다 = 다른 빛 → 빼지 않는다 */
+              k=Math.max(0,Math.min(1.2,k));
+              return W.map(function(x,i3){ return (x[key]-mf) - k*((x[bkey]!=null?x[bkey]:mb)-mb); });
+            }
+            var Rs=clean('r','br'), Gs=clean('g','bgg'), Bs=clean('b','bb');
+
+            /* ★ POS — 피부색에 수직인 평면으로 던져 조명과 움직임을 함께 누른다.
+               CHROM보다 조명 변화에 강하다. */
+            var mR=0,mG=0,mB=0;
+            for(var p=0;p<Rs.length;p++){ mR+=Rs[p]; mG+=Gs[p]; mB+=Bs[p]; }
+            mR/=Rs.length; mG/=Gs.length; mB/=Bs.length;
+            var S1=[],S2=[];
+            for(var q=0;q<Rs.length;q++){
+              var rn=Rs[q]-mR, gn=Gs[q]-mG, bn2=Bs[q]-mB;
+              S1.push(gn-bn2);
+              S2.push(-2*rn+gn+bn2);
+            }
+            function sd(a){ var m=0; for(var i=0;i<a.length;i++)m+=a[i]; m/=a.length;
+              var v=0; for(var i=0;i<a.length;i++)v+=Math.pow(a[i]-m,2); return Math.sqrt(v/a.length); }
+            var a1=sd(S1), a2=sd(S2), alpha=a2>1e-6?a1/a2:0;
+            var pos=[]; for(var t2=0;t2<S1.length;t2++) pos.push(S1[t2]+alpha*S2[t2]);
+
+            var cur=pos[pos.length-1], prev=pos[pos.length-2];
+            var pm=0; for(var u=0;u<pos.length;u++) pm+=pos[u]; pm/=pos.length;
+
+            if(prev<pm && cur>=pm && now-lastP>380){
+              peaks.push(now); lastP=now; if(peaks.length>12) peaks.shift();
+            }
+            if(peaks.length>3){
+              var gaps=[]; for(var m2=1;m2<peaks.length;m2++) gaps.push(peaks[m2]-peaks[m2-1]);
+              var avg=gaps.reduce(function(p2,c){return p2+c;},0)/gaps.length;
+              var bpm=Math.round(60000/avg);
+
+              /* ★ 생리 구속 — 심장은 1초에 30씩 뛰지 못한다.
+                 그보다 크게 튀면 몸이 변한 게 아니라 신호가 어긋난 것이다.
+                 버리지 않고 직전 값 쪽으로 부드럽게 끌어당긴다. */
+              if(bpm>40 && bpm<180){
+                if(lastBpm===null) lastBpm=bpm;
+                else{
+                  var dt=Math.max(0.3,(now-lastBpmT)/1000);
+                  var lim=15*dt;                       /* 1초에 15까지만 */
+                  var diff=bpm-lastBpm;
+                  if(Math.abs(diff)>lim) bpm=Math.round(lastBpm+Math.sign(diff)*lim);
+                  lastBpm=Math.round(lastBpm*0.7+bpm*0.3);
+                }
+                lastBpmT=now;
+                BPM.innerHTML=lastBpm+'<em>bpm</em>';
+              }
+              var sdv=0; for(var q2=0;q2<gaps.length;q2++) sdv+=Math.pow(gaps[q2]-avg,2);
+              HRV.innerHTML=Math.round(Math.sqrt(sdv/gaps.length))+'<em>ms</em>';
+            }
+
+            /* 밝기·잠금 — 어두우면 재지 않는다. 지어내는 것보다 안 재는 게 낫다. */
+            var brAvg=envBuf.reduce(function(p3,c){return p3+c;},0)/envBuf.length;
+            var envSd=0;
+            for(var e2=0;e2<envBuf.length;e2++) envSd+=Math.pow(envBuf[e2]-brAvg,2);
+            envSd=Math.sqrt(envSd/envBuf.length);
+            LUX.innerHTML=Math.round(brAvg)+'<em>lv</em>';
+            LOCKV.textContent = OV.dataset.lock==='1'?'locked':'auto';
+
+            var q3=100 - Math.abs(brAvg-135)*0.5 - Math.min(30,envSd*2.0);
+            if(src==='coord') q3+=12;
+            if(OV.dataset.lock==='1') q3+=8;
+            if(bg) q3+=5;
+            if(dcm && (dcm<25||dcm>55)) q3-=25;
+            if(brAvg<45) q3=Math.min(q3,25);          /* 너무 어둡다 */
+            q3=Math.max(0,Math.min(100,Math.round(q3)));
+            SIG.innerHTML=q3+'<em>%</em>';
+            GUIDE.classList.toggle('ok', q3>60);
+            OV.dataset.q=q3; OV.dataset.src=src;
+
+            /* 안내 — 무엇을 고쳐야 하는지 알려준다 */
+            var msg='';
+            if(brAvg<45) msg='Too dark — turn on a light';
+            else if(dcm && dcm<25) msg='A little further back';
+            else if(dcm && dcm>55) msg='Come a little closer';
+            else if(src!=='coord') msg='Fit your face in the ring';
+            else if(q3<50) msg='Hold still';
+            if(msg) HINT.textContent=msg;
+          }
         }
       }catch(e){}
       raf=requestAnimationFrame(sample);
@@ -2408,6 +2668,8 @@ window.buildSpecPage = function(key, name){
     }
 
     function run(){
+      /* 좌표 잡기 준비 — 없으면 화면 가운데로 물러난다(멈추지 않는다) */
+      if(window.cgoLoadFM) window.cgoLoadFM().then(function(){ initFM(); });
       running=true; t0=performance.now(); GO.disabled=true; GO.textContent='Measuring…';
       bt0=performance.now(); bp=0;
       raf=requestAnimationFrame(sample);
@@ -2427,8 +2689,10 @@ window.buildSpecPage = function(key, name){
       running=false;
       var bpm=(BPM.textContent||'').replace(/\D/g,'')||'--';
       var hrv=(HRV.textContent||'').replace(/\D/g,'')||'--';
+      var q=OV?OV.dataset.q:'', src=OV?OV.dataset.src:'';
+      var dist=OV?OV.dataset.dist:'', lock=OV?OV.dataset.lock:'';
       close();
-      if(window.cgoResult) window.cgoResult(page,{bpm:bpm,hrv:hrv});
+      if(window.cgoResult) window.cgoResult(page,{bpm:bpm,hrv:hrv,q:q,src:src,dist:dist,lock:lock});
     }
 
     GO.addEventListener('click',run);
@@ -2439,7 +2703,11 @@ window.buildSpecPage = function(key, name){
 
     paintStep();
     navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:{ideal:640}},audio:false})
-      .then(function(s){ stream=s; V.srcObject=s; })
+      .then(function(s){
+        stream=s; V.srcObject=s;
+        /* 1초 기다려 카메라가 스스로 맞춘 뒤 잠근다 */
+        setTimeout(function(){ OV.dataset.lock = lockCam(s) ? '1' : '0'; }, 1000);
+      })
       .catch(function(){
         HINT.textContent='Camera permission is needed. Allow it in your browser settings and try again.';
         GO.disabled=true;
@@ -2459,12 +2727,19 @@ window.buildSpecPage = function(key, name){
     /* 지수 — 맥의 리듬과 흔들림 폭에서 셈한다 */
     var ili = ok ? Math.max(35,Math.min(96, Math.round(
         70 + (hrv? Math.min(20,(hrv-25)/3) : 0) - Math.abs(bpm-68)*0.35 ))) : null;
+    var q=parseInt(d.q,10), coord=(d.src==='coord');
+    var dist=parseInt(d.dist,10), lock=(d.lock==='1');
     var rows = ok
       ? [['Heart rhythm', bpm+' bpm'],
          ['Inner resilience', (isNaN(hrv)?'—':hrv+' ms')],
-         ['Signal quality', 'measured'],
-         ['Measured at', new Date().toLocaleTimeString()]]
-      : [['Signal', 'not enough'],['Try again','Brighter light, hold still']];
+         ['Signal quality', (isNaN(q)?'—':q+' %')],
+         ['Distance', (isNaN(dist)?'—':dist+' cm')],
+         ['Camera', lock?'locked':'auto (may drift)'],
+         ['Face tracking', coord?'locked · 468 points':'centre frame'],
+         ['Measured at', new Date().toLocaleTimeString(window.cgoLocale?window.cgoLocale():'en-US')]]
+      : [['Signal', 'not enough'],['What to change','Brighter light · 30–50 cm · hold still']];
+    /* 조건이 못 미치면 지수를 비운다 — 지어내지 않는다 */
+    if(ok && !isNaN(q) && q<45) ili=null;
 
     var ov=document.createElement('div');
     ov.className='rs-ov';
@@ -2477,11 +2752,25 @@ window.buildSpecPage = function(key, name){
       +'</div>'
       +'<div class="rs-list">'+rows.map(function(r){
           return '<div>'+r[0]+'<b>'+r[1]+'</b></div>'; }).join('')+'</div>'
-      +'<div class="rs-note">This is general wellness reference information, not a medical device. '
-      +'It cannot be used to diagnose, treat, or prevent any condition. If something concerns you, please see a professional.</div>'
+      +'<div class="rs-note">'
+      +(coord&&lock?'Measured with the camera locked and your face tracked, so today and tomorrow can be compared. ':'')
+      +'This is general wellness reference information, not a medical device. '
+      +'It cannot be used to diagnose, treat, cure, or prevent any condition, and it does not replace a professional. '
+      +'If something concerns you, please see one.</div>'
       +'<div class="rs-act"><button class="ag">Measure again</button><button class="ok">Done</button></div>'
       +'</div>';
+    /* 잰 값을 기기 안에 쌓는다 — 흐름이 한 번의 값보다 믿을 만하다 */
+    try{ if(window.cgoTrendAdd) window.cgoTrendAdd(page, Object.assign({},d,{ili:ili})); }catch(e){}
     document.body.appendChild(ov);
+    /* 흐름을 결과 아래에 붙인다 */
+    try{
+      if(window.cgoTrendHtml){
+        var tw=document.createElement('div');
+        tw.innerHTML=window.cgoTrendHtml(page);
+        var box=ov.querySelector('.rs');
+        box.insertBefore(tw.firstChild, box.querySelector('.rs-note'));
+      }
+    }catch(e){}
     ov.querySelector('.ok').addEventListener('click',function(){ ov.remove(); });
     ov.querySelector('.ag').addEventListener('click',function(){ ov.remove(); window.cgoCam(page); });
     ov.addEventListener('click',function(e){ if(e.target===ov) ov.remove(); });
@@ -2497,6 +2786,142 @@ window.buildSpecPage = function(key, name){
     window.cgoCam(page);
   });
 })();
+</script>
+
+
+<script>
+/* ★2026-08-10 · 특허 4요소 — 좌표(FaceMesh 468).
+   얼굴 위치를 잡아 읽는 자리를 고정한다. 움직여도 같은 곳을 읽으므로 값이 흔들리지 않는다.
+   불러오기는 '측정을 누를 때'만 — 보이는 것만 살린다는 원칙 그대로. */
+(function(){
+  var loading=null;
+  window.cgoLoadFM=function(){
+    if(window.FaceMesh) return Promise.resolve(true);
+    if(loading) return loading;
+    loading=new Promise(function(res){
+      var s=document.createElement('script');
+      s.src='https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js';
+      s.onload=function(){ res(!!window.FaceMesh); };
+      s.onerror=function(){ res(false); };
+      document.head.appendChild(s);
+    });
+    return loading;
+  };
+})();
+</script>
+
+
+<script>
+/* ★2026-08-10 · 흐름 — 잰 값을 기기 안에만 쌓는다.
+   서버로 보내지 않는다. 지우면 사라진다. */
+(function(){
+  var KEY='cgo_trend_v1';
+
+  function load(){ try{ return JSON.parse(localStorage.getItem(KEY)||'{}'); }catch(e){ return {}; } }
+  function save(o){ try{ localStorage.setItem(KEY, JSON.stringify(o)); }catch(e){} }
+
+  window.cgoTrendAdd=function(page,d){
+    var q=parseInt(d.q,10), bpm=parseInt(d.bpm,10);
+    if(isNaN(bpm)||bpm<40||bpm>180) return;      /* 못 잰 것은 쌓지 않는다 */
+    var all=load(), arr=all[page]||[];
+    arr.push({t:Date.now(), bpm:bpm,
+      hrv:parseInt(d.hrv,10)||null, q:isNaN(q)?null:q,
+      dist:parseInt(d.dist,10)||null,
+      lock:d.lock==='1'?1:0, coord:d.src==='coord'?1:0,
+      ili:d.ili||null});
+    if(arr.length>60) arr=arr.slice(-60);
+    all[page]=arr; save(all);
+  };
+  window.cgoTrendGet=function(page){ return (load()[page])||[]; };
+  window.cgoTrendClear=function(page){ var a=load(); delete a[page]; save(a); };
+
+  function when(t){
+    var d=new Date(t), n=new Date(), day=86400000;
+    var diff=Math.floor((n.setHours(0,0,0,0)-new Date(t).setHours(0,0,0,0))/day);
+    if(diff===0) return 'Today';
+    if(diff===1) return 'Yesterday';
+    if(diff<7) return diff+' days ago';
+    return d.toLocaleDateString(window.cgoLocale?window.cgoLocale():'en-US',{month:'numeric',day:'numeric'});
+  }
+
+  /* 견줄 수 있는 것만 그린다 — 같은 조건에서 잰 것 */
+  window.cgoTrendHtml=function(page){
+    var arr=window.cgoTrendGet(page);
+    if(!arr.length){
+      return '<div class="tr-wrap"><div class="tr-hd"><b>Your trend</b></div>'
+        +'<div class="tr-empty">No readings yet.<br>Measure a few times and your trend appears here.<br>'
+        +'A trend says more than any single reading.</div></div>';
+    }
+    var good=arr.filter(function(x){ return x.q===null||x.q>=45; });
+    var use=good.length>=2?good:arr;
+    var last=use.slice(-14);
+
+    var bs=last.map(function(x){return x.bpm;});
+    var lo=Math.min.apply(null,bs)-4, hi=Math.max.apply(null,bs)+4;
+    if(hi-lo<12){ var mid=(hi+lo)/2; lo=mid-6; hi=mid+6; }
+    var W=280, H=90;
+    function X(i){ return last.length<2?W/2:(i/(last.length-1))*W; }
+    function Y(v){ return H-((v-lo)/(hi-lo))*H; }
+    var pts=last.map(function(x,i){ return X(i)+','+Y(x.bpm); }).join(' ');
+    var area='0,'+H+' '+pts+' '+W+','+H;
+
+    /* 평균선 — 이 사람의 보통 자리 */
+    var avg=bs.reduce(function(p,c){return p+c;},0)/bs.length;
+    var ay=Y(avg);
+
+    var dots=last.map(function(x,i){
+      var weak=(x.q!==null&&x.q<45);
+      return '<circle cx="'+X(i)+'" cy="'+Y(x.bpm)+'" r="'+(weak?2.5:3.5)+'" fill="'+(weak?'#cfd8e2':'#0e5a4e')+'"/>';
+    }).join('');
+
+    var rows=arr.slice(-6).reverse().map(function(x){
+      var weak=(x.q!==null&&x.q<45);
+      return '<div><span class="dt">'+when(x.t)+'</span>'
+        +'<b style="color:#101b2b;font-weight:800">'+x.bpm+'</b><span style="color:#8b98a4;font-size:10px">bpm</span>'
+        +(x.hrv?'<span style="color:#8b98a4;font-size:10px;margin-left:6px">'+x.hrv+'ms</span>':'')
+        +'<span class="qq'+(weak?' low':'')+'">'+(x.q===null?'—':x.q+'%')+'</span></div>';
+    }).join('');
+
+    var comparable=use.filter(function(x){ return x.lock&&x.coord; }).length;
+
+    return '<div class="tr-wrap">'
+      +'<div class="tr-hd"><b>Your trend</b><em>'+arr.length+' readings</em></div>'
+      +'<div class="tr-chart"><svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none">'
+      +'<defs><linearGradient id="tg" x1="0" y1="0" x2="0" y2="1">'
+      +'<stop offset="0%" stop-color="#0e5a4e" stop-opacity=".16"/>'
+      +'<stop offset="100%" stop-color="#0e5a4e" stop-opacity="0"/></linearGradient></defs>'
+      +'<polygon points="'+area+'" fill="url(#tg)"/>'
+      +'<line x1="0" y1="'+ay+'" x2="'+W+'" y2="'+ay+'" stroke="#c9d6d2" stroke-width="1" stroke-dasharray="3 3"/>'
+      +'<polyline points="'+pts+'" fill="none" stroke="#0e5a4e" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>'
+      +dots+'</svg></div>'
+      +'<div class="tr-legend"><span><i style="background:#0e5a4e"></i>heart rhythm</span>'
+      +'<span><i style="background:#c9d6d2"></i>your average '+Math.round(avg)+' bpm</span></div>'
+      +'<div class="tr-rows">'+rows+'</div>'
+      +'<div class="tr-note">'+comparable+' of these were taken with the camera locked and your face tracked — '
+      +'those are the ones that can be fairly compared. Kept on this device only.</div>'
+      +'<button class="tr-clear" data-trend-clear="'+page+'">Clear history</button>'
+      +'</div>';
+  };
+
+  document.addEventListener('click',function(e){
+    var b=e.target.closest('[data-trend-clear]');
+    if(!b) return;
+    window.cgoTrendClear(b.getAttribute('data-trend-clear'));
+    var w=b.closest('.tr-wrap'); if(w) w.outerHTML=window.cgoTrendHtml(b.getAttribute('data-trend-clear'));
+  });
+})();
+</script>
+
+
+<script>
+/* ★2026-08-10 · 시각 표기의 언어.
+   그냥 toLocaleTimeString()을 부르면 브라우저 언어가 나온다.
+   영어 화면인데 '오전 9:59'가 찍히는 이유가 그것이다. 고른 언어를 따르게 한다. */
+window.cgoLocale=function(){
+  var m={ko:'ko-KR',en:'en-US',ja:'ja-JP',zh:'zh-CN','zh-Hant':'zh-HK',ru:'ru-RU'};
+  var L=(window.CGO_LANG||document.documentElement.lang||'en');
+  return m[L]||'en-US';
+};
 </script>
 
 </body>
