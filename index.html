@@ -2419,15 +2419,14 @@ window.buildSpecPage = function(key, name){
 /* ★2026-08-10 — 화면 중간을 덮던 문제. 맨 아래 구석으로 내리고 반투명하게 둔다. */
 /* ★2026-08-10 — 뷰포트 고정이라 그 자리 글자를 늘 덮었다.
    오른쪽 끝으로 옮기고, 알약 밖은 클릭이 그대로 통과하게 한다. */
-#spd{position:fixed;right:10px;z-index:10000;left:auto;bottom:calc(6px + env(safe-area-inset-bottom));top:auto;z-index:9998;opacity:.5;pointer-events:none;font-family:'Lato','Noto Sans KR',sans-serif;
+#spd{position:fixed;right:10px;left:auto;bottom:calc(6px + env(safe-area-inset-bottom));top:auto;z-index:2147483000;opacity:.5;pointer-events:none;font-family:'Lato','Noto Sans KR',sans-serif;
  -webkit-user-select:none;user-select:none;touch-action:pan-y}
 #spd.dragging{touch-action:none}
 /* 팝업이 열려 있는 동안에는 물러난다 — 글자를 가리지 않게 */
 /* ★2026-08-10 — 속도계는 대시보드 전용.
    뷰포트에 고정돼 있어 페이지가 열리면 그 좌표의 글자를 덮고 클릭까지 가로챘다.
    재는 것은 화면 전환이므로 대시보드에만 있어도 목적을 다한다. */
-body:has(.fsp.on) #spd, body:has(.gd-ov) #spd, body:has(.rd-ov) #spd, body:has(.mf-ov) #spd{
-  display:none!important}
+/* 알약은 모든 화면에서 보인다 */
 #spd .pill,#spd .card{pointer-events:auto;display:none;background:#fff;border-radius:11px;padding:9px 11px;min-width:132px;box-shadow:0 8px 24px rgba(0,0,0,.18);cursor:grab}
 #spd .pill{display:flex;align-items:center;gap:7px;background:rgba(255,255,255,.96);
  border:1px solid rgba(16,27,43,.1);border-radius:999px;padding:8px 14px;cursor:pointer;
@@ -2473,6 +2472,7 @@ body:has(.fsp.on) #spd, body:has(.gd-ov) #spd, body:has(.rd-ov) #spd, body:has(.
  function start(e){
  var p=e.touches?e.touches[0]:e; down=true; el._moved=false; el.classList.add('dragging');
  sx=p.clientX; sy=p.clientY; var r=el.getBoundingClientRect(); ox=r.left; oy=r.top;
+ el.style.right='auto'; el.style.bottom='auto';
  document.addEventListener('mousemove',move); document.addEventListener('mouseup',end);
  document.addEventListener('touchmove',move,{passive:false}); document.addEventListener('touchend',end);
  }
@@ -2490,15 +2490,24 @@ body:has(.fsp.on) #spd, body:has(.gd-ov) #spd, body:has(.rd-ov) #spd, body:has(.
  }
  el.addEventListener('mousedown',start); el.addEventListener('touchstart',start,{passive:true});
  var C=document.getElementById('spdC');
- C.addEventListener('click',function(e){
- e.stopPropagation(); if(el._moved) return;
+ function doCopy(e){
+ if(e){ e.stopPropagation(); e.preventDefault(); }
+ if(el._moved) return;
  var txt=(K(2700)||'SWITCH SPEED')+'\n'+V.textContent+'s\n'+S.textContent;
- var ok=function(){ var o=C.textContent; C.textContent=K(2707)||'copied';
+ var done=function(){ C.textContent=K(2707)||'copied';
    setTimeout(function(){ C.textContent=K(2708)||'tap to copy'; },1200); };
- if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(ok,ok); }
- else{ var ta=document.createElement('textarea'); ta.value=txt; ta.style.position='fixed'; ta.style.opacity=0;
-   document.body.appendChild(ta); ta.select(); try{document.execCommand('copy')}catch(e){} ta.remove(); ok(); }
- });
+ var ta=document.createElement('textarea');
+ ta.value=txt; ta.setAttribute('readonly','');
+ ta.style.cssText='position:fixed;top:0;left:0;opacity:0;pointer-events:none';
+ document.body.appendChild(ta); ta.focus(); ta.select(); ta.setSelectionRange(0,txt.length);
+ var ok=false; try{ ok=document.execCommand('copy'); }catch(_){}
+ ta.remove();
+ if(ok){ done(); return; }
+ if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(done,done); }
+ else done();
+ }
+ C.addEventListener('click',doCopy);
+ el.querySelector('.card').addEventListener('dblclick',doCopy);
 
  /* 재기 — 클릭이 들어온 순간부터 화면이 바뀐 순간까지 */
  function show(ms,what){
