@@ -7818,17 +7818,6 @@ function toggleLangMenu() {
 // 언어 변경
 window._cgoRT = function(){ try{ var L=window._LANG; if(L && L!=='ko' && typeof _cgoApplyDictionary==='function'){ _cgoApplyDictionary(L); } }catch(e){} };
 function setLang(lang) {
-  /* ★2026-08-11 — 사전은 바깥 파일에 있다. 없으면 먼저 받고 다시 부른다.
-     두 번째부터는 기기에 남아 있어 기다림이 없다. */
-  try{
-    if(window.cgoLoadDict && !(window.CGO_DICT_READY||{})[lang]){
-      var _el=document.getElementById('cgo-pack-'+lang);
-      if(!_el || !_el.textContent){
-        window.cgoLoadDict(lang).then(function(){ setLang(lang); });
-        return;
-      }
-    }
-  }catch(e){}
   /* ★2026-08-07 — 앱에 내장된 UI 번역을 먼저 붙인다(네트워크 0).
      처음 고른 언어도 기다림 없이 즉시 번역된다. */
   try{ if(window._cgoMergeEmbedded) window._cgoMergeEmbedded(lang); }catch(e){}
