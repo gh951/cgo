@@ -466,7 +466,10 @@ main{padding:14px 16px 22px;display:flex;flex-direction:column;gap:10px}
 .tr-clear{background:none;border:0;color:#b9c4cd;font-size:10px;cursor:pointer;padding:2px 0;margin-top:6px}
 
 
-html,body{overflow-x:hidden;max-width:100%;overscroll-behavior-y:contain}
+/* ★2026-08-10 — 일반 앱처럼 스크롤한다.
+   세로는 언제나 열려 있고, 관성(부드럽게 미끄러지기)도 켠다. */
+html,body{overflow-x:hidden;overflow-y:auto;max-width:100%;-webkit-overflow-scrolling:touch;scroll-behavior:smooth}
+html{height:auto}
 body{position:relative}
 #spd{max-width:calc(100vw - 12px)}
 .pg,.card,.tr-wrap,main{max-width:100%;box-sizing:border-box}
@@ -2294,8 +2297,11 @@ window.buildSpecPage = function(key, name){
  알약을 누르면 카드로 펼쳐지고, 잡아끌어 자리를 옮길 수 있다.
  재는 방식: 클릭이 들어온 순간부터 화면 내용이 새 것으로 바뀐 순간까지를
  브라우저 고정밀 시계(performance.now)로 실제 측정한다. 미리 정한 숫자가 아니다. */
-#spd{position:fixed;left:14px;top:180px;z-index:9998;font-family:'Lato','Noto Sans KR',sans-serif;
- -webkit-user-select:none;user-select:none;touch-action:none}
+/* ★2026-08-10 — 속도계가 화면 한가운데서 스크롤을 가로막았다.
+   아래 구석으로 내리고, 끌 때만 막는다. 평소엔 페이지가 그대로 스크롤된다. */
+#spd{position:fixed;left:12px;bottom:16px;top:auto;z-index:9998;font-family:'Lato','Noto Sans KR',sans-serif;
+ -webkit-user-select:none;user-select:none;touch-action:pan-y}
+#spd.dragging{touch-action:none}
 #spd .pill{display:flex;align-items:center;gap:7px;background:rgba(12,22,34,.92);
  border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:8px 14px;cursor:pointer;
  box-shadow:0 6px 20px rgba(0,0,0,.3)}
@@ -2335,7 +2341,7 @@ window.buildSpecPage = function(key, name){
  /* 잡아끌어 옮기기 — 알약도 카드도 */
  var sx,sy,ox,oy,down=false;
  function start(e){
- var p=e.touches?e.touches[0]:e; down=true; el._moved=false;
+ var p=e.touches?e.touches[0]:e; down=true; el._moved=false; el.classList.add('dragging');
  sx=p.clientX; sy=p.clientY; var r=el.getBoundingClientRect(); ox=r.left; oy=r.top;
  document.addEventListener('mousemove',move); document.addEventListener('mouseup',end);
  document.addEventListener('touchmove',move,{passive:false}); document.addEventListener('touchend',end);
@@ -2347,7 +2353,7 @@ window.buildSpecPage = function(key, name){
  el.style.left=Math.max(4,Math.min(innerWidth-60,ox+dx))+'px';
  el.style.top =Math.max(4,Math.min(innerHeight-40,oy+dy))+'px';
  }
- function end(){ down=false;
+ function end(){ down=false; el.classList.remove('dragging');
  document.removeEventListener('mousemove',move); document.removeEventListener('mouseup',end);
  document.removeEventListener('touchmove',move); document.removeEventListener('touchend',end);
  setTimeout(function(){ el._moved=false; },40);
