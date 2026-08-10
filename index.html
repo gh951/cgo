@@ -3024,18 +3024,22 @@ try{
  var PACK={}, CUR=null;
 
  /* 사전 — 고른 언어 하나만 받는다. 두 번째부터는 기기에 남아 있다 */
+ /* ★v4 — 사전은 .js 로 받는다. fetch가 막힌 환경(파일 직접 열기·일부 미리보기)에서도
+    <script src>는 언제나 읽힌다. 받은 것은 기기에 남아 두 번째부터는 즉시. */
+ function load(src){
+  return new Promise(function(ok){
+   var s=document.createElement('script');
+   s.src=src; s.async=false;
+   s.onload=function(){ ok(true); }; s.onerror=function(){ ok(false); };
+   document.head.appendChild(s);
+  });
+ }
  function fetchDict(L){
-  var jobs=[['pack','lang/pack.'+L+'.json']];
-  if(L!=='ko') jobs.push(['ui','lang/ui.'+L+'.json']);
-  return Promise.all(jobs.map(function(j){
-   var key=CK+j[0]+'.'+L;
-   try{ var c=localStorage.getItem(key); if(c) return JSON.parse(c); }catch(e){}
-   return fetch(j[1]).then(function(r){ return r.ok?r.text():'null'; }).then(function(t){
-    try{ localStorage.setItem(key,t); }catch(e){}
-    try{ return JSON.parse(t); }catch(e){ return null; }
-   }).catch(function(){ return null; });
-  })).then(function(rs){
-   PACK[L]={ num:rs[0]||null, str:rs[1]||null };
+  var need=[];
+  if(!(window.CGO_PACK&&window.CGO_PACK[L])) need.push(load('lang/pack.'+L+'.js'));
+  if(L!=='ko' && !(window.CGO_UI&&window.CGO_UI[L])) need.push(load('lang/ui.'+L+'.js'));
+  return Promise.all(need).then(function(){
+   PACK[L]={ num:(window.CGO_PACK||{})[L]||null, str:(window.CGO_UI||{})[L]||null };
    return PACK[L];
   });
  }
@@ -73170,5 +73174,88 @@ console.log('[C-63 v2.2] 시작: 도→솔 상승 (350ms) · 종료: 도-미-솔
  }
  if(!wrap()){ var iv=setInterval(function(){ if(wrap()) clearInterval(iv); },200);
   setTimeout(function(){ clearInterval(iv); },8000); }
+})();
+</script>
+<div id="spd">
+ <div class="pill"><span class="dot"></span><b>SWITCH SPEED</b></div>
+ <div class="card">
+  <div class="hd"><span>SWITCH SPEED</span><button data-min>–</button></div>
+  <div class="val" id="spdV">--</div>
+  <div class="sub" id="spdS">waiting</div>
+  <div class="cp" id="spdC">tap to copy</div>
+ </div>
+</div>
+<style>
+#spd{position:fixed;right:10px;left:auto;bottom:calc(6px + env(safe-area-inset-bottom));top:auto;
+ z-index:2147483000;opacity:.55;pointer-events:none;font-family:'Lato','Noto Sans KR',sans-serif;
+ -webkit-user-select:none;user-select:none;touch-action:pan-y}
+#spd.dragging{touch-action:none}
+#spd:hover,#spd.open{opacity:1}
+#spd .pill{pointer-events:auto;display:flex;align-items:center;gap:7px;
+ background:rgba(255,255,255,.96);border:1px solid rgba(16,27,43,.1);border-radius:999px;
+ padding:8px 14px;cursor:pointer;box-shadow:0 6px 20px rgba(15,27,46,.14)}
+#spd .dot{width:6px;height:6px;border-radius:50%;background:#d4a843;flex:none}
+#spd .pill b{font-size:9.5px;font-weight:800;color:#2c3e50;white-space:nowrap}
+#spd .card{pointer-events:auto;display:none;background:#fff;border-radius:14px;
+ padding:12px 14px 10px;min-width:132px;box-shadow:0 10px 34px rgba(15,27,46,.2);cursor:grab}
+#spd.open .pill{display:none}
+#spd.open .card{display:block}
+#spd .hd{display:flex;align-items:center;justify-content:space-between;gap:10px}
+#spd .hd span{font-size:9px;font-weight:800;color:#94a3b8;letter-spacing:.1em}
+#spd .hd button{border:0;background:none;color:#94a3b8;font-size:15px;cursor:pointer;padding:0 2px}
+#spd .val{font-size:19px;font-weight:900;color:#0f1b2e;font-variant-numeric:tabular-nums;margin-top:4px}
+#spd .sub{font-size:8.5px;color:#64748b;margin-top:3px;line-height:1.5}
+#spd .cp{font-size:8px;color:#b3bec8;margin-top:6px;cursor:pointer}
+</style>
+<script>
+/* 화면 교체에 걸린 시간을 실제로 잰다 — 클릭한 순간부터 새 내용이 놓인 순간까지 */
+(function(){
+ var el=document.getElementById('spd'); if(!el) return;
+ var V=document.getElementById('spdV'), S=document.getElementById('spdS'),
+     C=document.getElementById('spdC'), pill=el.querySelector('.pill');
+ var n=0,best=null,t0=null,what='';
+ function show(ms){ n++; if(best===null||ms<best) best=ms;
+  V.textContent=(ms/1000).toFixed(3);
+  S.textContent=what+' · '+n+' · '+(best/1000).toFixed(3)+'s'; }
+ new MutationObserver(function(){ if(t0===null) return;
+  var ms=performance.now()-t0; t0=null;
+  requestAnimationFrame(function(){ show(ms); });
+ }).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class','style']});
+ document.addEventListener('click',function(e){
+  var t=e.target.closest('[data-lang],[data-page],[data-go],[data-sec],[onclick],button,a,.card');
+  if(!t||el.contains(t)) return;
+  what=t.getAttribute('data-lang')?('lang '+t.getAttribute('data-lang')):
+       (t.getAttribute('data-page')||t.getAttribute('data-go')||t.getAttribute('data-sec')||'page');
+  t0=performance.now(); },true);
+ pill.addEventListener('click',function(){ if(el._moved) return; el.classList.add('open'); });
+ el.querySelector('[data-min]').addEventListener('click',function(e){ e.stopPropagation(); el.classList.remove('open'); });
+ var sx,sy,ox,oy,down=false;
+ function start(e){ var p=e.touches?e.touches[0]:e; down=true; el._moved=false; el.classList.add('dragging');
+  sx=p.clientX; sy=p.clientY; var r=el.getBoundingClientRect(); ox=r.left; oy=r.top;
+  document.addEventListener('mousemove',move); document.addEventListener('mouseup',end);
+  document.addEventListener('touchmove',move,{passive:false}); document.addEventListener('touchend',end); }
+ function move(e){ if(!down) return; var p=e.touches?e.touches[0]:e;
+  var dx=p.clientX-sx, dy=p.clientY-sy;
+  if(Math.abs(dx)+Math.abs(dy)>4){ if(!el._moved){ el.style.right='auto'; el.style.bottom='auto'; }
+   el._moved=true; if(e.cancelable) e.preventDefault(); }
+  if(!el._moved) return;
+  el.style.left=Math.max(4,Math.min(innerWidth-60,ox+dx))+'px';
+  el.style.top=Math.max(4,Math.min(innerHeight-40,oy+dy))+'px'; }
+ function end(){ down=false; el.classList.remove('dragging');
+  document.removeEventListener('mousemove',move); document.removeEventListener('mouseup',end);
+  document.removeEventListener('touchmove',move); document.removeEventListener('touchend',end);
+  setTimeout(function(){ el._moved=false; },40); }
+ el.addEventListener('mousedown',start); el.addEventListener('touchstart',start,{passive:true});
+ function copy(e){ if(e){ e.stopPropagation(); e.preventDefault(); } if(el._moved) return;
+  var txt='SWITCH SPEED\n'+V.textContent+'s\n'+S.textContent;
+  var ta=document.createElement('textarea'); ta.value=txt; ta.setAttribute('readonly','');
+  ta.style.cssText='position:fixed;top:0;left:0;opacity:0';
+  document.body.appendChild(ta); ta.select(); ta.setSelectionRange(0,txt.length);
+  var ok=false; try{ ok=document.execCommand('copy'); }catch(_){} ta.remove();
+  function done(){ C.textContent='copied'; setTimeout(function(){ C.textContent='tap to copy'; },1200); }
+  if(ok) return done();
+  if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(done,done); else done(); }
+ C.addEventListener('click',copy);
+ el.querySelector('.card').addEventListener('dblclick',copy);
 })();
 </script>
