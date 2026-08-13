@@ -21777,6 +21777,7 @@ function doBatch(bi){
   };
 
 try{
+var _of=window.fetch.bind(window);
 window.fetch=function(u,o){
     try{
       var url=(typeof u==='string')?u:((u&&u.url)||'');

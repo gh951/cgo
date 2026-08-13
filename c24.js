@@ -1,3 +1,4 @@
+function _cK(n,f){try{var v=window.K&&window.K(n);return (v&&v!==String(n))?v:f;}catch(e){return f;}}
 function _c24Start(){ try{ if(typeof _c24CompStart==="function") return _c24CompStart(); }catch(e){} }
 
 function _c24StartDisease(key){
@@ -12,13 +13,13 @@ function _c24StartDisease(key){
   // 단계별 안내 생성
   var stepColors = {face:'56,189,248', tongue:'248,113,113', eye:'52,211,153', skin:'244,114,182', hand:'251,191,36', hand_back:'251,191,36', hand_palm:'251,191,36'};
   var stepGuides = {
-    face:  {ico:'👤', name:'얼굴', cam:'📱 전면 카메라', dist:'30~40cm', tips:['밝은 정면 조명', '안경·모자 제거', '무표정으로 정면 응시']},
-    tongue:{ico:'👅', name:'혀',   cam:'📱 전면 카메라', dist:'15~20cm', tips:['혀를 최대한 내밀기', '혀 전체가 화면에 보이도록', '식사 30분 후 권장']},
-    eye:   {ico:'👁️', name:'눈',   cam:'📱 전면 카메라', dist:'15~20cm', tips:['위를 약간 봐서 흰자 노출', '렌즈 제거 권장', '눈을 크게 뜨기']},
-    skin:  {ico:'🎨', name:'피부', cam:'📱 전면 카메라', dist:'10~15cm', tips:['맨 피부 상태 권장', '크림·화장 없이', '자연광 또는 백색등']},
-    hand:  {ico:'✋', name:'손',   cam:'📷 후면 카메라', dist:'20~25cm', tips:['손가락 가지런히 펴기', '매니큐어 제거 권장', '손 흔들지 않기']},
-    hand_back: {ico:'🤚', name:'손등', cam:'📷 후면 카메라', dist:'20~25cm', tips:['손톱 잘 보이게', '매니큐어 제거 권장', '손 흔들지 않기']},
-    hand_palm: {ico:'✋', name:'손바닥', cam:'📷 후면 카메라', dist:'20~25cm', tips:['손바닥 평평하게 펼치기', '손금이 보이도록', '손 흔들지 않기']}
+    face:  {ico:'👤', name:'얼굴', cam:_cK(8608,'📱 전면 카메라'), dist:'30~40cm', tips:['밝은 정면 조명', '안경·모자 제거', '무표정으로 정면 응시']},
+    tongue:{ico:'👅', name:'혀',   cam:_cK(8608,'📱 전면 카메라'), dist:'15~20cm', tips:['혀를 최대한 내밀기', '혀 전체가 화면에 보이도록', '식사 30분 후 권장']},
+    eye:   {ico:'👁️', name:'눈',   cam:_cK(8608,'📱 전면 카메라'), dist:'15~20cm', tips:['위를 약간 봐서 흰자 노출', '렌즈 제거 권장', '눈을 크게 뜨기']},
+    skin:  {ico:'🎨', name:'피부', cam:_cK(8608,'📱 전면 카메라'), dist:'10~15cm', tips:['맨 피부 상태 권장', '크림·화장 없이', '자연광 또는 백색등']},
+    hand:  {ico:'✋', name:'손',   cam:_cK(8624,'📷 후면 카메라'), dist:'20~25cm', tips:['손가락 가지런히 펴기', _cK(8627,'매니큐어 제거 권장'), '손 흔들지 않기']},
+    hand_back: {ico:'🤚', name:'손등', cam:_cK(8624,'📷 후면 카메라'), dist:'20~25cm', tips:['손톱 잘 보이게', _cK(8627,'매니큐어 제거 권장'), '손 흔들지 않기']},
+    hand_palm: {ico:'✋', name:'손바닥', cam:_cK(8624,'📷 후면 카메라'), dist:'20~25cm', tips:['손바닥 평평하게 펼치기', '손금이 보이도록', '손 흔들지 않기']}
   };
 
   var totalSec = (flow.times||[]).reduce(function(a,b){return a+b;},0);
@@ -51,16 +52,16 @@ function _c24StartDisease(key){
     +stepsHtml
     // 공통 주의
     +'<div style="background:rgba(251,191,36,.07);border:1px solid rgba(251,191,36,.2);border-radius:10px;padding:10px 14px;margin:10px 0 16px;">'
-    +'<div style="font-size:11px;font-weight:800;color:#fbbf24;margin-bottom:4px;">⚠️ 공통 주의사항</div>'
+    +'<div style="font-size:11px;font-weight:800;color:#fbbf24;margin-bottom:4px;">'+_cK(8631,'⚠️ 공통 주의사항')+'</div>'
     +'<div style="font-size:11px;color:rgba(240,230,200,.8);line-height:1.9;">'
-    +'• 밝은 곳에서 측정할수록 정확도가 높아집니다<br>'
+    +_cK(8632,'• 밝은 곳에서 측정할수록 정확도가 높아집니다')+'<br>'
     +(flow.total>1 ? '• 단계가 끝나면 자동으로 다음 단계로 넘어갑니다<br>' : '')
-    +'• 본 분석은 참고용이며 의학적 진단을 대체하지 않습니다'
+    +_cK(8635,'• 본 분석은 참고용이며 의학적 진단을 대체하지 않습니다')
     +'</div></div>'
     // 버튼
     +'<div style="display:flex;gap:10px;">'
     +'<button onclick="_c24DiseaseRealStart(\''+key+'\')" style="flex:3;padding:15px;background:linear-gradient(135deg,rgba(212,168,67,.3),rgba(248,113,113,.2));border:2px solid rgba(212,168,67,.7);border-radius:14px;color:#d4a843;font-size:15px;font-weight:900;cursor:pointer;">✅ 이해했습니다 — 측정 시작</button>'
-    +'<button onclick="document.getElementById(\'c24-disease-guide-pop\').remove()" style="flex:1;padding:15px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:14px;color:rgba(240,230,200,.5);font-size:13px;cursor:pointer;">나중에</button>'
+    +'<button onclick="document.getElementById(\'c24-disease-guide-pop\').remove()" style="flex:1;padding:15px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:14px;color:rgba(240,230,200,.5);font-size:13px;cursor:pointer;">'+_cK(8637,'나중에')+'</button>'
     +'</div></div>';
 
   document.body.appendChild(pop);
@@ -95,13 +96,13 @@ function _c24StartDisease(key){
   // 단계별 안내 생성
   var stepColors = {face:'56,189,248', tongue:'248,113,113', eye:'52,211,153', skin:'244,114,182', hand:'251,191,36', hand_back:'251,191,36', hand_palm:'251,191,36'};
   var stepGuides = {
-    face:  {ico:'👤', name:'얼굴', cam:'📱 전면 카메라', dist:'30~40cm', tips:['밝은 정면 조명', '안경·모자 제거', '무표정으로 정면 응시']},
-    tongue:{ico:'👅', name:'혀',   cam:'📱 전면 카메라', dist:'15~20cm', tips:['혀를 최대한 내밀기', '혀 전체가 화면에 보이도록', '식사 30분 후 권장']},
-    eye:   {ico:'👁️', name:'눈',   cam:'📱 전면 카메라', dist:'15~20cm', tips:['위를 약간 봐서 흰자 노출', '렌즈 제거 권장', '눈을 크게 뜨기']},
-    skin:  {ico:'🎨', name:'피부', cam:'📱 전면 카메라', dist:'10~15cm', tips:['맨 피부 상태 권장', '크림·화장 없이', '자연광 또는 백색등']},
-    hand:  {ico:'✋', name:'손',   cam:'📷 후면 카메라', dist:'20~25cm', tips:['손가락 가지런히 펴기', '매니큐어 제거 권장', '손 흔들지 않기']},
-    hand_back: {ico:'🤚', name:'손등', cam:'📷 후면 카메라', dist:'20~25cm', tips:['손톱 잘 보이게', '매니큐어 제거 권장', '손 흔들지 않기']},
-    hand_palm: {ico:'✋', name:'손바닥', cam:'📷 후면 카메라', dist:'20~25cm', tips:['손바닥 평평하게 펼치기', '손금이 보이도록', '손 흔들지 않기']}
+    face:  {ico:'👤', name:'얼굴', cam:_cK(8608,'📱 전면 카메라'), dist:'30~40cm', tips:['밝은 정면 조명', '안경·모자 제거', '무표정으로 정면 응시']},
+    tongue:{ico:'👅', name:'혀',   cam:_cK(8608,'📱 전면 카메라'), dist:'15~20cm', tips:['혀를 최대한 내밀기', '혀 전체가 화면에 보이도록', '식사 30분 후 권장']},
+    eye:   {ico:'👁️', name:'눈',   cam:_cK(8608,'📱 전면 카메라'), dist:'15~20cm', tips:['위를 약간 봐서 흰자 노출', '렌즈 제거 권장', '눈을 크게 뜨기']},
+    skin:  {ico:'🎨', name:'피부', cam:_cK(8608,'📱 전면 카메라'), dist:'10~15cm', tips:['맨 피부 상태 권장', '크림·화장 없이', '자연광 또는 백색등']},
+    hand:  {ico:'✋', name:'손',   cam:_cK(8624,'📷 후면 카메라'), dist:'20~25cm', tips:['손가락 가지런히 펴기', _cK(8627,'매니큐어 제거 권장'), '손 흔들지 않기']},
+    hand_back: {ico:'🤚', name:'손등', cam:_cK(8624,'📷 후면 카메라'), dist:'20~25cm', tips:['손톱 잘 보이게', _cK(8627,'매니큐어 제거 권장'), '손 흔들지 않기']},
+    hand_palm: {ico:'✋', name:'손바닥', cam:_cK(8624,'📷 후면 카메라'), dist:'20~25cm', tips:['손바닥 평평하게 펼치기', '손금이 보이도록', '손 흔들지 않기']}
   };
 
   var totalSec = (flow.times||[]).reduce(function(a,b){return a+b;},0);
@@ -134,16 +135,16 @@ function _c24StartDisease(key){
     +stepsHtml
     // 공통 주의
     +'<div style="background:rgba(251,191,36,.07);border:1px solid rgba(251,191,36,.2);border-radius:10px;padding:10px 14px;margin:10px 0 16px;">'
-    +'<div style="font-size:11px;font-weight:800;color:#fbbf24;margin-bottom:4px;">⚠️ 공통 주의사항</div>'
+    +'<div style="font-size:11px;font-weight:800;color:#fbbf24;margin-bottom:4px;">'+_cK(8631,'⚠️ 공통 주의사항')+'</div>'
     +'<div style="font-size:11px;color:rgba(240,230,200,.8);line-height:1.9;">'
-    +'• 밝은 곳에서 측정할수록 정확도가 높아집니다<br>'
+    +_cK(8632,'• 밝은 곳에서 측정할수록 정확도가 높아집니다')+'<br>'
     +(flow.total>1 ? '• 단계가 끝나면 자동으로 다음 단계로 넘어갑니다<br>' : '')
-    +'• 본 분석은 참고용이며 의학적 진단을 대체하지 않습니다'
+    +_cK(8635,'• 본 분석은 참고용이며 의학적 진단을 대체하지 않습니다')
     +'</div></div>'
     // 버튼
     +'<div style="display:flex;gap:10px;">'
     +'<button onclick="_c24DiseaseRealStart(\''+key+'\')" style="flex:3;padding:15px;background:linear-gradient(135deg,rgba(212,168,67,.3),rgba(248,113,113,.2));border:2px solid rgba(212,168,67,.7);border-radius:14px;color:#d4a843;font-size:15px;font-weight:900;cursor:pointer;">✅ 이해했습니다 — 측정 시작</button>'
-    +'<button onclick="document.getElementById(\'c24-disease-guide-pop\').remove()" style="flex:1;padding:15px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:14px;color:rgba(240,230,200,.5);font-size:13px;cursor:pointer;">나중에</button>'
+    +'<button onclick="document.getElementById(\'c24-disease-guide-pop\').remove()" style="flex:1;padding:15px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:14px;color:rgba(240,230,200,.5);font-size:13px;cursor:pointer;">'+_cK(8637,'나중에')+'</button>'
     +'</div></div>';
 
   document.body.appendChild(pop);
@@ -181,13 +182,13 @@ function _c24StartDisease(key){
   // 단계별 안내 생성
   var stepColors = {face:'56,189,248', tongue:'248,113,113', eye:'52,211,153', skin:'244,114,182', hand:'251,191,36', hand_back:'251,191,36', hand_palm:'251,191,36'};
   var stepGuides = {
-    face:  {ico:'👤', name:'얼굴', cam:'📱 전면 카메라', dist:'30~40cm', tips:['밝은 정면 조명', '안경·모자 제거', '무표정으로 정면 응시']},
-    tongue:{ico:'👅', name:'혀',   cam:'📱 전면 카메라', dist:'15~20cm', tips:['혀를 최대한 내밀기', '혀 전체가 화면에 보이도록', '식사 30분 후 권장']},
-    eye:   {ico:'👁️', name:'눈',   cam:'📱 전면 카메라', dist:'15~20cm', tips:['위를 약간 봐서 흰자 노출', '렌즈 제거 권장', '눈을 크게 뜨기']},
-    skin:  {ico:'🎨', name:'피부', cam:'📱 전면 카메라', dist:'10~15cm', tips:['맨 피부 상태 권장', '크림·화장 없이', '자연광 또는 백색등']},
-    hand:  {ico:'✋', name:'손',   cam:'📷 후면 카메라', dist:'20~25cm', tips:['손가락 가지런히 펴기', '매니큐어 제거 권장', '손 흔들지 않기']},
-    hand_back: {ico:'🤚', name:'손등', cam:'📷 후면 카메라', dist:'20~25cm', tips:['손톱 잘 보이게', '매니큐어 제거 권장', '손 흔들지 않기']},
-    hand_palm: {ico:'✋', name:'손바닥', cam:'📷 후면 카메라', dist:'20~25cm', tips:['손바닥 평평하게 펼치기', '손금이 보이도록', '손 흔들지 않기']}
+    face:  {ico:'👤', name:'얼굴', cam:_cK(8608,'📱 전면 카메라'), dist:'30~40cm', tips:['밝은 정면 조명', '안경·모자 제거', '무표정으로 정면 응시']},
+    tongue:{ico:'👅', name:'혀',   cam:_cK(8608,'📱 전면 카메라'), dist:'15~20cm', tips:['혀를 최대한 내밀기', '혀 전체가 화면에 보이도록', '식사 30분 후 권장']},
+    eye:   {ico:'👁️', name:'눈',   cam:_cK(8608,'📱 전면 카메라'), dist:'15~20cm', tips:['위를 약간 봐서 흰자 노출', '렌즈 제거 권장', '눈을 크게 뜨기']},
+    skin:  {ico:'🎨', name:'피부', cam:_cK(8608,'📱 전면 카메라'), dist:'10~15cm', tips:['맨 피부 상태 권장', '크림·화장 없이', '자연광 또는 백색등']},
+    hand:  {ico:'✋', name:'손',   cam:_cK(8624,'📷 후면 카메라'), dist:'20~25cm', tips:['손가락 가지런히 펴기', _cK(8627,'매니큐어 제거 권장'), '손 흔들지 않기']},
+    hand_back: {ico:'🤚', name:'손등', cam:_cK(8624,'📷 후면 카메라'), dist:'20~25cm', tips:['손톱 잘 보이게', _cK(8627,'매니큐어 제거 권장'), '손 흔들지 않기']},
+    hand_palm: {ico:'✋', name:'손바닥', cam:_cK(8624,'📷 후면 카메라'), dist:'20~25cm', tips:['손바닥 평평하게 펼치기', '손금이 보이도록', '손 흔들지 않기']}
   };
 
   var totalSec = (flow.times||[]).reduce(function(a,b){return a+b;},0);
@@ -220,16 +221,16 @@ function _c24StartDisease(key){
     +stepsHtml
     // 공통 주의
     +'<div style="background:rgba(251,191,36,.07);border:1px solid rgba(251,191,36,.2);border-radius:10px;padding:10px 14px;margin:10px 0 16px;">'
-    +'<div style="font-size:11px;font-weight:800;color:#fbbf24;margin-bottom:4px;">⚠️ 공통 주의사항</div>'
+    +'<div style="font-size:11px;font-weight:800;color:#fbbf24;margin-bottom:4px;">'+_cK(8631,'⚠️ 공통 주의사항')+'</div>'
     +'<div style="font-size:11px;color:rgba(240,230,200,.8);line-height:1.9;">'
-    +'• 밝은 곳에서 측정할수록 정확도가 높아집니다<br>'
+    +_cK(8632,'• 밝은 곳에서 측정할수록 정확도가 높아집니다')+'<br>'
     +(flow.total>1 ? '• 단계가 끝나면 자동으로 다음 단계로 넘어갑니다<br>' : '')
-    +'• 본 분석은 참고용이며 의학적 진단을 대체하지 않습니다'
+    +_cK(8635,'• 본 분석은 참고용이며 의학적 진단을 대체하지 않습니다')
     +'</div></div>'
     // 버튼
     +'<div style="display:flex;gap:10px;">'
     +'<button onclick="_c24DiseaseRealStart(\''+key+'\')" style="flex:3;padding:15px;background:linear-gradient(135deg,rgba(212,168,67,.3),rgba(248,113,113,.2));border:2px solid rgba(212,168,67,.7);border-radius:14px;color:#d4a843;font-size:15px;font-weight:900;cursor:pointer;">✅ 이해했습니다 — 측정 시작</button>'
-    +'<button onclick="document.getElementById(\'c24-disease-guide-pop\').remove()" style="flex:1;padding:15px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:14px;color:rgba(240,230,200,.5);font-size:13px;cursor:pointer;">나중에</button>'
+    +'<button onclick="document.getElementById(\'c24-disease-guide-pop\').remove()" style="flex:1;padding:15px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:14px;color:rgba(240,230,200,.5);font-size:13px;cursor:pointer;">'+_cK(8637,'나중에')+'</button>'
     +'</div></div>';
 
   document.body.appendChild(pop);
@@ -273,13 +274,13 @@ function _c24StartDisease(key){
   // 단계별 안내 생성
   var stepColors = {face:'56,189,248', tongue:'248,113,113', eye:'52,211,153', skin:'244,114,182', hand:'251,191,36', hand_back:'251,191,36', hand_palm:'251,191,36'};
   var stepGuides = {
-    face:  {ico:'👤', name:'얼굴', cam:'📱 전면 카메라', dist:'30~40cm', tips:['밝은 정면 조명', '안경·모자 제거', '무표정으로 정면 응시']},
-    tongue:{ico:'👅', name:'혀',   cam:'📱 전면 카메라', dist:'15~20cm', tips:['혀를 최대한 내밀기', '혀 전체가 화면에 보이도록', '식사 30분 후 권장']},
-    eye:   {ico:'👁️', name:'눈',   cam:'📱 전면 카메라', dist:'15~20cm', tips:['위를 약간 봐서 흰자 노출', '렌즈 제거 권장', '눈을 크게 뜨기']},
-    skin:  {ico:'🎨', name:'피부', cam:'📱 전면 카메라', dist:'10~15cm', tips:['맨 피부 상태 권장', '크림·화장 없이', '자연광 또는 백색등']},
-    hand:  {ico:'✋', name:'손',   cam:'📷 후면 카메라', dist:'20~25cm', tips:['손가락 가지런히 펴기', '매니큐어 제거 권장', '손 흔들지 않기']},
-    hand_back: {ico:'🤚', name:'손등', cam:'📷 후면 카메라', dist:'20~25cm', tips:['손톱 잘 보이게', '매니큐어 제거 권장', '손 흔들지 않기']},
-    hand_palm: {ico:'✋', name:'손바닥', cam:'📷 후면 카메라', dist:'20~25cm', tips:['손바닥 평평하게 펼치기', '손금이 보이도록', '손 흔들지 않기']}
+    face:  {ico:'👤', name:'얼굴', cam:_cK(8608,'📱 전면 카메라'), dist:'30~40cm', tips:['밝은 정면 조명', '안경·모자 제거', '무표정으로 정면 응시']},
+    tongue:{ico:'👅', name:'혀',   cam:_cK(8608,'📱 전면 카메라'), dist:'15~20cm', tips:['혀를 최대한 내밀기', '혀 전체가 화면에 보이도록', '식사 30분 후 권장']},
+    eye:   {ico:'👁️', name:'눈',   cam:_cK(8608,'📱 전면 카메라'), dist:'15~20cm', tips:['위를 약간 봐서 흰자 노출', '렌즈 제거 권장', '눈을 크게 뜨기']},
+    skin:  {ico:'🎨', name:'피부', cam:_cK(8608,'📱 전면 카메라'), dist:'10~15cm', tips:['맨 피부 상태 권장', '크림·화장 없이', '자연광 또는 백색등']},
+    hand:  {ico:'✋', name:'손',   cam:_cK(8624,'📷 후면 카메라'), dist:'20~25cm', tips:['손가락 가지런히 펴기', _cK(8627,'매니큐어 제거 권장'), '손 흔들지 않기']},
+    hand_back: {ico:'🤚', name:'손등', cam:_cK(8624,'📷 후면 카메라'), dist:'20~25cm', tips:['손톱 잘 보이게', _cK(8627,'매니큐어 제거 권장'), '손 흔들지 않기']},
+    hand_palm: {ico:'✋', name:'손바닥', cam:_cK(8624,'📷 후면 카메라'), dist:'20~25cm', tips:['손바닥 평평하게 펼치기', '손금이 보이도록', '손 흔들지 않기']}
   };
 
   var totalSec = (flow.times||[]).reduce(function(a,b){return a+b;},0);
@@ -312,16 +313,16 @@ function _c24StartDisease(key){
     +stepsHtml
     // 공통 주의
     +'<div style="background:rgba(251,191,36,.07);border:1px solid rgba(251,191,36,.2);border-radius:10px;padding:10px 14px;margin:10px 0 16px;">'
-    +'<div style="font-size:11px;font-weight:800;color:#fbbf24;margin-bottom:4px;">⚠️ 공통 주의사항</div>'
+    +'<div style="font-size:11px;font-weight:800;color:#fbbf24;margin-bottom:4px;">'+_cK(8631,'⚠️ 공통 주의사항')+'</div>'
     +'<div style="font-size:11px;color:rgba(240,230,200,.8);line-height:1.9;">'
-    +'• 밝은 곳에서 측정할수록 정확도가 높아집니다<br>'
+    +_cK(8632,'• 밝은 곳에서 측정할수록 정확도가 높아집니다')+'<br>'
     +(flow.total>1 ? '• 단계가 끝나면 자동으로 다음 단계로 넘어갑니다<br>' : '')
-    +'• 본 분석은 참고용이며 의학적 진단을 대체하지 않습니다'
+    +_cK(8635,'• 본 분석은 참고용이며 의학적 진단을 대체하지 않습니다')
     +'</div></div>'
     // 버튼
     +'<div style="display:flex;gap:10px;">'
     +'<button onclick="_c24DiseaseRealStart(\''+key+'\')" style="flex:3;padding:15px;background:linear-gradient(135deg,rgba(212,168,67,.3),rgba(248,113,113,.2));border:2px solid rgba(212,168,67,.7);border-radius:14px;color:#d4a843;font-size:15px;font-weight:900;cursor:pointer;">✅ 이해했습니다 — 측정 시작</button>'
-    +'<button onclick="document.getElementById(\'c24-disease-guide-pop\').remove()" style="flex:1;padding:15px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:14px;color:rgba(240,230,200,.5);font-size:13px;cursor:pointer;">나중에</button>'
+    +'<button onclick="document.getElementById(\'c24-disease-guide-pop\').remove()" style="flex:1;padding:15px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:14px;color:rgba(240,230,200,.5);font-size:13px;cursor:pointer;">'+_cK(8637,'나중에')+'</button>'
     +'</div></div>';
 
   document.body.appendChild(pop);
@@ -348,103 +349,103 @@ function _c24CompStart(){
     '<div style="width:100%;max-width:480px;max-height:92vh;overflow-y:auto;background:linear-gradient(160deg,#0a1628,#0d1f3c);border-radius:20px 20px 0 0;border-top:2px solid rgba(52,211,153,.4);padding:20px 18px 32px;">'
     // 헤더
     +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">'
-    +'<div style="font-size:15px;font-weight:900;color:#34d399;">🔬 C-24 종합 건강 스캔 안내</div>'
-    +'<div style="font-size:11px;color:rgba(52,211,153,.6);">총 2분 40초</div></div>'
+    +'<div style="font-size:15px;font-weight:900;color:#34d399;">'+_cK(8680,'🔬 C-24 종합 건강 스캔 안내')+'</div>'
+    +'<div style="font-size:11px;color:rgba(52,211,153,.6);">'+_cK(8681,'총 2분 40초')+'</div></div>'
 
     // 478 호흡법 설명
     +'<div style="background:rgba(56,189,248,.08);border:1px solid rgba(56,189,248,.25);border-radius:12px;padding:12px 14px;margin-bottom:14px;">'
-    +'<div style="font-size:12px;font-weight:800;color:#38bdf8;margin-bottom:6px;">🫁 4-7-8 호흡법이란?</div>'
+    +'<div style="font-size:12px;font-weight:800;color:#38bdf8;margin-bottom:6px;">'+_cK(8602,'🫁 4-7-8 호흡법이란?')+'</div>'
     +'<div style="font-size:11px;color:rgba(240,230,200,.85);line-height:1.9;">'
-    +'마음을 안정시켜 측정 정확도를 높이는 호흡법입니다.<br>'
-    +'<b style="color:#38bdf8;">① 코로 4초 들이쉬기</b> → <b style="color:#fbbf24;">② 7초 숨 멈추기</b> → <b style="color:#34d399;">③ 입으로 8초 내쉬기</b><br>'
-    +'얼굴 측정 시작 후 화면 아래 타임라인을 따라 한 번만 진행합니다.'
+    +_cK(8603,'마음을 안정시켜 측정 정확도를 높이는 호흡법입니다.')+'<br>'
+    +_cK(8604,'<b style="color:#38bdf8;">① 코로 4초 들이쉬기</b> → <b style="color:#fbbf24;">② 7초 숨 멈추기</b> → <b style="color:#34d399;">③ 입으로 8초 내쉬기</b>')+'<br>'
+    +_cK(8605,'얼굴 측정 시작 후 화면 아래 타임라인을 따라 한 번만 진행합니다.')
     +'</div></div>'
 
     // 6단계 안내
-    +'<div style="font-size:11px;font-weight:800;color:rgba(240,230,200,.6);margin-bottom:8px;letter-spacing:.05em;">📋 측정 순서 및 방법</div>'
+    +'<div style="font-size:11px;font-weight:800;color:rgba(240,230,200,.6);margin-bottom:8px;letter-spacing:.05em;">'+_cK(8606,'📋 측정 순서 및 방법')+'</div>'
     +'<div style="display:flex;flex-direction:column;gap:7px;margin-bottom:16px;">'
 
     // 1단계 얼굴
     +'<div style="background:rgba(56,189,248,.07);border:1px solid rgba(56,189,248,.2);border-radius:10px;padding:10px 12px;">'
     +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">'
     +'<span style="font-size:18px;">👤</span>'
-    +'<span style="font-size:12px;font-weight:800;color:#38bdf8;">얼굴 — 60초</span>'
-    +'<span style="font-size:10px;color:rgba(56,189,248,.5);margin-left:auto;">📱 전면 카메라</span></div>'
+    +'<span style="font-size:12px;font-weight:800;color:#38bdf8;">'+_cK(8607,'얼굴 — 60초')+'</span>'
+    +'<span style="font-size:10px;color:rgba(56,189,248,.5);margin-left:auto;">'+_cK(8608,'📱 전면 카메라')+'</span></div>'
     +'<div style="font-size:11px;color:rgba(240,230,200,.8);line-height:1.8;padding-left:26px;">'
-    +'카메라와 <b style="color:#fff;">30~40cm</b> 거리 유지<br>'
-    +'밝은 정면 조명 · 안경·모자 제거 · 무표정 유지<br>'
-    +'<span style="color:#38bdf8;">화면 하단 호흡 타임라인을 따라 4-7-8 호흡 1회</span></div></div>'
+    +_cK(8609,'카메라와 <b style="color:#fff;">30~40cm</b> 거리 유지')+'<br>'
+    +_cK(8610,'밝은 정면 조명 · 안경·모자 제거 · 무표정 유지')+'<br>'
+    +'<span style="color:#38bdf8;">'+_cK(8611,'화면 하단 호흡 타임라인을 따라 4-7-8 호흡 1회')+'</span></div></div>'
 
     // 2단계 혀
     +'<div style="background:rgba(248,113,113,.07);border:1px solid rgba(248,113,113,.2);border-radius:10px;padding:10px 12px;">'
     +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">'
     +'<span style="font-size:18px;">👅</span>'
-    +'<span style="font-size:12px;font-weight:800;color:#f87171;">혀 — 20초</span>'
-    +'<span style="font-size:10px;color:rgba(248,113,113,.5);margin-left:auto;">📱 전면 카메라</span></div>'
+    +'<span style="font-size:12px;font-weight:800;color:#f87171;">'+_cK(8612,'혀 — 20초')+'</span>'
+    +'<span style="font-size:10px;color:rgba(248,113,113,.5);margin-left:auto;">'+_cK(8608,'📱 전면 카메라')+'</span></div>'
     +'<div style="font-size:11px;color:rgba(240,230,200,.8);line-height:1.8;padding-left:26px;">'
-    +'카메라와 <b style="color:#fff;">15~20cm</b> 거리 유지<br>'
-    +'혀를 최대한 내밀어 혀 전체가 보이도록<br>'
-    +'<span style="color:#fbbf24;">식사 30분 후 측정 권장</span></div></div>'
+    +_cK(8613,'카메라와 <b style="color:#fff;">15~20cm</b> 거리 유지')+'<br>'
+    +_cK(8614,'혀를 최대한 내밀어 혀 전체가 보이도록')+'<br>'
+    +'<span style="color:#fbbf24;">'+_cK(8615,'식사 30분 후 측정 권장')+'</span></div></div>'
 
     // 3단계 눈
     +'<div style="background:rgba(56,189,248,.07);border:1px solid rgba(56,189,248,.2);border-radius:10px;padding:10px 12px;">'
     +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">'
     +'<span style="font-size:18px;">👁️</span>'
-    +'<span style="font-size:12px;font-weight:800;color:#38bdf8;">눈 — 20초</span>'
-    +'<span style="font-size:10px;color:rgba(56,189,248,.5);margin-left:auto;">📱 전면 카메라</span></div>'
+    +'<span style="font-size:12px;font-weight:800;color:#38bdf8;">'+_cK(8616,'눈 — 20초')+'</span>'
+    +'<span style="font-size:10px;color:rgba(56,189,248,.5);margin-left:auto;">'+_cK(8608,'📱 전면 카메라')+'</span></div>'
     +'<div style="font-size:11px;color:rgba(240,230,200,.8);line-height:1.8;padding-left:26px;">'
-    +'카메라와 <b style="color:#fff;">15~20cm</b> 거리 유지<br>'
-    +'위를 약간 봐서 흰자가 잘 보이게<br>'
-    +'<span style="color:#fbbf24;">콘택트렌즈 제거 권장</span></div></div>'
+    +_cK(8613,'카메라와 <b style="color:#fff;">15~20cm</b> 거리 유지')+'<br>'
+    +_cK(8617,'위를 약간 봐서 흰자가 잘 보이게')+'<br>'
+    +'<span style="color:#fbbf24;">'+_cK(8618,'콘택트렌즈 제거 권장')+'</span></div></div>'
 
     // 4단계 피부
     +'<div style="background:rgba(244,114,182,.07);border:1px solid rgba(244,114,182,.2);border-radius:10px;padding:10px 12px;">'
     +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">'
     +'<span style="font-size:18px;">🎨</span>'
-    +'<span style="font-size:12px;font-weight:800;color:#f472b6;">피부 — 30초</span>'
-    +'<span style="font-size:10px;color:rgba(244,114,182,.5);margin-left:auto;">📱 전면 카메라</span></div>'
+    +'<span style="font-size:12px;font-weight:800;color:#f472b6;">'+_cK(8619,'피부 — 30초')+'</span>'
+    +'<span style="font-size:10px;color:rgba(244,114,182,.5);margin-left:auto;">'+_cK(8608,'📱 전면 카메라')+'</span></div>'
     +'<div style="font-size:11px;color:rgba(240,230,200,.8);line-height:1.8;padding-left:26px;">'
-    +'카메라와 <b style="color:#fff;">10~15cm</b> 거리 유지<br>'
-    +'이마 또는 뺨 맨피부를 카메라에 가까이<br>'
-    +'<span style="color:#fbbf24;">크림·화장 없는 상태 권장</span></div></div>'
+    +_cK(8620,'카메라와 <b style="color:#fff;">10~15cm</b> 거리 유지')+'<br>'
+    +_cK(8621,'이마 또는 뺨 맨피부를 카메라에 가까이')+'<br>'
+    +'<span style="color:#fbbf24;">'+_cK(8622,'크림·화장 없는 상태 권장')+'</span></div></div>'
 
     // 5단계 손등
     +'<div style="background:rgba(52,211,153,.07);border:1px solid rgba(52,211,153,.2);border-radius:10px;padding:10px 12px;">'
     +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">'
     +'<span style="font-size:18px;">🤚</span>'
-    +'<span style="font-size:12px;font-weight:800;color:#34d399;">손등 — 15초</span>'
-    +'<span style="font-size:10px;color:rgba(52,211,153,.5);margin-left:auto;">📷 후면 카메라</span></div>'
+    +'<span style="font-size:12px;font-weight:800;color:#34d399;">'+_cK(8623,'손등 — 15초')+'</span>'
+    +'<span style="font-size:10px;color:rgba(52,211,153,.5);margin-left:auto;">'+_cK(8624,'📷 후면 카메라')+'</span></div>'
     +'<div style="font-size:11px;color:rgba(240,230,200,.8);line-height:1.8;padding-left:26px;">'
-    +'카메라와 <b style="color:#fff;">20~25cm</b> 거리 유지<br>'
-    +'손톱이 잘 보이도록 손등을 카메라 정면으로<br>'
-    +'<span style="color:#fbbf24;">매니큐어 제거 권장</span></div></div>'
+    +_cK(8625,'카메라와 <b style="color:#fff;">20~25cm</b> 거리 유지')+'<br>'
+    +_cK(8626,'손톱이 잘 보이도록 손등을 카메라 정면으로')+'<br>'
+    +'<span style="color:#fbbf24;">'+_cK(8627,'매니큐어 제거 권장')+'</span></div></div>'
 
     // 6단계 손바닥
     +'<div style="background:rgba(52,211,153,.07);border:1px solid rgba(52,211,153,.2);border-radius:10px;padding:10px 12px;">'
     +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">'
     +'<span style="font-size:18px;">✋</span>'
-    +'<span style="font-size:12px;font-weight:800;color:#34d399;">손바닥 — 15초</span>'
-    +'<span style="font-size:10px;color:rgba(52,211,153,.5);margin-left:auto;">📷 후면 카메라</span></div>'
+    +'<span style="font-size:12px;font-weight:800;color:#34d399;">'+_cK(8628,'손바닥 — 15초')+'</span>'
+    +'<span style="font-size:10px;color:rgba(52,211,153,.5);margin-left:auto;">'+_cK(8624,'📷 후면 카메라')+'</span></div>'
     +'<div style="font-size:11px;color:rgba(240,230,200,.8);line-height:1.8;padding-left:26px;">'
-    +'카메라와 <b style="color:#fff;">20~25cm</b> 거리 유지<br>'
-    +'손바닥을 평평하게 펼쳐 카메라 정면으로<br>'
-    +'손금이 잘 보이도록 조명 확인</div></div>'
+    +_cK(8625,'카메라와 <b style="color:#fff;">20~25cm</b> 거리 유지')+'<br>'
+    +_cK(8629,'손바닥을 평평하게 펼쳐 카메라 정면으로')+'<br>'
+    +_cK(8630,'손금이 잘 보이도록 조명 확인')+'</div></div>'
     +'</div>'
 
     // 공통 주의사항
     +'<div style="background:rgba(251,191,36,.07);border:1px solid rgba(251,191,36,.2);border-radius:10px;padding:10px 14px;margin-bottom:18px;">'
-    +'<div style="font-size:11px;font-weight:800;color:#fbbf24;margin-bottom:5px;">⚠️ 공통 주의사항</div>'
+    +'<div style="font-size:11px;font-weight:800;color:#fbbf24;margin-bottom:5px;">'+_cK(8631,'⚠️ 공통 주의사항')+'</div>'
     +'<div style="font-size:11px;color:rgba(240,230,200,.8);line-height:1.9;">'
-    +'• 밝은 곳에서 측정할수록 정확도가 높아집니다<br>'
-    +'• 각 단계는 자동으로 순서대로 진행됩니다<br>'
-    +'• 측정 중 흔들리면 해당 단계가 다시 시작됩니다<br>'
-    +'• 본 분석은 참고용이며 의학적 진단을 대체하지 않습니다'
+    +_cK(8632,'• 밝은 곳에서 측정할수록 정확도가 높아집니다')+'<br>'
+    +_cK(8633,'• 각 단계는 자동으로 순서대로 진행됩니다')+'<br>'
+    +_cK(8634,'• 측정 중 흔들리면 해당 단계가 다시 시작됩니다')+'<br>'
+    +_cK(8635,'• 본 분석은 참고용이며 의학적 진단을 대체하지 않습니다')
     +'</div></div>'
 
     // 버튼
     +'<div style="display:flex;gap:10px;">'
-    +'<button onclick="_c24CompStartReal()" style="flex:3;padding:15px;background:linear-gradient(135deg,rgba(52,211,153,.3),rgba(56,189,248,.2));border:2px solid rgba(52,211,153,.7);border-radius:14px;color:#34d399;font-size:15px;font-weight:900;cursor:pointer;letter-spacing:.03em;">✅ 이해했습니다 — 스캔 시작</button>'
-    +'<button onclick="document.getElementById(\'c24-scan-guide-pop\').remove()" style="flex:1;padding:15px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:14px;color:rgba(240,230,200,.5);font-size:13px;cursor:pointer;">나중에</button>'
+    +'<button onclick="_c24CompStartReal()" style="flex:3;padding:15px;background:linear-gradient(135deg,rgba(52,211,153,.3),rgba(56,189,248,.2));border:2px solid rgba(52,211,153,.7);border-radius:14px;color:#34d399;font-size:15px;font-weight:900;cursor:pointer;letter-spacing:.03em;">'+_cK(8636,'✅ 이해했습니다 — 스캔 시작')+'</button>'
+    +'<button onclick="document.getElementById(\'c24-scan-guide-pop\').remove()" style="flex:1;padding:15px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:14px;color:rgba(240,230,200,.5);font-size:13px;cursor:pointer;">'+_cK(8637,'나중에')+'</button>'
     +'</div>'
     +'</div>';
 
@@ -577,13 +578,13 @@ function _c24StartDisease(key){
   // 단계별 안내 생성
   var stepColors = {face:'56,189,248', tongue:'248,113,113', eye:'52,211,153', skin:'244,114,182', hand:'251,191,36', hand_back:'251,191,36', hand_palm:'251,191,36'};
   var stepGuides = {
-    face:  {ico:'👤', name:'얼굴', cam:'📱 전면 카메라', dist:'30~40cm', tips:['밝은 정면 조명', '안경·모자 제거', '무표정으로 정면 응시']},
-    tongue:{ico:'👅', name:'혀',   cam:'📱 전면 카메라', dist:'15~20cm', tips:['혀를 최대한 내밀기', '혀 전체가 화면에 보이도록', '식사 30분 후 권장']},
-    eye:   {ico:'👁️', name:'눈',   cam:'📱 전면 카메라', dist:'15~20cm', tips:['위를 약간 봐서 흰자 노출', '렌즈 제거 권장', '눈을 크게 뜨기']},
-    skin:  {ico:'🎨', name:'피부', cam:'📱 전면 카메라', dist:'10~15cm', tips:['맨 피부 상태 권장', '크림·화장 없이', '자연광 또는 백색등']},
-    hand:  {ico:'✋', name:'손',   cam:'📷 후면 카메라', dist:'20~25cm', tips:['손가락 가지런히 펴기', '매니큐어 제거 권장', '손 흔들지 않기']},
-    hand_back: {ico:'🤚', name:'손등', cam:'📷 후면 카메라', dist:'20~25cm', tips:['손톱 잘 보이게', '매니큐어 제거 권장', '손 흔들지 않기']},
-    hand_palm: {ico:'✋', name:'손바닥', cam:'📷 후면 카메라', dist:'20~25cm', tips:['손바닥 평평하게 펼치기', '손금이 보이도록', '손 흔들지 않기']}
+    face:  {ico:'👤', name:'얼굴', cam:_cK(8608,'📱 전면 카메라'), dist:'30~40cm', tips:['밝은 정면 조명', '안경·모자 제거', '무표정으로 정면 응시']},
+    tongue:{ico:'👅', name:'혀',   cam:_cK(8608,'📱 전면 카메라'), dist:'15~20cm', tips:['혀를 최대한 내밀기', '혀 전체가 화면에 보이도록', '식사 30분 후 권장']},
+    eye:   {ico:'👁️', name:'눈',   cam:_cK(8608,'📱 전면 카메라'), dist:'15~20cm', tips:['위를 약간 봐서 흰자 노출', '렌즈 제거 권장', '눈을 크게 뜨기']},
+    skin:  {ico:'🎨', name:'피부', cam:_cK(8608,'📱 전면 카메라'), dist:'10~15cm', tips:['맨 피부 상태 권장', '크림·화장 없이', '자연광 또는 백색등']},
+    hand:  {ico:'✋', name:'손',   cam:_cK(8624,'📷 후면 카메라'), dist:'20~25cm', tips:['손가락 가지런히 펴기', _cK(8627,'매니큐어 제거 권장'), '손 흔들지 않기']},
+    hand_back: {ico:'🤚', name:'손등', cam:_cK(8624,'📷 후면 카메라'), dist:'20~25cm', tips:['손톱 잘 보이게', _cK(8627,'매니큐어 제거 권장'), '손 흔들지 않기']},
+    hand_palm: {ico:'✋', name:'손바닥', cam:_cK(8624,'📷 후면 카메라'), dist:'20~25cm', tips:['손바닥 평평하게 펼치기', '손금이 보이도록', '손 흔들지 않기']}
   };
 
   var totalSec = (flow.times||[]).reduce(function(a,b){return a+b;},0);
@@ -616,16 +617,16 @@ function _c24StartDisease(key){
     +stepsHtml
     // 공통 주의
     +'<div style="background:rgba(251,191,36,.07);border:1px solid rgba(251,191,36,.2);border-radius:10px;padding:10px 14px;margin:10px 0 16px;">'
-    +'<div style="font-size:11px;font-weight:800;color:#fbbf24;margin-bottom:4px;">⚠️ 공통 주의사항</div>'
+    +'<div style="font-size:11px;font-weight:800;color:#fbbf24;margin-bottom:4px;">'+_cK(8631,'⚠️ 공통 주의사항')+'</div>'
     +'<div style="font-size:11px;color:rgba(240,230,200,.8);line-height:1.9;">'
-    +'• 밝은 곳에서 측정할수록 정확도가 높아집니다<br>'
+    +_cK(8632,'• 밝은 곳에서 측정할수록 정확도가 높아집니다')+'<br>'
     +(flow.total>1 ? '• 단계가 끝나면 자동으로 다음 단계로 넘어갑니다<br>' : '')
-    +'• 본 분석은 참고용이며 의학적 진단을 대체하지 않습니다'
+    +_cK(8635,'• 본 분석은 참고용이며 의학적 진단을 대체하지 않습니다')
     +'</div></div>'
     // 버튼
     +'<div style="display:flex;gap:10px;">'
     +'<button onclick="_c24DiseaseRealStart(\''+key+'\')" style="flex:3;padding:15px;background:linear-gradient(135deg,rgba(212,168,67,.3),rgba(248,113,113,.2));border:2px solid rgba(212,168,67,.7);border-radius:14px;color:#d4a843;font-size:15px;font-weight:900;cursor:pointer;">✅ 이해했습니다 — 측정 시작</button>'
-    +'<button onclick="document.getElementById(\'c24-disease-guide-pop\').remove()" style="flex:1;padding:15px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:14px;color:rgba(240,230,200,.5);font-size:13px;cursor:pointer;">나중에</button>'
+    +'<button onclick="document.getElementById(\'c24-disease-guide-pop\').remove()" style="flex:1;padding:15px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:14px;color:rgba(240,230,200,.5);font-size:13px;cursor:pointer;">'+_cK(8637,'나중에')+'</button>'
     +'</div></div>';
 
   document.body.appendChild(pop);
@@ -799,13 +800,13 @@ function _c24StartDisease(key){
   // 단계별 안내 생성
   var stepColors = {face:'56,189,248', tongue:'248,113,113', eye:'52,211,153', skin:'244,114,182', hand:'251,191,36', hand_back:'251,191,36', hand_palm:'251,191,36'};
   var stepGuides = {
-    face:  {ico:'👤', name:'얼굴', cam:'📱 전면 카메라', dist:'30~40cm', tips:['밝은 정면 조명', '안경·모자 제거', '무표정으로 정면 응시']},
-    tongue:{ico:'👅', name:'혀',   cam:'📱 전면 카메라', dist:'15~20cm', tips:['혀를 최대한 내밀기', '혀 전체가 화면에 보이도록', '식사 30분 후 권장']},
-    eye:   {ico:'👁️', name:'눈',   cam:'📱 전면 카메라', dist:'15~20cm', tips:['위를 약간 봐서 흰자 노출', '렌즈 제거 권장', '눈을 크게 뜨기']},
-    skin:  {ico:'🎨', name:'피부', cam:'📱 전면 카메라', dist:'10~15cm', tips:['맨 피부 상태 권장', '크림·화장 없이', '자연광 또는 백색등']},
-    hand:  {ico:'✋', name:'손',   cam:'📷 후면 카메라', dist:'20~25cm', tips:['손가락 가지런히 펴기', '매니큐어 제거 권장', '손 흔들지 않기']},
-    hand_back: {ico:'🤚', name:'손등', cam:'📷 후면 카메라', dist:'20~25cm', tips:['손톱 잘 보이게', '매니큐어 제거 권장', '손 흔들지 않기']},
-    hand_palm: {ico:'✋', name:'손바닥', cam:'📷 후면 카메라', dist:'20~25cm', tips:['손바닥 평평하게 펼치기', '손금이 보이도록', '손 흔들지 않기']}
+    face:  {ico:'👤', name:'얼굴', cam:_cK(8608,'📱 전면 카메라'), dist:'30~40cm', tips:['밝은 정면 조명', '안경·모자 제거', '무표정으로 정면 응시']},
+    tongue:{ico:'👅', name:'혀',   cam:_cK(8608,'📱 전면 카메라'), dist:'15~20cm', tips:['혀를 최대한 내밀기', '혀 전체가 화면에 보이도록', '식사 30분 후 권장']},
+    eye:   {ico:'👁️', name:'눈',   cam:_cK(8608,'📱 전면 카메라'), dist:'15~20cm', tips:['위를 약간 봐서 흰자 노출', '렌즈 제거 권장', '눈을 크게 뜨기']},
+    skin:  {ico:'🎨', name:'피부', cam:_cK(8608,'📱 전면 카메라'), dist:'10~15cm', tips:['맨 피부 상태 권장', '크림·화장 없이', '자연광 또는 백색등']},
+    hand:  {ico:'✋', name:'손',   cam:_cK(8624,'📷 후면 카메라'), dist:'20~25cm', tips:['손가락 가지런히 펴기', _cK(8627,'매니큐어 제거 권장'), '손 흔들지 않기']},
+    hand_back: {ico:'🤚', name:'손등', cam:_cK(8624,'📷 후면 카메라'), dist:'20~25cm', tips:['손톱 잘 보이게', _cK(8627,'매니큐어 제거 권장'), '손 흔들지 않기']},
+    hand_palm: {ico:'✋', name:'손바닥', cam:_cK(8624,'📷 후면 카메라'), dist:'20~25cm', tips:['손바닥 평평하게 펼치기', '손금이 보이도록', '손 흔들지 않기']}
   };
 
   var totalSec = (flow.times||[]).reduce(function(a,b){return a+b;},0);
@@ -838,16 +839,16 @@ function _c24StartDisease(key){
     +stepsHtml
     // 공통 주의
     +'<div style="background:rgba(251,191,36,.07);border:1px solid rgba(251,191,36,.2);border-radius:10px;padding:10px 14px;margin:10px 0 16px;">'
-    +'<div style="font-size:11px;font-weight:800;color:#fbbf24;margin-bottom:4px;">⚠️ 공통 주의사항</div>'
+    +'<div style="font-size:11px;font-weight:800;color:#fbbf24;margin-bottom:4px;">'+_cK(8631,'⚠️ 공통 주의사항')+'</div>'
     +'<div style="font-size:11px;color:rgba(240,230,200,.8);line-height:1.9;">'
-    +'• 밝은 곳에서 측정할수록 정확도가 높아집니다<br>'
+    +_cK(8632,'• 밝은 곳에서 측정할수록 정확도가 높아집니다')+'<br>'
     +(flow.total>1 ? '• 단계가 끝나면 자동으로 다음 단계로 넘어갑니다<br>' : '')
-    +'• 본 분석은 참고용이며 의학적 진단을 대체하지 않습니다'
+    +_cK(8635,'• 본 분석은 참고용이며 의학적 진단을 대체하지 않습니다')
     +'</div></div>'
     // 버튼
     +'<div style="display:flex;gap:10px;">'
     +'<button onclick="_c24DiseaseRealStart(\''+key+'\')" style="flex:3;padding:15px;background:linear-gradient(135deg,rgba(212,168,67,.3),rgba(248,113,113,.2));border:2px solid rgba(212,168,67,.7);border-radius:14px;color:#d4a843;font-size:15px;font-weight:900;cursor:pointer;">✅ 이해했습니다 — 측정 시작</button>'
-    +'<button onclick="document.getElementById(\'c24-disease-guide-pop\').remove()" style="flex:1;padding:15px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:14px;color:rgba(240,230,200,.5);font-size:13px;cursor:pointer;">나중에</button>'
+    +'<button onclick="document.getElementById(\'c24-disease-guide-pop\').remove()" style="flex:1;padding:15px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:14px;color:rgba(240,230,200,.5);font-size:13px;cursor:pointer;">'+_cK(8637,'나중에')+'</button>'
     +'</div></div>';
 
   document.body.appendChild(pop);
@@ -1442,41 +1443,41 @@ window._c24ShowChatGuide = function(idx){
   if(stale) stale.remove();
   var stepInfo = [
     {emoji:'👤', title:'얼굴 측정', sec:60, msgs:[
-      '안녕하세요! 6부위 종합 검사 함께 시작할게요 🌸',
-      '먼저 *얼굴*부터 측정해요',
-      '카메라와 30~40cm 거리 유지 + 무표정 + 정면 조명',
-      '안경·모자 제거하시고, 화면 아래 4-7-8 호흡 타임라인을 따라 호흡해주세요'
-    ], tip:'준비되면 [네, 시작할게요] 버튼을 눌러주세요. 카메라 켜진 후 *5초 위치 조정 시간*이 있어요'},
+      _cK(8642,'안녕하세요! 6부위 종합 검사 함께 시작할게요 🌸'),
+      _cK(8643,'먼저 *얼굴*부터 측정해요'),
+      _cK(8644,'카메라와 30~40cm 거리 유지 + 무표정 + 정면 조명'),
+      _cK(8645,'안경·모자 제거하시고, 화면 아래 4-7-8 호흡 타임라인을 따라 호흡해주세요')
+    ], tip:_cK(8646,'준비되면 [네, 시작할게요] 버튼을 눌러주세요. 카메라 켜진 후 *5초 위치 조정 시간*이 있어요')},
     {emoji:'👅', title:'혀 관찰 측정', sec:20, msgs:[
-      '잘하셨어요! 얼굴 측정 완료 ✓',
-      '이제 *혀*를 보여주실 차례예요',
-      '카메라 15~20cm 거리에 혀를 *최대한 내밀어* 전체가 보이게 해주세요',
-      '식사 30분 후가 가장 정확합니다'
-    ], tip:'혀를 카메라에 가져다 댄 후 [네, 시작할게요] 눌러주세요'},
+      _cK(8700,'잘하셨어요! 얼굴 측정 완료 ✓'),
+      _cK(8701,'이제 *혀*를 보여주실 차례예요'),
+      _cK(8702,'카메라 15~20cm 거리에 혀를 *최대한 내밀어* 전체가 보이게 해주세요'),
+      _cK(8703,'식사 30분 후가 가장 정확합니다')
+    ], tip:_cK(8704,'혀를 카메라에 가져다 댄 후 [네, 시작할게요] 눌러주세요')},
     {emoji:'👁️', title:'눈 측정', sec:20, msgs:[
-      '좋아요! 혀 측정 완료 ✓',
-      '다음은 *눈* 차례예요',
-      '카메라 15~20cm 거리에서 *위를 약간 봐서* 흰자가 잘 보이게',
-      '콘택트렌즈는 제거해주시면 더 정확해요'
-    ], tip:'눈 위치 잡으신 후 [네, 시작할게요] 눌러주세요'},
+      _cK(8705,'좋아요! 혀 측정 완료 ✓'),
+      _cK(8706,'다음은 *눈* 차례예요'),
+      _cK(8707,'카메라 15~20cm 거리에서 *위를 약간 봐서* 흰자가 잘 보이게'),
+      _cK(8708,'콘택트렌즈는 제거해주시면 더 정확해요')
+    ], tip:_cK(8709,'눈 위치 잡으신 후 [네, 시작할게요] 눌러주세요')},
     {emoji:'🎨', title:'피부 측정', sec:30, msgs:[
-      '훌륭해요! 눈 측정 완료 ✓',
-      '이제 *피부* 차례예요',
-      '카메라 10~15cm 거리에 *이마 또는 뺨 맨피부*를 가까이',
-      '크림·화장 없는 상태가 가장 정확합니다'
-    ], tip:'피부 위치 잡으신 후 [네, 시작할게요] 눌러주세요'},
+      _cK(8710,'훌륭해요! 눈 측정 완료 ✓'),
+      _cK(8711,'이제 *피부* 차례예요'),
+      _cK(8712,'카메라 10~15cm 거리에 *이마 또는 뺨 맨피부*를 가까이'),
+      _cK(8713,'크림·화장 없는 상태가 가장 정확합니다')
+    ], tip:_cK(8714,'피부 위치 잡으신 후 [네, 시작할게요] 눌러주세요')},
     {emoji:'🤚', title:'손등 측정', sec:15, msgs:[
-      '좋습니다! 피부 측정 완료 ✓',
-      '*손등*을 측정할게요. 이번엔 *후면 카메라* 사용',
-      '카메라 20~25cm 거리에 *손톱이 잘 보이도록* 손등을 정면으로',
-      '매니큐어 제거 권장'
-    ], tip:'손등 위치 잡으신 후 [네, 시작할게요] 눌러주세요'},
+      _cK(8715,'좋습니다! 피부 측정 완료 ✓'),
+      _cK(8716,'*손등*을 측정할게요. 이번엔 *후면 카메라* 사용'),
+      _cK(8717,'카메라 20~25cm 거리에 *손톱이 잘 보이도록* 손등을 정면으로'),
+      _cK(8627,'매니큐어 제거 권장')
+    ], tip:_cK(8718,'손등 위치 잡으신 후 [네, 시작할게요] 눌러주세요')},
     {emoji:'✋', title:'손바닥 측정 (마지막!)', sec:15, msgs:[
-      '거의 다 왔어요! 손등 측정 완료 ✓',
-      '*마지막* — 손바닥 차례예요',
-      '카메라 20~25cm 거리에 손바닥을 *평평하게 펼쳐* 정면으로',
-      '조명이 잘 비추는 곳에서 측정하세요'
-    ], tip:'손바닥 위치 잡으신 후 [네, 시작할게요] 눌러주세요. 측정 완료까지 잠시!'}
+      _cK(8720,'거의 다 왔어요! 손등 측정 완료 ✓'),
+      _cK(8721,'*마지막* — 손바닥 차례예요'),
+      _cK(8722,'카메라 20~25cm 거리에 손바닥을 *평평하게 펼쳐* 정면으로'),
+      _cK(8723,'조명이 잘 비추는 곳에서 측정하세요')
+    ], tip:_cK(8724,'손바닥 위치 잡으신 후 [네, 시작할게요] 눌러주세요. 측정 완료까지 잠시!')}
   ];
   var info = stepInfo[idx] || stepInfo[0];
   var pop = document.createElement('div');
@@ -1495,8 +1496,8 @@ window._c24ShowChatGuide = function(idx){
     +'<div style="display:flex;align-items:center;gap:12px;margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,.08);">'
       +'<div style="font-size:32px;">'+info.emoji+'</div>'
       +'<div style="flex:1;">'
-        +'<div style="font-size:9px;font-weight:800;color:#10b981;letter-spacing:.15em;margin-bottom:3px;">CGO-FULI · '+(idx+1)+'/6 단계</div>'
-        +'<div style="font-size:16px;font-weight:900;color:#e2e8f0;">'+info.title+' · '+info.sec+'초</div>'
+        +'<div style="font-size:9px;font-weight:800;color:#10b981;letter-spacing:.15em;margin-bottom:3px;">'+_cK(8660,'CGO-FULI ·')+' '+(idx+1)+'/6 '+_cK(8661,'단계')+'</div>'
+        +'<div style="font-size:16px;font-weight:900;color:#e2e8f0;">'+_cK(8670+idx,info.title)+' · '+info.sec+_cK(8662,'초')+'</div>'
       +'</div>'
     +'</div>'
     // 챗봇 메시지들
@@ -1510,7 +1511,7 @@ window._c24ShowChatGuide = function(idx){
     +'</div>'
     // 버튼
     +'<div style="display:flex;gap:10px;margin-top:18px;">'
-      +'<button id="c24-chat-go" style="flex:3;padding:14px;background:linear-gradient(135deg,#10b981,#059669);border:none;border-radius:12px;color:#fff;font-size:14px;font-weight:900;cursor:pointer;font-family:inherit;letter-spacing:.02em;">✅ 네, 시작할게요</button>'
+      +'<button id="c24-chat-go" style="flex:3;padding:14px;background:linear-gradient(135deg,#10b981,#059669);border:none;border-radius:12px;color:#fff;font-size:14px;font-weight:900;cursor:pointer;font-family:inherit;letter-spacing:.02em;">'+_cK(8647,'✅ 네, 시작할게요')+'</button>'
       +'<button id="c24-chat-pause" style="flex:1;padding:14px;background:rgba(251,191,36,.15);border:1px solid rgba(251,191,36,.4);border-radius:12px;color:#fbbf24;font-size:12px;font-weight:800;cursor:pointer;font-family:inherit;">⏸️ 잠깐</button>'
     +'</div>'
     +'</div>';
