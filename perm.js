@@ -83,6 +83,61 @@
     }
   });
 
+  /* ══ 카톡·인스타 같은 인앱 브라우저 ══
+     이 브라우저들은 카메라를 아예 막는다. 구 CGO와 같이 바깥 브라우저로 내보낸다. */
+  var ua = (navigator.userAgent || '').toLowerCase();
+  var inApp = /kakaotalk|fbav|fb_iab|instagram|line\/|naver|daumapps|everytimeapp|whale|kakaostory|band/.test(ua);
+  var isAndroid = ua.indexOf('android') > -1;
+  var isIOS = /iphone|ipad|ipod/.test(ua);
+  window._cgoInApp = inApp;
+
+  window._cgoOpenOutside = function(){
+    var url = location.href.split('#')[0];
+    if(isAndroid){
+      /* 안드로이드 — 크롬으로 바로 넘긴다 */
+      var noScheme = url.replace(/^https?:\/\//, '');
+      location.href = 'intent://' + noScheme + '#Intent;scheme=https;package=com.android.chrome;end';
+      return true;
+    }
+    if(isIOS){
+      /* 아이폰 — 카톡은 자동 이동을 막으므로 주소를 복사해 주고 안내한다 */
+      try{ navigator.clipboard && navigator.clipboard.writeText(url); }catch(e){}
+      showOutsideGuide(url);
+      return true;
+    }
+    return false;
+  };
+
+  function showOutsideGuide(url){
+    if(document.getElementById('cgoInAppGuide')) return;
+    var d = document.createElement('div');
+    d.id = 'cgoInAppGuide';
+    d.style.cssText = 'position:fixed;inset:0;z-index:2147483647;background:rgba(2,20,16,.92);display:flex;align-items:center;justify-content:center;padding:24px;';
+    d.innerHTML =
+      '<div style="width:100%;max-width:380px;background:#f0fdf9;border:1px solid #99f6e4;border-radius:20px;padding:26px 22px;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.4)">'
+      + '<div style="font-size:34px;line-height:1">📷</div>'
+      + '<div style="font-size:16px;font-weight:900;color:#0f172a;margin-top:12px;line-height:1.4">Open in Safari to use the camera</div>'
+      + '<div style="font-size:12.5px;color:#475569;margin-top:10px;line-height:1.7">This in-app browser blocks the camera.<br>Tap <b style="color:#0d9488">···</b> at the bottom right → <b style="color:#0d9488">Open in Safari</b>.</div>'
+      + '<div style="font-size:11.5px;color:#0d9488;margin-top:14px;padding:10px 12px;background:#ccfbf1;border-radius:11px;word-break:break-all">' + url + '</div>'
+      + '<div style="font-size:11px;color:#64748b;margin-top:8px">The address is copied — you can paste it in Safari.</div>'
+      + '<button id="cgoInAppClose" style="margin-top:16px;width:100%;padding:13px;border:0;border-radius:13px;background:#0f172a;color:#fff;font-size:13.5px;font-weight:800;cursor:pointer;font-family:inherit">OK</button>'
+      + '</div>';
+    document.body.appendChild(d);
+    d.querySelector('#cgoInAppClose').onclick = function(){ d.remove(); };
+  }
+
+  /* 카메라를 요청하는 순간 인앱이면 바깥 브라우저로 보낸다 */
+  if(inApp && md && md.getUserMedia){
+    var beforeAsk = md.getUserMedia;
+    md.getUserMedia = function(c){
+      if(c && c.video){
+        window._cgoOpenOutside();
+        return Promise.reject(new DOMException('in-app browser', 'NotAllowedError'));
+      }
+      return beforeAsk.call(md, c);
+    };
+  }
+
   /* ── 위치: 한 번만 묻고 보관한다 ── */
   var GEO_KEY = 'cgo_geo_pos';
   function saved(){
