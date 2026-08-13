@@ -2068,3 +2068,16 @@ function _c24SendFM(v){
 
 /* 마크업의 onclick이 부를 수 있게 전역으로 */
 (function(){var n=["_c24CompStart","_c24Stop","_c24Start","_c24CompStartStep","_c24CompNextStep","_c24Finish"];n.forEach(function(k){try{ if(typeof eval(k)==="function") window[k]=eval(k); }catch(e){}});})();
+
+/* ══ 측정 취소 — 결과를 만들지 않고 상태만 정리한다 ══
+   페이지를 벗어나거나 앱이 뒤로 갈 때 쓰인다. _c24Stop은 결과를 계산해 저장하므로 여기서 쓰지 않는다. */
+window._c24Cancel = function(){
+  try{ var s=window._c24; if(s){
+    s.isRunning=false;
+    if(s.timerInt){ clearInterval(s.timerInt); s.timerInt=null; }
+    if(s.rafId){ cancelAnimationFrame(s.rafId); s.rafId=null; }
+    if(s.stream){ try{ s.stream.getTracks().forEach(function(t){t.stop();}); }catch(e){} s.stream=null; }
+  } }catch(e){}
+  try{ if(typeof _c24BreathStop==='function') _c24BreathStop(); }catch(e){}
+  try{ var p=document.getElementById('page-algo'); if(p) p.classList.remove('c24-scanning'); }catch(e){}
+};
