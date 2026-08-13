@@ -67,21 +67,20 @@
   [0, 300, 1200, 3000].forEach(function(d){ setTimeout(hookGoPage, d); });
 
   /* 뒤로가기·탭 이동으로 화면을 떠날 때도 끈다 */
-  window.addEventListener('pagehide', function(){ try{ window._cgoStopAllCams(); }catch(e){} });
-  /* 알림창을 잠깐 내렸다 올리는 정도로는 측정을 깨지 않는다.
-     측정 중이면 카메라 트랙만 멈추고, 계산·저장은 하지 않는다. */
+  window.addEventListener('pagehide', function(e){ if(e && e.persisted) return; try{ window._cgoStopAllCams(); }catch(e2){} });
+  /* 화면이 잠깐 가려지는 것(권한 창, 알림창, 2초 앱 전환)으로는 끄지 않는다.
+     12초 넘게 진짜로 뒤로 물러난 뒤에만 끈다 — 즉시 끄면 권한 허용 직후 카메라가 죽었다. */
+  var hideTimer = null;
   document.addEventListener('visibilitychange', function(){
-    if(document.visibilityState !== 'hidden') return;
-    var scanning = false;
-    try{ scanning = !!(window._c24 && window._c24.isRunning); }catch(e){}
-    if(scanning){
-      live.slice().forEach(function(s){
-        try{ s.getTracks().forEach(function(t){ t.stop(); }); }catch(e){}
-      });
-      live.length = 0;
-      return;
+    if(document.visibilityState === 'hidden'){
+      if(hideTimer) clearTimeout(hideTimer);
+      hideTimer = setTimeout(function(){
+        hideTimer = null;
+        try{ window._cgoStopAllCams(); }catch(e){}
+      }, 12000);
+    } else if(hideTimer){
+      clearTimeout(hideTimer); hideTimer = null;
     }
-    try{ window._cgoStopAllCams(); }catch(e){}
   });
 
   /* ── 위치: 한 번만 묻고 보관한다 ── */
