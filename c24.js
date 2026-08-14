@@ -26,11 +26,17 @@ var _c24CompState = {
   step: 0,                // 0=얼굴 1=혀 2=눈 3=피부 4=손등 5=손바닥
   steps: ['face','tongue','eye','skin','hand_back','hand_palm'],
   totals: [60, 20, 20, 30, 15, 15],
-  labels: ['👤 얼굴 (rPPG + 478호흡)','👅 혀 관찰','👁️ 눈 (눈빛 톤)','🎨 피부 (색·탄력)','✋ 손등 (손톱·혈관)','✋ 손바닥 (손금·색)'],
+  labels: [], /* ★ 번호로 읽는다 — 아래 _c24StepLabel */
   cameras: ['user','user','user','user','environment','environment'],
   images: {face:null, tongue:null, eye:null, skin:null, hand_back:null, hand_palm:null},
   breathData: {cycles:0, inhaleAvg:0, holdAvg:0, exhaleAvg:0}
 };
+
+/* ★ 측정 중 화면 글자 — 고른 언어로 읽는다. 예전엔 한국어가 박혀 있었다 */
+window._c24StepLabel=function(i){ return _cK(8730+i, ["👤 얼굴 (rPPG + 478호흡)","👅 혀 관찰","👁️ 눈 (눈빛 톤)","🎨 피부 (색·탄력)","✋ 손등 (손톱·혈관)","✋ 손바닥 (손금·색)"][i]||''); };
+Object.defineProperty(_c24CompState,'labels',{get:function(){
+  return [0,1,2,3,4,5].map(window._c24StepLabel);
+}});
 
 /* ══ 구 CGO에서 함께 가져온 컨디션 데이터 ══ */
 function _c24Guide(color, steps, warning){
@@ -2163,19 +2169,19 @@ function _c24CompDoStep(idx){
   // 단계별 안내 UI 표시
   var icons=['👤','👅','👁️','🎨','🤚','✋'];
   var guides=[
-    '얼굴을 카메라 정면 30cm에 맞춰주세요\n478 호흡법을 따라 호흡해 주세요 (60초)',
-    '혀를 최대한 내밀어 카메라에 가까이 대주세요 (20초)',
-    '눈 흰자가 보이도록 위를 약간 보며 카메라에 대주세요 (20초)',
-    '피부 부위를 카메라 10~20cm 앞에 고정해 주세요 (30초)',
-    '손등(손톱 보이는 쪽)을 후면 카메라에 보여주세요 (15초)',
-    '손바닥을 펼쳐 후면 카메라에 보여주세요 (15초)'
+    _cK(8740,'얼굴을 카메라 정면 30cm에 맞춰주세요\n478 호흡법을 따라 호흡해 주세요 (60초)'),
+    _cK(8741,'혀를 최대한 내밀어 카메라에 가까이 대주세요 (20초)'),
+    _cK(8742,'눈 흰자가 보이도록 위를 약간 보며 카메라에 대주세요 (20초)'),
+    _cK(8743,'피부 부위를 카메라 10~20cm 앞에 고정해 주세요 (30초)'),
+    _cK(8744,'손등(손톱 보이는 쪽)을 후면 카메라에 보여주세요 (15초)'),
+    _cK(8745,'손바닥을 펼쳐 후면 카메라에 보여주세요 (15초)')
   ];
   var idleOv=document.getElementById('c24-idle-overlay');
   if(idleOv){
     idleOv.style.display='flex';
     idleOv.innerHTML=
       '<div style="font-size:32px;margin-bottom:8px;">'+icons[idx]+'</div>'
-      +'<div style="font-size:13px;font-weight:900;color:#34d399;margin-bottom:6px;">'+(idx+1)+'/'+s.steps.length+' 단계</div>'
+      +'<div style="font-size:13px;font-weight:900;color:#34d399;margin-bottom:6px;">'+(idx+1)+'/'+s.steps.length+' '+_cK(8661,'단계')+'</div>'
       +'<div style="font-size:11px;color:rgba(240,230,200,.7);text-align:center;padding:0 16px;line-height:1.7;">'+guides[idx]+'</div>';
   }
 
