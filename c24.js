@@ -1509,7 +1509,7 @@ function _c24DrawGuide(skinRatio){
   var ok = _c24.faceOK;
   var _fs = _c24.fitState || (ok?'ok':'far');
   var _fcol = _fs==='ok'?'rgba(52,211,153,.92)':_fs==='near'?'rgba(251,191,36,.95)':'rgba(248,113,113,.85)';
-  var _hint = _fs==='ok'?'✅ 딱 맞아요 — 측정 중':_fs==='near'?'➡️ 조금 멀어지세요':'⬅️ 더 가까이 · 원 안에 맞춰주세요';
+  var _hint = _fs==='ok'?_cK(8762,'✅ 딱 맞아요 — 측정 중'):_fs==='near'?_cK(8763,'➡️ 조금 멀어지세요'):_cK(8764,'⬅️ 더 가까이 · 원 안에 맞춰주세요');
 
   if(isHandMode){
     // 손 모드: 사각형 가이드
@@ -1611,11 +1611,11 @@ function _c24DrawGuide(skinRatio){
       }
       ctx.setLineDash([]);
       /* 좌상단 상태 배지 */
-      var _lbl={facemesh:'🎯 얼굴 추적 정밀',
-                'inner-circle':'⭕ 안쪽 원 영역',
-                'hand-rect':'✋ 손 영역',
-                ellipse:'🔍 얼굴 탐색 중...',
-                fixed:'⬜ 기본 영역'}[_rb.src]||_rb.src;
+      var _lbl={facemesh:_cK(8750,'🎯 얼굴 추적 정밀'),
+                'inner-circle':_cK(8751,'⭕ 안쪽 원 영역'),
+                'hand-rect':_cK(8752,'✋ 손 영역'),
+                ellipse:_cK(8753,'🔍 얼굴 탐색 중...'),
+                fixed:_cK(8754,'⬜ 기본 영역')}[_rb.src]||_rb.src;
       ctx.font='bold 11px sans-serif'; ctx.textAlign='left';
       _lbl=_cgoT(_lbl);   /* ★ C-63: 캔버스 번역 (너비 계산 전에) */
       var _tw=ctx.measureText(_lbl).width+12;
@@ -1638,14 +1638,14 @@ function _c24DrawGuide(skinRatio){
       /* ★ C-63: 상황별 안내 — 얼굴 못 잡으면 무엇을 할지 알려준다 */
       var _sym;
       if((mode==='face'||mode==='skin')){
-        _sym = _isFM ? '✅ 얼굴 인식됨 — 그대로 유지하세요'
-             : (_c24._fmHit>0 ? '🔍 얼굴을 다시 화면 중앙으로'
-                              : '💡 얼굴이 안 잡혀요 — 조명을 밝게 · 카메라와 40~60cm');
+        _sym = _isFM ? _cK(8755,'✅ 얼굴 인식됨 — 그대로 유지하세요')
+             : (_c24._fmHit>0 ? _cK(8756,'🔍 얼굴을 다시 화면 중앙으로')
+                              : _cK(8757,'💡 얼굴이 안 잡혀요 — 조명을 밝게 · 카메라와 40~60cm'));
       } else {
-        _sym={tongue:'👅 혀를 작은 원 중앙에',
-              eye:'👁️ 눈을 작은 원 중앙에',
-              hand_back:'🤚 손등을 박스 가득',
-              hand_palm:'🖐️ 손바닥을 박스 가득'}[mode];
+        _sym={tongue:_cK(8758,'👅 혀를 작은 원 중앙에'),
+              eye:_cK(8759,'👁️ 눈을 작은 원 중앙에'),
+              hand_back:_cK(8760,'🤚 손등을 박스 가득'),
+              hand_palm:_cK(8761,'🖐️ 손바닥을 박스 가득')}[mode];
       }
       if(_sym){
         ctx.font='bold 12px sans-serif'; ctx.textAlign='center';
