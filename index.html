@@ -6124,7 +6124,7 @@ function cgoHome(){
 window.cgoHome=cgoHome;
 
 function refreshData(){
-  try{ sessionStorage.setItem('cgo_ent','1'); }catch(_){}
+  try{ sessionStorage.setItem('cgo_ent','1'); localStorage.setItem('cgo_ent_day', new Date().toDateString()); }catch(_){}
   try{ if(window._p0Entered) sessionStorage.setItem('cgo_lang_ok','1'); }catch(_){}
   try{ if(window._cgoStopAllCams) window._cgoStopAllCams(); }catch(_){}
   location.reload();
@@ -6136,7 +6136,7 @@ function entSplashGo(){
   window._entPassed=true;
   /* ★ 한 번 들어오면 기억한다 — 카메라를 오래 쓴 뒤 폰이 화면을 새로 불러와도
      대문으로 튕기지 않는다. 앱을 닫으면 지워진다(세션). */
-  try{ sessionStorage.setItem('cgo_ent','1'); }catch(_){}
+  try{ sessionStorage.setItem('cgo_ent','1'); localStorage.setItem('cgo_ent_day', new Date().toDateString()); }catch(_){}
   var p=document.getElementById('phase0'); if(p) p.style.opacity='1';
   e.style.transition='opacity .55s ease'; e.style.opacity='0';
   setTimeout(function(){ e.style.display='none'; },560);
@@ -6145,13 +6145,14 @@ window.entSplashGo=entSplashGo;
 /* 첫 화면에서는 반드시 보이게 — 새로 열 때 감춰져 있던 경우가 있었다 */
 (function(){
  /* 되살아난 화면이면 대문을 건너뛴다 */
- try{ if(sessionStorage.getItem('cgo_ent')==='1'){
+ try{ var _entOK = sessionStorage.getItem('cgo_ent')==='1' || localStorage.getItem('cgo_ent_day')===new Date().toDateString();
+   if(_entOK){ try{ sessionStorage.setItem('cgo_ent','1'); }catch(_x){}
    window._entPassed=true;
    var e0=document.getElementById('entSplash'); if(e0){ e0.style.display='none'; e0.style.opacity='0'; }
    var p0=document.getElementById('phase0'); if(p0) p0.style.opacity='1';
    /* 언어까지 골랐던 화면이면 언어 관문도 건너뛴다 —
       대문 → 언어 선택을 처음부터 다시 하게 되던 문제. */
-   if(sessionStorage.getItem('cgo_lang_ok')==='1'){
+   if(sessionStorage.getItem('cgo_lang_ok')==='1' || localStorage.getItem('cgo_lang_day')===new Date().toDateString()){
      window._p0Entered=true;
      document.documentElement.classList.remove('gate-open');
      document.body && document.body.classList.remove('gate-open');
@@ -7983,7 +7984,7 @@ window.p0Enter=function(returning){
  window._p0Entered=true;
  document.documentElement.classList.remove('gate-open');
  document.body.classList.remove('gate-open');
- try{ localStorage.setItem('cgo_entered','1'); sessionStorage.setItem('cgo_lang_ok','1'); }catch(e){}
+ try{ localStorage.setItem('cgo_entered','1'); sessionStorage.setItem('cgo_lang_ok','1'); localStorage.setItem('cgo_lang_day', new Date().toDateString()); }catch(e){}
  var p=document.getElementById('phase0');
  if(p){ p.style.transition='opacity .28s'; p.style.opacity='0'; p.style.pointerEvents='none';
    setTimeout(function(){ if(p.parentNode) p.remove(); },320); }
@@ -10296,48 +10297,48 @@ var familyData = window.familyData, selectedFamilyId = window.selectedFamilyId, 
    <div data-k="9302" style="font-size:11px;color:#475569;margin-top:5px;line-height:1.65;"></div>
 
    <div data-k="9303" style="font-size:12px;font-weight:900;color:#0f766e;margin-top:14px;"></div>
-   <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:1fr;gap:8px;margin-top:9px;">
-    <div onclick="scArea(1)" style="display:flex;align-items:flex-start;gap:10px;padding:13px 12px;border-radius:14px;height:100%;min-width:0;box-sizing:border-box;background:#fff1f2;border:1px solid #fecdd3;cursor:pointer;">
-     <div style="font-size:23px;line-height:1;flex-shrink:0">👤</div>
+   <div style="display:grid;grid-template-columns:1fr;gap:8px;margin-top:9px;">
+    <div onclick="scArea(1)" style="display:flex;align-items:center;gap:13px;padding:14px 14px;border-radius:14px;min-width:0;box-sizing:border-box;background:#fff1f2;border:1px solid #fecdd3;cursor:pointer;">
+     <div style="font-size:30px;line-height:1;flex-shrink:0;width:42px;text-align:center">👤</div>
      <div style="min-width:0;display:flex;flex-direction:column;gap:3px">
       <div data-k="9310" style="font-size:12.5px;font-weight:800;color:#0f172a;line-height:1.25;overflow-wrap:anywhere"></div>
       <div data-k="9311" style="font-size:10px;color:#475569;line-height:1.4;overflow-wrap:anywhere"></div></div></div>
-    <div onclick="scArea(2)" style="display:flex;align-items:flex-start;gap:10px;padding:13px 12px;border-radius:14px;height:100%;min-width:0;box-sizing:border-box;background:#fff1f2;border:1px solid #fecdd3;cursor:pointer;">
-     <div style="font-size:23px;line-height:1;flex-shrink:0">👅</div>
+    <div onclick="scArea(2)" style="display:flex;align-items:center;gap:13px;padding:14px 14px;border-radius:14px;min-width:0;box-sizing:border-box;background:#fff1f2;border:1px solid #fecdd3;cursor:pointer;">
+     <div style="font-size:30px;line-height:1;flex-shrink:0;width:42px;text-align:center">👅</div>
      <div style="min-width:0;display:flex;flex-direction:column;gap:3px">
       <div data-k="9312" style="font-size:12.5px;font-weight:800;color:#0f172a;line-height:1.25;overflow-wrap:anywhere"></div>
       <div data-k="9313" style="font-size:10px;color:#475569;line-height:1.4;overflow-wrap:anywhere"></div></div></div>
    </div>
 
    <div data-k="9304" style="font-size:12px;font-weight:900;color:#0f766e;margin-top:16px;"></div>
-   <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:1fr;gap:8px;margin-top:9px;">
-    <div onclick="scArea(3)" style="display:flex;align-items:flex-start;gap:10px;padding:13px 12px;border-radius:14px;height:100%;min-width:0;box-sizing:border-box;background:#f0fdf9;border:1px solid #d7eee8;cursor:pointer;">
-     <div style="font-size:23px;line-height:1;flex-shrink:0">🧑‍🦱</div>
+   <div style="display:grid;grid-template-columns:1fr;gap:8px;margin-top:9px;">
+    <div onclick="scArea(3)" style="display:flex;align-items:center;gap:13px;padding:14px 14px;border-radius:14px;min-width:0;box-sizing:border-box;background:#f0fdf9;border:1px solid #d7eee8;cursor:pointer;">
+     <div style="font-size:30px;line-height:1;flex-shrink:0;width:42px;text-align:center">🧑‍🦱</div>
      <div style="min-width:0;display:flex;flex-direction:column;gap:3px">
       <div data-k="9314" style="font-size:12.5px;font-weight:800;color:#0f172a;line-height:1.25;overflow-wrap:anywhere"></div>
       <div data-k="9315" style="font-size:10px;color:#475569;line-height:1.4;overflow-wrap:anywhere"></div></div></div>
-    <div onclick="scArea(4)" style="display:flex;align-items:flex-start;gap:10px;padding:13px 12px;border-radius:14px;height:100%;min-width:0;box-sizing:border-box;background:#f0fdf9;border:1px solid #d7eee8;cursor:pointer;">
-     <div style="font-size:23px;line-height:1;flex-shrink:0">↖️</div>
+    <div onclick="scArea(4)" style="display:flex;align-items:center;gap:13px;padding:14px 14px;border-radius:14px;min-width:0;box-sizing:border-box;background:#f0fdf9;border:1px solid #d7eee8;cursor:pointer;">
+     <div style="font-size:30px;line-height:1;flex-shrink:0;width:42px;text-align:center">↖️</div>
      <div style="min-width:0;display:flex;flex-direction:column;gap:3px">
       <div data-k="9316" style="font-size:12.5px;font-weight:800;color:#0f172a;line-height:1.25;overflow-wrap:anywhere"></div>
       <div data-k="9317" style="font-size:10px;color:#475569;line-height:1.4;overflow-wrap:anywhere"></div></div></div>
-    <div onclick="scArea(5)" style="display:flex;align-items:flex-start;gap:10px;padding:13px 12px;border-radius:14px;height:100%;min-width:0;box-sizing:border-box;background:#f0fdf9;border:1px solid #d7eee8;cursor:pointer;">
-     <div style="font-size:23px;line-height:1;flex-shrink:0">↗️</div>
+    <div onclick="scArea(5)" style="display:flex;align-items:center;gap:13px;padding:14px 14px;border-radius:14px;min-width:0;box-sizing:border-box;background:#f0fdf9;border:1px solid #d7eee8;cursor:pointer;">
+     <div style="font-size:30px;line-height:1;flex-shrink:0;width:42px;text-align:center">↗️</div>
      <div style="min-width:0;display:flex;flex-direction:column;gap:3px">
       <div data-k="9318" style="font-size:12.5px;font-weight:800;color:#0f172a;line-height:1.25;overflow-wrap:anywhere"></div>
       <div data-k="9319" style="font-size:10px;color:#475569;line-height:1.4;overflow-wrap:anywhere"></div></div></div>
-    <div onclick="scArea(6)" style="display:flex;align-items:flex-start;gap:10px;padding:13px 12px;border-radius:14px;height:100%;min-width:0;box-sizing:border-box;background:#f0fdf9;border:1px solid #d7eee8;cursor:pointer;">
-     <div style="font-size:23px;line-height:1;flex-shrink:0">📏</div>
+    <div onclick="scArea(6)" style="display:flex;align-items:center;gap:13px;padding:14px 14px;border-radius:14px;min-width:0;box-sizing:border-box;background:#f0fdf9;border:1px solid #d7eee8;cursor:pointer;">
+     <div style="font-size:30px;line-height:1;flex-shrink:0;width:42px;text-align:center">📏</div>
      <div style="min-width:0;display:flex;flex-direction:column;gap:3px">
       <div data-k="9320" style="font-size:12.5px;font-weight:800;color:#0f172a;line-height:1.25;overflow-wrap:anywhere"></div>
       <div data-k="9321" style="font-size:10px;color:#475569;line-height:1.4;overflow-wrap:anywhere"></div></div></div>
-    <div onclick="scArea(7)" style="display:flex;align-items:flex-start;gap:10px;padding:13px 12px;border-radius:14px;height:100%;min-width:0;box-sizing:border-box;background:#f0fdf9;border:1px solid #d7eee8;cursor:pointer;">
-     <div style="font-size:23px;line-height:1;flex-shrink:0">🌫️</div>
+    <div onclick="scArea(7)" style="display:flex;align-items:center;gap:13px;padding:14px 14px;border-radius:14px;min-width:0;box-sizing:border-box;background:#f0fdf9;border:1px solid #d7eee8;cursor:pointer;">
+     <div style="font-size:30px;line-height:1;flex-shrink:0;width:42px;text-align:center">🌫️</div>
      <div style="min-width:0;display:flex;flex-direction:column;gap:3px">
       <div data-k="9322" style="font-size:12.5px;font-weight:800;color:#0f172a;line-height:1.25;overflow-wrap:anywhere"></div>
       <div data-k="9323" style="font-size:10px;color:#475569;line-height:1.4;overflow-wrap:anywhere"></div></div></div>
-    <div style="display:flex;align-items:flex-start;gap:10px;padding:13px 12px;border-radius:14px;height:100%;min-width:0;box-sizing:border-box;background:#fffbeb;border:1px solid #fde68a;">
-     <div style="font-size:23px;line-height:1;flex-shrink:0">⏱️</div>
+    <div style="display:flex;align-items:center;gap:13px;padding:14px 14px;border-radius:14px;min-width:0;box-sizing:border-box;background:#fffbeb;border:1px solid #fde68a;">
+     <div style="font-size:30px;line-height:1;flex-shrink:0;width:42px;text-align:center">⏱️</div>
      <div style="min-width:0;display:flex;flex-direction:column;gap:3px">
       <div data-k="9324" style="font-size:12.5px;font-weight:800;color:#0f172a;line-height:1.25;overflow-wrap:anywhere"></div>
       <div data-k="9325" style="font-size:10px;color:#475569;line-height:1.4;overflow-wrap:anywhere"></div></div></div>
