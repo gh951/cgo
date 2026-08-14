@@ -5,7 +5,7 @@
   'use strict';
 
   /* ── 카메라 기능이 있는 페이지 ── */
-  var CAM_PAGES = ['c24','c44-eye','c41','acc-cam','vision','iq'];
+  var CAM_PAGES = ['c24','c39','c44-eye','c41','acc-cam','vision','iq'];
 
   /* ── 켜져 있는 카메라 목록 ── */
   var live = [];
@@ -44,7 +44,7 @@
       });
     }catch(e){}
     /* 기능별 '취소' 함수만 부른다 — 결과를 계산해 저장하는 종료 함수는 부르지 않는다 */
-    ['eyeCancelMeasure','_c24Cancel','cgoAccCamClose'].forEach(function(fn){
+    ['eyeCancelMeasure','_c24Cancel','c39Stop','cgoAccCamClose'].forEach(function(fn){
       try{ if(typeof window[fn] === 'function') window[fn](); }catch(e){}
     });
     return n;
