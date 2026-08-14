@@ -6095,16 +6095,48 @@ document.addEventListener('DOMContentLoaded',function(){ document.body.classList
 </div>
 <script>
 /* ★v5 — 양자 방어 입구. 눌러야 언어 선택으로 넘어간다 */
+/* ★ 상단 ↻ — 함수가 없어 눌러도 아무 일이 없었다.
+   지금 언어와 대문 통과 상태는 그대로 두고 화면만 다시 불러온다. */
+function refreshData(){
+  try{ sessionStorage.setItem('cgo_ent','1'); }catch(_){}
+  try{ if(window._p0Entered) sessionStorage.setItem('cgo_lang_ok','1'); }catch(_){}
+  try{ if(window._cgoStopAllCams) window._cgoStopAllCams(); }catch(_){}
+  location.reload();
+}
+window.refreshData=refreshData;
+
 function entSplashGo(){
   var e=document.getElementById('entSplash'); if(!e) return;
   window._entPassed=true;
+  /* ★ 한 번 들어오면 기억한다 — 카메라를 오래 쓴 뒤 폰이 화면을 새로 불러와도
+     대문으로 튕기지 않는다. 앱을 닫으면 지워진다(세션). */
+  try{ sessionStorage.setItem('cgo_ent','1'); }catch(_){}
   var p=document.getElementById('phase0'); if(p) p.style.opacity='1';
   e.style.transition='opacity .55s ease'; e.style.opacity='0';
   setTimeout(function(){ e.style.display='none'; },560);
 }
 window.entSplashGo=entSplashGo;
 /* 첫 화면에서는 반드시 보이게 — 새로 열 때 감춰져 있던 경우가 있었다 */
-(function(){ function show(){ var e=document.getElementById('entSplash'); if(!e) return;
+(function(){
+ /* 되살아난 화면이면 대문을 건너뛴다 */
+ try{ if(sessionStorage.getItem('cgo_ent')==='1'){
+   window._entPassed=true;
+   var e0=document.getElementById('entSplash'); if(e0){ e0.style.display='none'; e0.style.opacity='0'; }
+   var p0=document.getElementById('phase0'); if(p0) p0.style.opacity='1';
+   /* 언어까지 골랐던 화면이면 언어 관문도 건너뛴다 —
+      대문 → 언어 선택을 처음부터 다시 하게 되던 문제. */
+   if(sessionStorage.getItem('cgo_lang_ok')==='1'){
+     window._p0Entered=true;
+     document.documentElement.classList.remove('gate-open');
+     document.body && document.body.classList.remove('gate-open');
+     var rm=function(){ var p=document.getElementById('phase0'); if(p&&p.parentNode) p.remove();
+       document.documentElement.classList.remove('gate-open');
+       document.body && document.body.classList.remove('gate-open'); };
+     if(document.readyState==='loading') addEventListener('DOMContentLoaded',rm); else rm();
+     [0,150,500].forEach(function(d){ setTimeout(rm,d); });
+   }
+ } }catch(_){}
+ function show(){ var e=document.getElementById('entSplash'); if(!e) return;
   if(window._entPassed) return;
   e.style.display='flex'; e.style.opacity='1'; }
  if(document.readyState==='loading') addEventListener('DOMContentLoaded',show); else show();
@@ -6187,10 +6219,7 @@ window.entSplashGo=entSplashGo;
     <div class="topbar-title" id="pageTitle" style="display:flex;align-items:center;gap:10px;min-width:0">
       <span id="pageTitleText" style="font-family:'DM Serif Display',serif;font-size:15px;white-space:nowrap;display:none"></span>
       <div id="nasaMiniBar" style="display:flex;align-items:center;gap:6px;overflow:hidden;flex:1;min-width:0">
-        <span style="display:flex;align-items:center;gap:4px;flex-shrink:0">
-          <span style="width:6px;height:6px;background:#34d399;border-radius:50%;box-shadow:0 0 5px #34d399;animation:pulse 2s infinite;display:inline-block"></span>
-          <span data-k="404" style="font-size:9px;color:#34d399;font-weight:700;letter-spacing:.06em;white-space:nowrap" data-i18n="nasaLive">NASA JPL</span>
-        </span>
+        <img src="logo.png" alt="CGO-FULI" onclick="cgoGoPage('dashboard')" title="Dashboard" style="height:26px;width:auto;flex-shrink:0;cursor:pointer;-webkit-tap-highlight-color:transparent">
         <div id="nasaStatusBar" style="display:none;font-size:10px;font-weight:600;padding:4px 10px;border-radius:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:.04em;transition:all .5s"></div>
         <!-- [상단 별자리띠 숨김 C-build] 복구:index_before_minibar.html · display:flex 로 되돌리면 재표시 -->
         <div id="nasaMiniPlanets" style="display:none;gap:5px;align-items:center;overflow:hidden">
@@ -7928,7 +7957,7 @@ window.p0Enter=function(returning){
  window._p0Entered=true;
  document.documentElement.classList.remove('gate-open');
  document.body.classList.remove('gate-open');
- try{ localStorage.setItem('cgo_entered','1'); }catch(e){}
+ try{ localStorage.setItem('cgo_entered','1'); sessionStorage.setItem('cgo_lang_ok','1'); }catch(e){}
  var p=document.getElementById('phase0');
  if(p){ p.style.transition='opacity .28s'; p.style.opacity='0'; p.style.pointerEvents='none';
    setTimeout(function(){ if(p.parentNode) p.remove(); },320); }
