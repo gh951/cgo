@@ -377,6 +377,8 @@ window.iqRender = function(){
   var s = window._iqRun; if(!s) return;
   var q = s.qs[s.at];
   if(!q){ iqFinish(); return; }
+  /* ★ 카메라를 문제 위에 둔다 — 문제를 푸는 동안 rPPG로 함께 본다 */
+  try{ iqCamEnsure(); }catch(e){}
   var head = document.getElementById('iqTestHead');
   var body = document.getElementById('iqTestBody');
   if(!head || !body) return;
@@ -440,6 +442,8 @@ window.iqFinish = function(){
                 verbal:_k(9704,'언어 능력'), numeric:_k(9705,'수리 논리'), memory:_k(9706,'작업 기억') };
 
   var body = document.getElementById('iqTestBody');
+  /* ★ 카메라를 문제 위에 둔다 — 문제를 푸는 동안 rPPG로 함께 본다 */
+  try{ iqCamEnsure(); }catch(e){}
   var head = document.getElementById('iqTestHead');
   if(head) head.innerHTML = '<div style="font-size:12px;font-weight:900;color:#0f766e;">' + _k(9720,'검사 결과') + '</div>';
   if(!body) return;
@@ -468,7 +472,69 @@ window.iqFinish = function(){
 };
 
 window.iqTestClose = function(){
+  try{ iqCamStop(); }catch(e){}
   var p = document.getElementById('iqTestPop');
   if(p) p.style.display = 'none';
   window._iqRun = null;
+};
+
+
+/* ══ 검사 중 카메라 — 문제 위에 붙여 둔다 ══ */
+window.iqCamEnsure = function(){
+  var host = document.getElementById('iqCamHost');
+  if(!host) return;
+  if(host.getAttribute('data-on') === '1') return;
+  host.setAttribute('data-on','1');
+  /* ★ 얼굴은 확인만 하면 되므로 오른쪽 위에 작게 띄운다.
+     크게 두면 문제와 보기가 한 화면에 안 들어와 스크롤이 필요했다. */
+  host.innerHTML =
+    '<div style="position:relative;background:#000;border-radius:12px;overflow:hidden;width:112px;height:84px;margin-left:auto;box-shadow:0 2px 10px rgba(2,20,16,.18);">'
+    + '<video id="iq-video" autoplay playsinline muted style="width:100%;height:100%;object-fit:cover;display:block;transform:scaleX(-1);"></video>'
+    + '<div id="iq-cam-idle" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;'
+    + 'justify-content:center;background:rgba(2,20,16,.78);color:#fff;text-align:center;padding:6px;">'
+    + '<div style="font-size:18px;line-height:1;">🛰️</div>'
+    + '<div style="font-size:8.5px;font-weight:800;color:#34d399;margin-top:4px;line-height:1.3;">' + _k(9730,'카메라 준비 중') + '</div></div>'
+    + '<div style="position:absolute;left:6px;top:6px;display:flex;align-items:center;gap:4px;padding:2px 6px;'
+    + 'border-radius:999px;background:rgba(2,20,16,.6);">'
+    + '<span style="width:5px;height:5px;border-radius:999px;background:#f43f5e;"></span>'
+    + '<span style="font-size:8px;font-weight:900;color:#fff;letter-spacing:.05em;">rPPG</span></div></div>';
+  function _iqCamMsg(t){
+    var idle = document.getElementById('iq-cam-idle');
+    if(!idle) return;
+    idle.style.display = 'flex';
+    idle.innerHTML = '<div style="font-size:16px;line-height:1">📷</div>'
+      + '<div style="font-size:8px;font-weight:800;color:#fca5a5;margin-top:4px;line-height:1.3;'
+      + 'padding:0 4px;overflow-wrap:anywhere">' + t + '</div>';
+  }
+  function _iqCamGo(){
+    if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+      _iqCamMsg(_k(9732,'이 브라우저는 카메라를 열 수 없습니다')); return;
+    }
+    navigator.mediaDevices.getUserMedia({ video:{ facingMode:'user', width:{ideal:640}, height:{ideal:480} } })
+      .catch(function(){ return navigator.mediaDevices.getUserMedia({ video:true }); })
+      .then(function(s){
+        window._iqStream = s;
+        var v = document.getElementById('iq-video');
+        if(v){ v.srcObject = s; v.muted = true; v.play().catch(function(){}); }
+        var idle = document.getElementById('iq-cam-idle');
+        if(idle) idle.style.display = 'none';
+      })
+      .catch(function(err){
+        var n = (err && err.name) || '';
+        _iqCamMsg(n === 'NotAllowedError' ? _k(9733,'카메라 허용을 눌러 주세요')
+                : n === 'NotFoundError'  ? _k(9734,'카메라를 찾지 못했습니다')
+                : _k(9735,'카메라를 열지 못했습니다'));
+      });
+  }
+  /* 화면이 붙은 다음에 켠다 — 바로 부르면 video 가 아직 없어 조용히 실패했다 */
+  setTimeout(_iqCamGo, 60);
+};
+
+window.iqCamStop = function(){
+  try{
+    if(window._iqStream){ window._iqStream.getTracks().forEach(function(t){ t.stop(); }); window._iqStream = null; }
+  }catch(e){}
+  var v = document.getElementById('iq-video'); if(v) v.srcObject = null;
+  var host = document.getElementById('iqCamHost');
+  if(host){ host.innerHTML = ''; host.setAttribute('data-on','0'); }
 };
