@@ -2,6 +2,8 @@
 <html lang="ko" translate="no"><head>
 <meta charset="utf-8">
 <meta name="google" content="notranslate">
+<style>/* cgo-topbar-always-top — 카메라 화면 위에서도 로고가 눌리게 */
+.topbar{z-index:2147482000!important}</style>
 <script>
 /* ★ 되살아난 화면이면 대문을 그려지기 전에 감춘다.
    document.write 는 문서 파싱을 끊어 뒤따르는 스크립트(초시계 등)를 죽였다 —
@@ -6119,6 +6121,19 @@ document.addEventListener('DOMContentLoaded',function(){ document.body.classList
 /* ★ 상단 로고 — 어느 팝업·페이지에 있어도 대시보드로 나온다.
    예전엔 cgoGoPage만 불러, 팝업이 위에 떠 있으면 화면이 안 바뀌어 보였다. */
 function cgoHome(){
+  /* ★ 열려 있는 것을 종류 가리지 않고 모두 닫는다 — 팝업 안의 팝업, 카메라 화면까지 */
+  try{
+    document.querySelectorAll('div[id]').forEach(function(el){
+      if(!el.id) return;
+      var pop = /Pop$|-pop$|Overlay$|-overlay$|GuidePop$/.test(el.id);
+      if(!pop) return;
+      var cs = getComputedStyle(el);
+      if(cs.position !== 'fixed') return;
+      el.style.display = 'none';
+      if(el.classList) el.classList.remove('on','active','show','open');
+    });
+  }catch(_){}
+
   /* 화면에 떠 있는 것을 모두 닫는다 */
   var IDS=['c24GuidePop','c39GuidePop','c39CarePop','scGuidePop','scAreaPop','scStepPop','mypage-pop','suInfoPop','suTermsPop','suSocialPop','suPwPop','suPayPop',
            'cgoGuidePopup','cgoAccUsage','cgoAccPricing','acc-guide-popup','wf10-pop','page-account',
@@ -6136,8 +6151,23 @@ function cgoHome(){
   try{ if(window._cgoStopAllCams) window._cgoStopAllCams(); }catch(_){}
   /* 팝업이 잠갔던 스크롤을 되돌린다 */
   try{ document.body.style.overflow=''; document.documentElement.style.overflow=''; }catch(_){}
+  /* ★ 각 기능을 처음 상태로 되돌린다 — 다음에 들어갔을 때 앞 작업이 남지 않게 */
+  try{ if(window.cgoResetFeatures) cgoResetFeatures(); }catch(_){}
   try{ cgoGoPage('dashboard'); }catch(_){}
   try{ window.scrollTo(0,0); }catch(_){}
+}
+
+/* ★ 기능 화면 초기화 — 접힌 것은 접고, 고른 것은 지우고, 카메라는 끈다 */
+window.cgoResetFeatures=function(){
+  ['scFold-area','scFold-step'].forEach(function(id){
+    var el=document.getElementById(id); if(el) el.style.display='none';
+    var ar=document.getElementById(id+'-arrow'); if(ar) ar.textContent='▼';
+  });
+  try{ window._scAreaCur=null; window._scStepCur=null; window._c39CareCur=null; }catch(_){}
+  /* 페이지 안 스크롤도 처음으로 */
+  ['page-c24','page-c39','page-scalp','page-signup','page-mypage'].forEach(function(id){
+    var p=document.getElementById(id); if(p) p.scrollTop=0;
+  });
 }
 window.cgoHome=cgoHome;
 
@@ -6511,13 +6541,7 @@ window.entSplashGo=entSplashGo;
                        if(_p&&_p[_k]) _t=_p[_k]; } }catch(e){}
           d.innerHTML='<span class="cgo-bar-hd-t cgo-bar-title"'+(_k?' data-k="'+_k+'"':'')+'>'+_t+'</span>'+
             '<span id="cgo-arr-'+wrapId+'" class="cgo-bar-hd-a'+(isOpen?' open':'')+'">&#9654;</span>';
-          d.onclick=function(){
-            /* 정보 입력은 카드 5장 페이지로 — 계단식으로 채우게 한다 */
-            if(wrapId==='cgoip' && document.getElementById('page-signup')){
-              cgoGoPage('signup'); return;
-            }
-            cgoSecToggle(wrapId);
-          };
+          d.onclick=function(){ cgoSecToggle(wrapId); };
           return d;
         }
 
@@ -6531,7 +6555,7 @@ window.entSplashGo=entSplashGo;
           if(wrapId==='cgosec7'){
             // ★ 정보 입력 게이트 (C-60) — 입력 전엔 전체기능 잠금
             var _su={}; try{ _su=JSON.parse(localStorage.getItem('cgo_su_done')||'{}'); }catch(e){}
-            if(!(window.calcResult && window.calcResult.y) && !(_su.info && _su.terms)){
+            if(false && !(window.calcResult && window.calcResult.y) && !(_su.info && _su.terms)){
               alert((window.K?K(7520):null)||'Please enter your info first.');
               try{ var _ipw=document.getElementById('cgoip'); var _ipa=document.getElementById('cgo-arr-cgoip'); if(_ipw){ _ipw.style.display=''; if(_ipa)_ipa.classList.add('open'); _ipw.scrollIntoView({behavior:'smooth',block:'center'}); } }catch(e){}
               return;
@@ -14044,7 +14068,11 @@ window.c24CondGo=function(){
 };
 </script>
 
-<!-- build 1786700349319 · page-close-fix -->
+
+
+
+
+<!-- build 1786703905604 · home-reset -->
 </body></html>
 <style>
 /* ★v5 — 앱 전체 스크롤. 구형은 .content 안에만 스크롤이 있어 휠·스와이프가 겉돌았다 */

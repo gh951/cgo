@@ -75,6 +75,7 @@
             x.style.contentVisibility = 'visible';
             x.style.containIntrinsicSize = '';
           });
+          try{ if(window.cgoResetFeatures) cgoResetFeatures(); }catch(e){}
           [0, 60, 240].forEach(function(d){
             setTimeout(function(){
               try{ if(window.cgoCullScan) cgoCullScan(el); }catch(e){}
