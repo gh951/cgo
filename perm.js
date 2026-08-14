@@ -61,7 +61,28 @@
       /* ★ 보던 페이지를 기억한다 — 폰이 카메라를 켜다 메모리를 회수해
          화면을 다시 불러오면 대시보드로 튕겼다. */
       try{ sessionStorage.setItem('cgo_page', String(page)); }catch(e){}
-      return inner.apply(this, arguments);
+      var r = inner.apply(this, arguments);
+      /* ★ 특허 장치가 숨은 페이지를 재워 두는데, 다시 열 때 깨우지 않으면
+         높이가 0으로 남아 화면이 비어(검게) 보였다. 열자마자 깨운다. */
+      try{
+        var el = document.getElementById('page-' + page);
+        if(el){
+          el.classList.remove('cgo-rest');
+          el.style.contentVisibility = 'visible';
+          el.style.containIntrinsicSize = '';
+          el.querySelectorAll('.cgo-rest').forEach(function(x){
+            x.classList.remove('cgo-rest');
+            x.style.contentVisibility = 'visible';
+            x.style.containIntrinsicSize = '';
+          });
+          [0, 60, 240].forEach(function(d){
+            setTimeout(function(){
+              try{ if(window.cgoCullScan) cgoCullScan(el); }catch(e){}
+            }, d);
+          });
+        }
+      }catch(e){}
+      return r;
     };
     wrapped.__permWrapped = true;
     window.cgoGoPage = wrapped;
