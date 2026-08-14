@@ -58,6 +58,9 @@
       try{
         if(CAM_PAGES.indexOf(String(page)) < 0) window._cgoStopAllCams();
       }catch(e){}
+      /* ★ 보던 페이지를 기억한다 — 폰이 카메라를 켜다 메모리를 회수해
+         화면을 다시 불러오면 대시보드로 튕겼다. */
+      try{ sessionStorage.setItem('cgo_page', String(page)); }catch(e){}
       return inner.apply(this, arguments);
     };
     wrapped.__permWrapped = true;
@@ -137,6 +140,24 @@
       return beforeAsk.call(md, c);
     };
   }
+
+  /* ── 되살아난 화면이면 보던 페이지로 돌아간다 ── */
+  (function(){
+    var last = null;
+    try{ last = sessionStorage.getItem('cgo_page'); }catch(e){}
+    if(!last || last === 'dashboard') return;
+    function back(){
+      try{
+        if(sessionStorage.getItem('cgo_ent') !== '1') return;
+        if(typeof window.cgoGoPage !== 'function') return;
+        var p = document.getElementById('page-' + last);
+        if(!p) return;
+        if(getComputedStyle(p).display !== 'none') return;   /* 이미 그 페이지면 그만둔다 */
+        window.cgoGoPage(last);
+      }catch(e){}
+    }
+    [600, 1500, 2600].forEach(function(d){ setTimeout(back, d); });
+  })();
 
   /* ── 위치: 한 번만 묻고 보관한다 ── */
   var GEO_KEY = 'cgo_geo_pos';

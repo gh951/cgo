@@ -1790,9 +1790,9 @@ window._c24ShowCaptureCountdown = function(){
     ov.innerHTML = 
       '<style>@keyframes c24cdFade{from{opacity:0;}to{opacity:1;}}@keyframes c24cdPulse{0%,100%{transform:scale(1);}50%{transform:scale(1.08);}}</style>'
       +'<div style="background:rgba(15,23,42,.92);border:2px solid #fbbf24;border-radius:24px;padding:24px 40px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.6);">'
-        +'<div style="font-size:11px;font-weight:800;color:#fbbf24;letter-spacing:.18em;margin-bottom:8px;">📍 부위를 카메라에 맞춰주세요</div>'
+        +'<div style="font-size:11px;font-weight:800;color:#fbbf24;letter-spacing:.18em;margin-bottom:8px;">'+_cK(8770,'📍 부위를 카메라에 맞춰주세요')+'</div>'
         +'<div id="c24-cd-num" style="font-family:Orbitron,sans-serif;font-size:96px;font-weight:900;color:#fbbf24;line-height:1;animation:c24cdPulse 1s infinite;text-shadow:0 0 30px rgba(251,191,36,.6);">5</div>'
-        +'<div style="font-size:12px;color:rgba(232,234,240,.7);margin-top:8px;line-height:1.7;">측정 시작까지<br><span style="color:#fbbf24;font-weight:700;">위치 조정 시간</span></div>'
+        +'<div style="font-size:12px;color:rgba(232,234,240,.7);margin-top:8px;line-height:1.7;">'+_cK(8771,'측정 시작까지')+'<br><span style="color:#fbbf24;font-weight:700;">'+_cK(8772,'위치 조정 시간')+'</span></div>'
       +'</div>';
     document.body.appendChild(ov);
     var num = ov.querySelector('#c24-cd-num');
