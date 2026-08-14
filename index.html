@@ -2,6 +2,20 @@
 <html lang="ko" translate="no"><head>
 <meta charset="utf-8">
 <meta name="google" content="notranslate">
+<script>
+/* ★ 되살아난 화면(그날 이미 들어온 기기)이면 대문을 그려지기 전에 감춘다 */
+try{
+  var _d=new Date().toDateString();
+  if(sessionStorage.getItem('cgo_ent')==='1' || localStorage.getItem('cgo_ent_day')===_d){
+    window._entPassed=true;
+    document.write('<style>#entSplash{display:none!important}</style>');
+  }
+  if(sessionStorage.getItem('cgo_lang_ok')==='1' || localStorage.getItem('cgo_lang_day')===_d){
+    window._p0Entered=true;
+    document.write('<style>#phase0{display:none!important}html.gate-open,body.gate-open{overflow:auto!important}</style>');
+  }
+}catch(e){}
+</script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>CGO-FULI</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -6163,11 +6177,9 @@ window.entSplashGo=entSplashGo;
      [0,150,500].forEach(function(d){ setTimeout(rm,d); });
    }
  } }catch(_){}
- function show(){ var e=document.getElementById('entSplash'); if(!e) return;
-  if(window._entPassed) return;
-  e.style.display='flex'; e.style.opacity='1'; }
- if(document.readyState==='loading') addEventListener('DOMContentLoaded',show); else show();
- [0,120,400].forEach(function(d){setTimeout(show,d)});
+ /* ★ 구 CGO에는 대문을 다시 띄우는 장치가 없다. 우리만 있던 이 장치가
+    폰이 화면을 되살릴 때 대문을 강제로 켜서 튕기는 것처럼 보였다. 그래서 없앴다.
+    첫 방문이면 마크업 그대로 이미 보이므로 따로 켤 필요가 없다. */
 })();
 </script>
 
