@@ -9,6 +9,9 @@
    같은 높이라 언어 단추가 대문 위를 덮어, 눌러도 안 들어가졌다. */
 #entSplash{z-index:2147483600!important}
 #entSplash *{pointer-events:none}
+#entSplash{pointer-events:auto!important}
+#entHit{position:absolute;inset:0;z-index:9;background:transparent;border:0;
+  pointer-events:auto!important;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
 #phase0{z-index:2147483000!important}
 /* ★ 초시계가 대문과 같은 높이라 대문 위를 덮어, 눌러도 안 들어가졌다.
    대문보다 한 칸 아래로 내린다. */
@@ -6084,7 +6087,8 @@ body{font-family:Noto Sans KR,sans-serif;background:#fff;color:#111;padding:40px
 document.documentElement.classList.add('gate-open');
 document.addEventListener('DOMContentLoaded',function(){ document.body.classList.add('gate-open'); });
 </script>
-<div id="entSplash" onclick="entSplashGo()" ontouchend="event.preventDefault();entSplashGo()" role="button" tabindex="0" style="position:fixed;inset:0;z-index:600;-webkit-tap-highlight-color:transparent;touch-action:manipulation;background:radial-gradient(circle at 50% 42%,#ecfdf5 0%,#d1fae5 46%,#a7f3d0 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;font-family:'Noto Sans KR',sans-serif;">
+<div id="entSplash" onclick="entSplashGo()" role="button" tabindex="0" style="position:fixed;inset:0;z-index:600;-webkit-tap-highlight-color:transparent;touch-action:manipulation;background:radial-gradient(circle at 50% 42%,#ecfdf5 0%,#d1fae5 46%,#a7f3d0 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;font-family:'Noto Sans KR',sans-serif;">
+  <button id="entHit" type="button" aria-label="Enter" onclick="event.stopPropagation();entSplashGo()"></button>
   <style>
     @keyframes entBob{0%,100%{transform:translateY(-10px)}50%{transform:translateY(10px)}}
     @keyframes entGlow{0%,100%{opacity:.35;transform:scale(1)}50%{opacity:.62;transform:scale(1.1)}}
@@ -14353,7 +14357,9 @@ window.c24CondGo=function(){
 
 
 
-<!-- build 1786721206013 · gate-top -->
+
+
+<!-- build 1786746720909 · gate-hit -->
 </body></html>
 <style>
 /* ★v5 — 앱 전체 스크롤. 구형은 .content 안에만 스크롤이 있어 휠·스와이프가 겉돌았다 */
