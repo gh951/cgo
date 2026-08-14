@@ -2,8 +2,18 @@
 <html lang="ko" translate="no"><head>
 <meta charset="utf-8">
 <meta name="google" content="notranslate">
-<style>/* cgo-topbar-always-top — 카메라 화면 위에서도 로고가 눌리게 */
-.topbar{z-index:2147482000!important}</style>
+<style>/* cgo-topbar-always-top — 카메라 화면 위에서도 로고가 눌리게.
+  다만 대문·언어 관문이 떠 있는 동안에는 상단 바를 감춘다 (앞서 함께 떴다). */
+.topbar{z-index:2147482000!important}
+html.cgo-gate .topbar{display:none!important}</style>
+<script>
+try{
+  var _d=new Date().toDateString();
+  var _entOK=sessionStorage.getItem('cgo_ent')==='1'||localStorage.getItem('cgo_ent_day')===_d;
+  var _lngOK=sessionStorage.getItem('cgo_lang_ok')==='1'||localStorage.getItem('cgo_lang_day')===_d;
+  if(!_entOK||!_lngOK) document.documentElement.classList.add('cgo-gate');
+}catch(e){}
+</script>
 <script>
 /* ★ 되살아난 화면이면 대문을 그려지기 전에 감춘다.
    document.write 는 문서 파싱을 끊어 뒤따르는 스크립트(초시계 등)를 죽였다 —
@@ -6173,6 +6183,7 @@ window.cgoHome=cgoHome;
 
 function refreshData(){
   try{ sessionStorage.setItem('cgo_ent','1'); localStorage.setItem('cgo_ent_day', new Date().toDateString()); }catch(_){}
+  try{ if(sessionStorage.getItem('cgo_lang_ok')==='1'||localStorage.getItem('cgo_lang_day')===new Date().toDateString()) document.documentElement.classList.remove('cgo-gate'); }catch(_){}
   try{ if(window._p0Entered) sessionStorage.setItem('cgo_lang_ok','1'); }catch(_){}
   try{ if(window._cgoStopAllCams) window._cgoStopAllCams(); }catch(_){}
   location.reload();
@@ -6185,6 +6196,7 @@ function entSplashGo(){
   /* ★ 한 번 들어오면 기억한다 — 카메라를 오래 쓴 뒤 폰이 화면을 새로 불러와도
      대문으로 튕기지 않는다. 앱을 닫으면 지워진다(세션). */
   try{ sessionStorage.setItem('cgo_ent','1'); localStorage.setItem('cgo_ent_day', new Date().toDateString()); }catch(_){}
+  try{ if(sessionStorage.getItem('cgo_lang_ok')==='1'||localStorage.getItem('cgo_lang_day')===new Date().toDateString()) document.documentElement.classList.remove('cgo-gate'); }catch(_){}
   var p=document.getElementById('phase0'); if(p) p.style.opacity='1';
   e.style.transition='opacity .55s ease'; e.style.opacity='0';
   setTimeout(function(){ e.style.display='none'; },560);
@@ -8023,7 +8035,7 @@ window.p0Enter=function(returning){
  window._p0Entered=true;
  document.documentElement.classList.remove('gate-open');
  document.body.classList.remove('gate-open');
- try{ localStorage.setItem('cgo_entered','1'); sessionStorage.setItem('cgo_lang_ok','1'); localStorage.setItem('cgo_lang_day', new Date().toDateString()); }catch(e){}
+ try{ localStorage.setItem('cgo_entered','1'); sessionStorage.setItem('cgo_lang_ok','1'); localStorage.setItem('cgo_lang_day', new Date().toDateString()); document.documentElement.classList.remove('cgo-gate'); }catch(e){}
  var p=document.getElementById('phase0');
  if(p){ p.style.transition='opacity .28s'; p.style.opacity='0'; p.style.pointerEvents='none';
    setTimeout(function(){ if(p.parentNode) p.remove(); },320); }
@@ -14072,7 +14084,17 @@ window.c24CondGo=function(){
 
 
 
-<!-- build 1786703905604 · home-reset -->
+
+
+
+
+
+
+
+
+
+
+<!-- build 1786704777723 · no-tidy -->
 </body></html>
 <style>
 /* ★v5 — 앱 전체 스크롤. 구형은 .content 안에만 스크롤이 있어 휠·스와이프가 겉돌았다 */
