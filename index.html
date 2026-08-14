@@ -6098,6 +6098,29 @@ document.addEventListener('DOMContentLoaded',function(){ document.body.classList
 /* ★v5 — 양자 방어 입구. 눌러야 언어 선택으로 넘어간다 */
 /* ★ 상단 ↻ — 함수가 없어 눌러도 아무 일이 없었다.
    지금 언어와 대문 통과 상태는 그대로 두고 화면만 다시 불러온다. */
+/* ★ 상단 로고 — 어느 팝업·페이지에 있어도 대시보드로 나온다.
+   예전엔 cgoGoPage만 불러, 팝업이 위에 떠 있으면 화면이 안 바뀌어 보였다. */
+function cgoHome(){
+  /* 화면에 떠 있는 것을 모두 닫는다 */
+  var IDS=['c24GuidePop','mypage-pop','suInfoPop','suTermsPop','suSocialPop','suPwPop','suPayPop',
+           'cgoGuidePopup','cgoAccUsage','cgoAccPricing','acc-guide-popup','wf10-pop','page-account',
+           'todayFortuneOverlay','pm-intro-pop','cgoYtOverlay','acc-cam-overlay','page-c44-eye'];
+  IDS.forEach(function(id){ var e=document.getElementById(id);
+    if(e){ e.style.display='none'; if(e.classList) e.classList.remove('on','active','show'); } });
+  /* 실행 중에 만들어진 팝업은 지운다 */
+  ['c24-scan-guide-pop','c24-chat-guide','c24-capture-cd','cgoInAppGuide'].forEach(function(id){
+    var e=document.getElementById(id); if(e&&e.parentNode) e.parentNode.removeChild(e); });
+  document.querySelectorAll('.modal.on,.popup.on,.fsp.on').forEach(function(e){ e.classList.remove('on'); });
+  /* 측정 중이면 결과를 만들지 않고 접는다 · 카메라도 끈다 */
+  try{ if(window._c24Cancel) window._c24Cancel(); }catch(_){}
+  try{ if(window._cgoStopAllCams) window._cgoStopAllCams(); }catch(_){}
+  /* 팝업이 잠갔던 스크롤을 되돌린다 */
+  try{ document.body.style.overflow=''; document.documentElement.style.overflow=''; }catch(_){}
+  try{ cgoGoPage('dashboard'); }catch(_){}
+  try{ window.scrollTo(0,0); }catch(_){}
+}
+window.cgoHome=cgoHome;
+
 function refreshData(){
   try{ sessionStorage.setItem('cgo_ent','1'); }catch(_){}
   try{ if(window._p0Entered) sessionStorage.setItem('cgo_lang_ok','1'); }catch(_){}
@@ -6220,7 +6243,7 @@ window.entSplashGo=entSplashGo;
     <div class="topbar-title" id="pageTitle" style="display:flex;align-items:center;gap:10px;min-width:0">
       <span id="pageTitleText" style="font-family:'DM Serif Display',serif;font-size:15px;white-space:nowrap;display:none"></span>
       <div id="nasaMiniBar" style="display:flex;align-items:center;gap:6px;overflow:hidden;flex:1;min-width:0">
-        <img src="logo.png" alt="CGO-FULI" onclick="cgoGoPage('dashboard')" title="Dashboard" style="height:26px;width:auto;flex-shrink:0;cursor:pointer;-webkit-tap-highlight-color:transparent">
+        <img src="logo.png" alt="CGO-FULI" onclick="cgoHome()" title="Dashboard" style="height:26px;width:auto;flex-shrink:0;cursor:pointer;-webkit-tap-highlight-color:transparent">
         <div id="nasaStatusBar" style="display:none;font-size:10px;font-weight:600;padding:4px 10px;border-radius:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:.04em;transition:all .5s"></div>
         <!-- [상단 별자리띠 숨김 C-build] 복구:index_before_minibar.html · display:flex 로 되돌리면 재표시 -->
         <div id="nasaMiniPlanets" style="display:none;gap:5px;align-items:center;overflow:hidden">
