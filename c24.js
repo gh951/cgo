@@ -2105,9 +2105,24 @@ function _c24CompStartStep(needBack){
     _c24._delayedStart = setTimeout(function(){
       _c24.rafId=requestAnimationFrame(_c24Loop);
     }, 5000);
-  }).catch(function(){
+  }).catch(function(err){
     _c24.isRunning=false;
-    alert('카메라 권한이 필요합니다.');
+    /* ★ 알림창으로 막지 않는다 — 창을 닫아도 다시 시도할 길이 없어 멈춰 보였다.
+       화면에 안내를 띄우고, 눌러서 다시 열 수 있게 한다. */
+    try{
+      var n=(err&&err.name)||'';
+      var msg = n==='NotAllowedError' ? _cK(8790,'카메라 허용을 눌러 주세요 · 눌러서 다시 시도')
+              : n==='NotFoundError'  ? _cK(8791,'카메라를 찾지 못했습니다')
+              : _cK(8792,'카메라를 열지 못했습니다 · 눌러서 다시 시도');
+      var host=document.getElementById('c24-idle-overlay')||document.getElementById('c24-stage-overlay');
+      if(host){
+        host.style.display='flex';
+        host.innerHTML='<div style="text-align:center;padding:18px;">'
+          +'<div style="font-size:30px;line-height:1">📷</div>'
+          +'<div style="font-size:12.5px;font-weight:800;color:#fca5a5;margin-top:9px;line-height:1.5;overflow-wrap:anywhere">'+msg+'</div></div>';
+        host.onclick=function(){ try{ _c24CompStartStep(false); }catch(e){} };
+      }
+    }catch(e){}
   });
 
   // 타이머
