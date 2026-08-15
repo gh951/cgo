@@ -1273,6 +1273,9 @@ function _c24CompNextStep(){
   var nextIco = nextIcos[nextIdx] || '📷';
   var sec = document.getElementById('c24-result-section');
   if(!sec) return;
+  /* 자리가 숨어 있으면 열어 준다 — 안 열면 유도 버튼이 보이지 않아 흐름이 멈춘다 */
+  sec.style.display = 'block';
+  try{ sec.scrollIntoView && 0; }catch(e){}
 
   // 기존 유도 제거
   var old = document.getElementById('c24-comp-next');
