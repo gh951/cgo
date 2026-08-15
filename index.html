@@ -2903,7 +2903,7 @@ html,body{width:100%;height:100%;overflow:auto;background:var(--bg);font-family:
 .fdash-ch .fdash-tag{font-size:9px;color:rgba(15,27,46,.55);border:1px solid rgba(15,27,46,.16);padding:2px 7px;border-radius:999px;}
 .fdash-ch .fdash-num{margin-left:auto;font-size:10px;color:rgba(15,27,46,.45);}
 .fdash-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
-.fdash-card{position:relative;background:linear-gradient(158deg,rgba(227,178,60,.82) 0%,rgba(218,165,32,.82) 52%,rgba(198,148,27,.85) 100%);border:1px solid rgba(52,211,153,.55);border-radius:16px;box-shadow:0 0 0 1px rgba(52,211,153,.12),inset 0 1px 0 rgba(255,255,255,.34),0 2px 6px rgba(120,88,10,.16);padding:18px 10px 14px;text-align:center;cursor:pointer;overflow:hidden;min-height:104px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;transition:transform .2s,border-color .2s,background .2s;}
+.fdash-card{position:relative;background:linear-gradient(158deg,rgba(227,178,60,.82) 0%,rgba(218,165,32,.82) 52%,rgba(198,148,27,.85) 100%);border:1px solid rgba(52,211,153,.55);border-radius:0;box-shadow:0 0 0 1px rgba(52,211,153,.12),inset 0 1px 0 rgba(255,255,255,.34),0 2px 6px rgba(120,88,10,.16);padding:18px 10px 14px;text-align:center;cursor:pointer;overflow:hidden;min-height:104px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;transition:transform .2s,border-color .2s,background .2s;}
 .fdash-card::before{content:"";position:absolute;inset:0;background:radial-gradient(110px 70px at 50% 0%,var(--fc) 0%,transparent 70%);opacity:.12;pointer-events:none;}
 .fdash-card:hover{transform:translateY(-2px);border-color:#34d399;box-shadow:0 0 0 1px rgba(52,211,153,.3),0 6px 14px rgba(120,88,10,.24);background:linear-gradient(158deg,rgba(235,190,76,.92) 0%,rgba(224,174,40,.92) 52%,rgba(206,156,31,.94) 100%);}
 .fdash-card:active{transform:scale(.97);}
@@ -6296,7 +6296,7 @@ window.entSplashGo=entSplashGo;
 <div class="page active" id="page-dashboard">
 
       <!-- ✦ 삼성 스타일 홍보 배너 슬라이드 ✦ -->
-      <div id="cgo-hero-banner" style="position:relative;border-radius:20px;overflow:hidden;margin-bottom:16px;background:#020817;">
+      <div id="cgo-hero-banner" style="position:relative;border-radius:0;overflow:hidden;margin-bottom:16px;background:#020817;">
         <!-- 슬라이드 컨테이너 -->
         <div id="cgo-slides" style="display:flex;transition:transform .5s cubic-bezier(.4,0,.2,1);">
 
@@ -6479,7 +6479,7 @@ window.entSplashGo=entSplashGo;
         var _s=document.createElement('style');
         _s.textContent=
           '.cgo-bar-hd{display:flex;align-items:center;justify-content:space-between;padding:11px 16px;'+
-          'background:rgba(10,18,38,.92);border:1px solid rgba(2,132,199,.28);border-radius:10px;'+
+          'background:rgba(10,18,38,.92);border:1px solid rgba(2,132,199,.28);border-radius:0;'+
           'border-left:3px solid rgba(2,132,199,.7);'+
           'cursor:pointer;margin:3px 0;user-select:none;-webkit-tap-highlight-color:transparent;transition:background .18s;}'+
           '.cgo-bar-hd:hover{background:rgba(2,132,199,.07);}'+
@@ -6750,7 +6750,7 @@ window.entSplashGo=entSplashGo;
       <!-- ══ /CGO 퀵 점프 네비 바 ══ -->
 
       <!-- 👤 마이페이지 카드 (C-60) -->
-      <div onclick="cgoGoPage('mypage')" style="position:relative;border:1.5px solid rgba(6,182,212,.45);border-radius:14px;padding:13px 16px;margin:0 0 10px;background:linear-gradient(135deg,rgba(6,182,212,.12),rgba(14,116,144,.05));cursor:pointer;overflow:hidden;box-shadow:0 2px 14px rgba(6,182,212,.12);">
+      <div onclick="cgoGoPage('mypage')" style="position:relative;border:1.5px solid rgba(6,182,212,.45);border-radius:0;padding:13px 16px;margin:0 0 10px;background:linear-gradient(135deg,rgba(6,182,212,.12),rgba(14,116,144,.05));cursor:pointer;overflow:hidden;box-shadow:0 2px 14px rgba(6,182,212,.12);">
         <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#06b6d4,transparent);"></div>
         <div style="display:flex;align-items:center;justify-content:space-between;">
           <div style="display:flex;align-items:center;gap:10px;">
@@ -6764,7 +6764,7 @@ window.entSplashGo=entSplashGo;
         </div>
       </div>
       <!-- 📖 사용법 카드 (C-60) -->
-      <div onclick="var p=document.getElementById('wf10-pop');p.style.display='flex';try{CGO_T.paint(p);cgoPaintKo(p);}catch(e){}" style="position:relative;border:1.5px solid rgba(13,148,136,.45);border-radius:14px;padding:13px 16px;margin:0 0 10px;background:linear-gradient(135deg,rgba(13,148,136,.14),rgba(15,118,110,.05));cursor:pointer;overflow:hidden;box-shadow:0 2px 14px rgba(13,148,136,.12);">
+      <div onclick="var p=document.getElementById('wf10-pop');p.style.display='flex';try{CGO_T.paint(p);cgoPaintKo(p);}catch(e){}" style="position:relative;border:1.5px solid rgba(13,148,136,.45);border-radius:0;padding:13px 16px;margin:0 0 10px;background:linear-gradient(135deg,rgba(13,148,136,.14),rgba(15,118,110,.05));cursor:pointer;overflow:hidden;box-shadow:0 2px 14px rgba(13,148,136,.12);">
         <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#14b8a6,transparent);"></div>
         <div style="display:flex;align-items:center;justify-content:space-between;">
           <div style="display:flex;align-items:center;gap:10px;">
@@ -6794,7 +6794,7 @@ window.entSplashGo=entSplashGo;
 
       <!-- ✨ CGO-FULI 사용 가이드 카드 -->
       <!-- 슬림 클릭 카드 (칸 통일 C-60) -->
-      <div onclick="document.getElementById('cgoGuidePopup').style.display='block'" style="position:relative;border:1.5px solid rgba(2,132,199,.5);border-radius:14px;padding:13px 16px;margin:0 0 10px;background:linear-gradient(135deg,rgba(10,18,38,.97),rgba(18,28,52,.95));cursor:pointer;overflow:hidden;box-shadow:0 2px 14px rgba(2,132,199,.12);transition:background .2s;" onmouseover="this.style.background='linear-gradient(135deg,rgba(15,25,50,.98),rgba(25,38,68,.97))'" onmouseout="this.style.background='linear-gradient(135deg,rgba(10,18,38,.97),rgba(18,28,52,.95))'">
+      <div onclick="document.getElementById('cgoGuidePopup').style.display='block'" style="position:relative;border:1.5px solid rgba(2,132,199,.5);border-radius:0;padding:13px 16px;margin:0 0 10px;background:linear-gradient(135deg,rgba(10,18,38,.97),rgba(18,28,52,.95));cursor:pointer;overflow:hidden;box-shadow:0 2px 14px rgba(2,132,199,.12);transition:background .2s;" onmouseover="this.style.background='linear-gradient(135deg,rgba(15,25,50,.98),rgba(25,38,68,.97))'" onmouseout="this.style.background='linear-gradient(135deg,rgba(10,18,38,.97),rgba(18,28,52,.95))'">
         <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#0284c7,transparent);"></div>
         <div style="display:flex;align-items:center;justify-content:space-between;">
           <div style="display:flex;align-items:center;gap:10px;">
@@ -14331,7 +14331,15 @@ window.c24CondGo=function(){
 
 
 
-<!-- build 1786772038748 · full3 -->
+
+
+
+
+
+
+
+
+<!-- build 1786799911847 · no-round4 -->
 </body></html>
 <style>
 /* ★v5 — 앱 전체 스크롤. 구형은 .content 안에만 스크롤이 있어 휠·스와이프가 겉돌았다 */
