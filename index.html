@@ -10415,8 +10415,10 @@ var familyData = window.familyData, selectedFamilyId = window.selectedFamilyId, 
  </div>
  <div style="max-width:640px;margin:0 auto;padding:16px 16px 40px;">
   <div style="position:sticky;top:0;z-index:6;background:#f0fdf9;padding-bottom:9px;">
-   <div id="iqTestHead"></div>
-   <div id="iqCamHost" data-on="0" style="margin-top:9px;"></div>
+   <div style="display:flex;align-items:flex-start;gap:11px;">
+    <div id="iqTestHead" style="flex:1;min-width:0;"></div>
+    <div id="iqCamHost" data-on="0" style="flex:none;"></div>
+   </div>
   </div>
   <div id="iqTestBody"></div>
  </div>
@@ -14313,7 +14315,15 @@ window.c24CondGo=function(){
 
 
 
-<!-- build 1786758778001 · iq-q-i18n -->
+
+
+
+
+
+
+
+
+<!-- build 1786761338330 · full-width -->
 </body></html>
 <style>
 /* ★v5 — 앱 전체 스크롤. 구형은 .content 안에만 스크롤이 있어 휠·스와이프가 겉돌았다 */
@@ -14325,7 +14335,11 @@ html,body{height:auto!important;min-height:100%;max-height:none!important;
    좁은 화면 규칙들이 .page에 좌우 여백을 !important로 넣어 양옆에 빈 띠가 생겼다.
    페이지 안쪽 구역이 이미 자기 여백을 갖고 있으므로 바깥 여백은 0으로 둔다. */
 @media(max-width:860px){
+ /* ★ 폰에서는 팝업처럼 화면을 꽉 채운다 — 820px 틀을 풀어 좌우가 남지 않게 한다 */
  .page{padding-left:0!important;padding-right:0!important}
+ .page > div[style*="max-width"]{max-width:100%!important;width:100%!important;margin:0!important}
+ .content > div[style*="max-width"],
+ #page-dashboard > div[style*="max-width"]{max-width:100%!important;width:100%!important;margin:0!important}
  .page > div[style*="max-width:820px"]{max-width:100%!important;width:100%!important}
 }
 
