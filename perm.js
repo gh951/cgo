@@ -4,8 +4,62 @@
 (function(){
   'use strict';
 
+/* ★ 기능을 나가면 모두 꺼지고 처음으로 돌아간다 (합의 규칙 · 전체 기능 공통).
+   결과를 만드는 종료 함수는 부르지 않는다 — 반쪽 데이터로 결과가 만들어지기 때문. */
+window.cgoResetFeatures = function(){
+  /* 1) 카메라 — 취소 함수만 부른다 */
+  ['_c24Cancel','c39Stop','scStop','iqCamStop','eyeCancelMeasure','cgoAccCamClose'].forEach(function(fn){
+    try{ if(typeof window[fn] === 'function') window[fn](); }catch(e){}
+  });
+  try{ if(window._cgoStopAllCams) window._cgoStopAllCams(); }catch(e){}
+  try{
+    Array.prototype.forEach.call(document.querySelectorAll('video'), function(v){
+      if(v.srcObject){
+        try{ v.srcObject.getTracks().forEach(function(t){ t.stop(); }); }catch(e){}
+        v.srcObject = null;
+      }
+    });
+  }catch(e){}
+  /* 2) 떠 있는 것을 종류 가리지 않고 모두 닫는다 — 팝업 안의 팝업까지 */
+  try{
+    Array.prototype.forEach.call(document.querySelectorAll('div[id]'), function(el){
+      if(!/Pop$|Popup$|-pop$|Overlay$|-overlay$/.test(el.id)) return;
+      if(getComputedStyle(el).position !== 'fixed') return;
+      el.style.display = 'none';
+      if(el.classList) el.classList.remove('on','active','show','open');
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('.modal.on,.popup.on,.fsp.on'),
+      function(e){ e.classList.remove('on'); });
+  }catch(e){}
+  /* 3) 펼친 것을 접고, 고른 것을 지운다 */
+  try{
+    Array.prototype.forEach.call(document.querySelectorAll('[id^="scFold-"]'), function(el){
+      if(/-arrow$/.test(el.id)){ el.textContent = '▼'; return; }
+      el.style.display = 'none';
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('[id^="fold-"]'),
+      function(el){ el.style.display = 'none'; });
+  }catch(e){}
+  try{
+    window._scAreaCur = null; window._scStepCur = null;
+    window._c39CareCur = null; window._iqRun = null;
+  }catch(e){}
+  /* 4) 스크롤 맨 위 */
+  try{
+    Array.prototype.forEach.call(document.querySelectorAll('.page'), function(p){ p.scrollTop = 0; });
+    Array.prototype.forEach.call(document.querySelectorAll('div[id]'), function(el){
+      if(/Pop$|Popup$|-pop$/.test(el.id)) el.scrollTop = 0;
+    });
+    window.scrollTo(0,0);
+    var c = document.querySelector('.content'); if(c) c.scrollTop = 0;
+  }catch(e){}
+  /* 5) 팝업이 잠갔던 스크롤을 되돌린다 */
+  try{ document.body.style.overflow = ''; document.documentElement.style.overflow = ''; }catch(e){}
+};
+
+
   /* ── 카메라 기능이 있는 페이지 ── */
-  var CAM_PAGES = ['c24','c39','scalp','c44-eye','c41','acc-cam','vision','iq'];
+  var CAM_PAGES = ['c24','c39','scalp','iq','c44-eye','c41','acc-cam','vision','iq'];
 
   /* ── 켜져 있는 카메라 목록 ── */
   var live = [];
@@ -16,6 +70,8 @@
     var orig = md.getUserMedia.bind(md);
     md.getUserMedia = function(c){
       return orig(c).then(function(stream){
+        /* 카메라가 켜진 동안에만 상단 바를 맨 위로 — 관문 위에 뜨지 않게 */
+        try{ document.documentElement.classList.add('cgo-cam'); }catch(e){}
         live.push(stream);
         stream.getTracks().forEach(function(t){
           t.addEventListener('ended', function(){
@@ -29,6 +85,7 @@
 
   /* ── 카메라 전부 끄기 ── */
   window._cgoStopAllCams = function(){
+    try{ document.documentElement.classList.remove('cgo-cam'); }catch(e){}
     var n = 0;
     live.slice().forEach(function(s){
       try{ s.getTracks().forEach(function(t){ t.stop(); n++; }); }catch(e){}
@@ -44,7 +101,7 @@
       });
     }catch(e){}
     /* 기능별 '취소' 함수만 부른다 — 결과를 계산해 저장하는 종료 함수는 부르지 않는다 */
-    ['eyeCancelMeasure','_c24Cancel','c39Stop','scStop','cgoAccCamClose'].forEach(function(fn){
+    ['eyeCancelMeasure','_c24Cancel','c39Stop','scStop','iqCamStop','cgoAccCamClose'].forEach(function(fn){
       try{ if(typeof window[fn] === 'function') window[fn](); }catch(e){}
     });
     return n;
@@ -108,80 +165,11 @@
     }
   });
 
-  /* ══ 카톡·인스타 같은 인앱 브라우저 ══
-     이 브라우저들은 카메라를 아예 막는다. 구 CGO와 같이 바깥 브라우저로 내보낸다. */
-  var ua = (navigator.userAgent || '').toLowerCase();
-  var inApp = /kakaotalk|fbav|fb_iab|instagram|line\/|naver|daumapps|everytimeapp|whale|kakaostory|band/.test(ua);
-  var isAndroid = ua.indexOf('android') > -1;
-  var isIOS = /iphone|ipad|ipod/.test(ua);
-  window._cgoInApp = inApp;
+  /* ★ 인앱 브라우저(카톡 등)에서 크롬으로 내보내던 장치를 없앴다.
+     구 CGO는 카톡 안에서 카메라가 그대로 열렸다 — 막힌다는 전제가 틀렸고,
+     내보내는 순간 주소가 새로 열려 대문부터 다시 시작하는 것이 튕김의 원인이었다. */
 
-  window._cgoOpenOutside = function(){
-    var url = location.href.split('#')[0];
-    if(isAndroid){
-      /* 안드로이드 — 크롬으로 바로 넘긴다 */
-      var noScheme = url.replace(/^https?:\/\//, '');
-      location.href = 'intent://' + noScheme + '#Intent;scheme=https;package=com.android.chrome;end';
-      return true;
-    }
-    if(isIOS){
-      /* 아이폰 — 카톡은 자동 이동을 막으므로 주소를 복사해 주고 안내한다 */
-      try{ navigator.clipboard && navigator.clipboard.writeText(url); }catch(e){}
-      showOutsideGuide(url);
-      return true;
-    }
-    return false;
-  };
-
-  function showOutsideGuide(url){
-    if(document.getElementById('cgoInAppGuide')) return;
-    var d = document.createElement('div');
-    d.id = 'cgoInAppGuide';
-    d.style.cssText = 'position:fixed;inset:0;z-index:2147483647;background:rgba(2,20,16,.92);display:flex;align-items:center;justify-content:center;padding:24px;';
-    d.innerHTML =
-      '<div style="width:100%;max-width:380px;background:#f0fdf9;border:1px solid #99f6e4;border-radius:20px;padding:26px 22px;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.4)">'
-      + '<div style="font-size:34px;line-height:1">📷</div>'
-      + '<div style="font-size:16px;font-weight:900;color:#0f172a;margin-top:12px;line-height:1.4">Open in Safari to use the camera</div>'
-      + '<div style="font-size:12.5px;color:#475569;margin-top:10px;line-height:1.7">This in-app browser blocks the camera.<br>Tap <b style="color:#0d9488">···</b> at the bottom right → <b style="color:#0d9488">Open in Safari</b>.</div>'
-      + '<div style="font-size:11.5px;color:#0d9488;margin-top:14px;padding:10px 12px;background:#ccfbf1;border-radius:11px;word-break:break-all">' + url + '</div>'
-      + '<div style="font-size:11px;color:#64748b;margin-top:8px">The address is copied — you can paste it in Safari.</div>'
-      + '<button id="cgoInAppClose" style="margin-top:16px;width:100%;padding:13px;border:0;border-radius:13px;background:#0f172a;color:#fff;font-size:13.5px;font-weight:800;cursor:pointer;font-family:inherit">OK</button>'
-      + '</div>';
-    document.body.appendChild(d);
-    d.querySelector('#cgoInAppClose').onclick = function(){ d.remove(); };
-  }
-
-  /* 카메라를 요청하는 순간 인앱이면 바깥 브라우저로 보낸다 */
-  if(inApp && md && md.getUserMedia){
-    var beforeAsk = md.getUserMedia;
-    md.getUserMedia = function(c){
-      if(c && c.video){
-        window._cgoOpenOutside();
-        return Promise.reject(new DOMException('in-app browser', 'NotAllowedError'));
-      }
-      return beforeAsk.call(md, c);
-    };
-  }
-
-  /* ── 되살아난 화면이면 보던 페이지로 돌아간다 ── */
-  (function(){
-    var last = null;
-    try{ last = sessionStorage.getItem('cgo_page'); }catch(e){}
-    if(!last || last === 'dashboard') return;
-    function back(){
-      try{
-        if(sessionStorage.getItem('cgo_ent') !== '1') return;
-        if(typeof window.cgoGoPage !== 'function') return;
-        var p = document.getElementById('page-' + last);
-        if(!p) return;
-        if(getComputedStyle(p).display !== 'none') return;   /* 이미 그 페이지면 그만둔다 */
-        window.cgoGoPage(last);
-      }catch(e){}
-    }
-    [600, 1500, 2600].forEach(function(d){ setTimeout(back, d); });
-  })();
-
-  /* ── 위치: 한 번만 묻고 보관한다 ── */
+/* ── 위치: 한 번만 묻고 보관한다 ── */
   var GEO_KEY = 'cgo_geo_pos';
   function saved(){
     try{ return JSON.parse(localStorage.getItem(GEO_KEY) || 'null'); }catch(e){ return null; }
