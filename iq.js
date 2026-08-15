@@ -386,7 +386,7 @@ window.iqRender = function(){
   var pct = Math.round((s.at / s.qs.length) * 100);
   head.innerHTML =
     '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">'
-    + '<span style="font-size:12px;font-weight:900;color:#0f766e;">' + (q.domainLabel || q.domain || '') + '</span>'
+    + '<span style="font-size:12px;font-weight:900;color:#0f766e;">' + _iqTr(q.domainLabel || q.domain || '') + '</span>'
     + '<span style="font-size:11px;color:#64748b;">' + (s.at+1) + ' / ' + s.qs.length + '</span></div>'
     + '<div style="height:6px;border-radius:999px;background:#e2e8f0;margin-top:8px;overflow:hidden;">'
     + '<div style="height:100%;width:' + pct + '%;background:linear-gradient(90deg,#0d9488,#14b8a6);transition:width .25s;"></div></div>';
@@ -396,7 +396,7 @@ window.iqRender = function(){
     '<div style="background:#fff;border:1px solid #d7eee8;border-radius:16px;padding:18px 16px;margin-top:13px;">'
     + (isSvg
         ? '<div style="display:flex;justify-content:center;">' + q.q + '</div>'
-        : '<div style="font-size:14.5px;font-weight:800;color:#0f172a;line-height:1.65;text-wrap:pretty;">' + q.q + '</div>')
+        : '<div style="font-size:14.5px;font-weight:800;color:#0f172a;line-height:1.65;text-wrap:pretty;">' + _iqTr(q.q) + '</div>')
     + '</div>'
     + '<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:12px;">'
     + q.opts.map(function(o, i){
@@ -409,7 +409,7 @@ window.iqRender = function(){
           + 'font-size:11px;font-weight:900;display:inline-flex;align-items:center;justify-content:center;">'
           + String.fromCharCode(65+i) + '</span>'
           + '<span style="flex:1;min-width:0;font-size:' + (svg ? '13px' : '13.5px') + ';color:#0f172a;font-weight:700;'
-          + 'line-height:1.5;overflow-wrap:anywhere;">' + o + '</span></button>';
+          + 'line-height:1.5;overflow-wrap:anywhere;">' + _iqTr(o) + '</span></button>';
       }).join('')
     + '</div>';
   s.tq = Date.now();
@@ -488,12 +488,13 @@ window.iqCamEnsure = function(){
   /* ★ 얼굴은 확인만 하면 되므로 오른쪽 위에 작게 띄운다.
      크게 두면 문제와 보기가 한 화면에 안 들어와 스크롤이 필요했다. */
   host.innerHTML =
-    '<div style="position:relative;background:#000;border-radius:12px;overflow:hidden;width:112px;height:84px;margin-left:auto;box-shadow:0 2px 10px rgba(2,20,16,.18);">'
+    '<div style="position:relative;background:#000;border-radius:14px;overflow:hidden;width:100%;height:132px;box-shadow:0 2px 10px rgba(2,20,16,.14);">'
     + '<video id="iq-video" autoplay playsinline muted style="width:100%;height:100%;object-fit:cover;display:block;transform:scaleX(-1);"></video>'
     + '<div id="iq-cam-idle" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;'
     + 'justify-content:center;background:rgba(2,20,16,.78);color:#fff;text-align:center;padding:6px;">'
-    + '<div style="font-size:18px;line-height:1;">🛰️</div>'
-    + '<div style="font-size:8.5px;font-weight:800;color:#34d399;margin-top:4px;line-height:1.3;">' + _k(9730,'카메라 준비 중') + '</div></div>'
+    + '<div style="font-size:24px;line-height:1;">🛰️</div>'
+    + '<div style="font-size:11px;font-weight:800;color:#34d399;margin-top:6px;line-height:1.4;">' + _k(9730,'카메라 준비 중') + '</div>'
+    + '<div style="font-size:9.5px;color:rgba(255,255,255,.7);margin-top:3px;line-height:1.5;">' + _k(9731,'얼굴을 화면 안에 두고 문제를 푸세요') + '</div></div>'
     + '<div style="position:absolute;left:6px;top:6px;display:flex;align-items:center;gap:4px;padding:2px 6px;'
     + 'border-radius:999px;background:rgba(2,20,16,.6);">'
     + '<span style="width:5px;height:5px;border-radius:999px;background:#f43f5e;"></span>'
@@ -537,4 +538,20 @@ window.iqCamStop = function(){
   var v = document.getElementById('iq-video'); if(v) v.srcObject = null;
   var host = document.getElementById('iqCamHost');
   if(host){ host.innerHTML = ''; host.setAttribute('data-on','0'); }
+};
+
+
+/* ══ 문제·보기 번역 — 원문을 열쇠로 찾아 바꾼다 ══
+   문제는 도형 생성 함수가 만들어 내므로 자리 번호를 심을 수 없다.
+   그래서 원문 글자를 그대로 열쇠로 쓰고, 사전에 있으면 갈아 넣는다. */
+window._iqTr = function(t){
+  if(!t || typeof t !== 'string') return t;
+  if(/^\s*<svg/i.test(t)) return t;            /* 도형은 그대로 */
+  try{
+    var L = (window.CGO_T && CGO_T.cur && CGO_T.cur()) || 'ko';
+    if(L === 'ko') return t;
+    var D = window.IQ_TR && window.IQ_TR[L];
+    if(D && D[t]) return D[t];
+  }catch(e){}
+  return t;
 };
