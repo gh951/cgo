@@ -91,11 +91,24 @@ function eyeFitLoop(){
   function tick(){
     if(!window._eye.stream) return;
     var fill = 0;
-    try{ if(window._c24 && _c24._faceLms) fill = cgoFaceFill(_c24._faceLms); }catch(e){}
-    if(window.cgoFitHint) cgoFitHint(fill, 'eye', 'eye-fit');
-    if(window._eye.stream) setTimeout(tick, 400);
+    try{ if(window._c24 && _c24._faceLms && _c24._faceLms.length && window.cgoFaceFill) fill = cgoFaceFill(_c24._faceLms); }catch(e){}
+    var st = window.cgoFitState ? cgoFitState(fill, 'eye') : 'ok';
+    /* ★ 거리가 벗어나면 시표를 가리고 답을 못 하게 잠근다 (구 CGO와 같은 방식) */
+    var lock = (st === 'far' || st === 'near');
+    window._eye.locked = lock;
+    var body = document.getElementById('eyeTestBody');
+    if(body){
+      body.style.opacity = lock ? '0.25' : '1';
+      body.style.pointerEvents = lock ? 'none' : '';
+    }
+    if(st === 'far')       box.textContent = _ek(8820,'📏 조금 더 가까이');
+    else if(st === 'near') box.textContent = _ek(8821,'📏 조금 더 멀리');
+    else if(st === 'ok'){  box.textContent = _ek(8762,'✅ 딱 맞아요');
+                           try{ if(window.cgoFitBeep) cgoFitBeep('eye'); }catch(e){} }
+    else box.textContent = '';
+    requestAnimationFrame(tick);
   }
-  tick();
+  requestAnimationFrame(tick);
 }
 
 window.eyeCamStop = function(){
@@ -120,43 +133,51 @@ window.eyeNext = function(){
   var head = document.getElementById('eyeTestHead');
   var body = document.getElementById('eyeTestBody');
   if(!head || !body) return;
-
   if(r.at >= r.trials.length){ eyeFinish(); return; }
   var t = r.trials[r.at];
   var pct = Math.round(r.at / r.trials.length * 100);
-
   head.innerHTML =
     '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">'
-    + '<span style="font-size:12px;font-weight:900;color:#0f766e;">'
-    + _ek(9957, '시각 반응') + ' · ' + (window._eye.side === 'L' ? _ek(9943,'왼쪽 눈') : _ek(9945,'오른쪽 눈')) + '</span>'
-    + '<span style="font-size:11px;color:#64748b;">' + (r.at + 1) + ' / ' + r.trials.length + '</span></div>'
+    + '<span style="font-size:12px;font-weight:900;color:#0f766e;">' + _ek(9957,'시표 읽기') + ' · '
+    + (window._eye.side === 'L' ? _ek(9943,'왼쪽 눈') : _ek(9945,'오른쪽 눈')) + '</span>'
+    + '<span style="font-size:11px;color:#64748b;">' + (r.at+1) + ' / ' + r.trials.length + '</span></div>'
     + '<div style="height:6px;border-radius:999px;background:#e2e8f0;margin-top:8px;overflow:hidden;">'
     + '<div style="height:100%;width:' + pct + '%;background:linear-gradient(90deg,#0d9488,#14b8a6);transition:width .25s;"></div></div>';
 
-  body.innerHTML =
-    '<div id="eye-stage" style="position:relative;height:210px;margin-top:13px;border-radius:16px;'
-    + 'background:#fff;border:1px solid #d7eee8;overflow:hidden;">'
-    + '<div id="eye-dot" style="position:absolute;display:none;border-radius:999px;background:#0f766e;"></div>'
-    + '<div id="eye-wait" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;'
-    + 'font-size:12px;color:#94a3b8;">' + _ek(9958, '점이 나타나면 곧바로 누르세요') + '</div></div>'
-    + '<button type="button" onclick="eyeHit()" style="width:100%;margin-top:11px;padding:22px;border:0;'
-    + 'border-radius:16px;background:#0f172a;color:#fff;font-size:15px;font-weight:900;cursor:pointer;font-family:inherit;">'
-    + _ek(9959, '눌렀습니다') + '</button>';
+  /* 란돌트 고리 — 단계가 오를수록 작아진다. 틈이 어느 쪽인지 답한다 */
+  var size = Math.max(14, 120 - r.at * 7);
+  var gap  = size * 0.2;
+  var dirs = ['up','right','down','left'];
+  var dir  = t.dir || dirs[Math.floor(Math.random()*4)];
+  t.dir = dir;
+  var rot  = { up:270, right:0, down:90, left:180 }[dir];
+  var half = size/2, ring = size*0.2;
+  var svg =
+    '<svg width="' + size + '" height="' + size + '" viewBox="0 0 100 100" style="display:block">'
+    + '<g transform="rotate(' + rot + ' 50 50)">'
+    + '<path d="M50 10 A40 40 0 1 1 49.9 10" fill="none" stroke="#0f172a" stroke-width="20"'
+    + ' stroke-dasharray="' + (2*Math.PI*40*0.86) + ' 999" transform="rotate(6 50 50)"/>'
+    + '</g></svg>';
 
-  r.shownAt = 0;
-  r.timer = setTimeout(function(){
-    var dot = document.getElementById('eye-dot');
-    var wait = document.getElementById('eye-wait');
-    if(!dot) return;
-    if(wait) wait.style.display = 'none';
-    dot.style.width = t.size + 'px';
-    dot.style.height = t.size + 'px';
-    dot.style.top = (60 + Math.random() * 90) + 'px';
-    dot.style.left = (t.side === 'L' ? 20 + Math.random() * 80 : 60 + Math.random() * 30) + '%';
-    dot.style.display = 'block';
-    r.shownAt = Date.now();
-  }, t.wait);
+  body.innerHTML =
+    '<div style="background:#fff;border:1px solid #d7eee8;border-radius:16px;padding:26px 16px;margin-top:13px;'
+    + 'display:flex;flex-direction:column;align-items:center;gap:10px;">'
+    + '<div style="font-size:11px;color:#64748b;font-weight:700;">' + _ek(9958,'틈이 어느 쪽인가요?') + '</div>'
+    + svg + '</div>'
+    + '<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:12px;justify-items:center;">'
+    + '<span></span>' + _eyeBtn('up','▲') + '<span></span>'
+    + _eyeBtn('left','◀') + '<span></span>' + _eyeBtn('right','▶')
+    + '<span></span>' + _eyeBtn('down','▼') + '<span></span>'
+    + '</div>';
+  r.tq = Date.now();
 };
+
+function _eyeBtn(d, ch){
+  return '<button type="button" onclick="eyeAnswer(\'' + d + '\')" '
+    + 'style="width:62px;height:62px;border-radius:16px;border:1.5px solid #d7eee8;background:#fff;'
+    + 'font-size:22px;color:#0f172a;cursor:pointer;font-family:inherit;">' + ch + '</button>';
+}
+
 
 window.eyeHit = function(){
   var r = window._eye.run; if(!r) return;
