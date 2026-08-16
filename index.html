@@ -9565,6 +9565,21 @@ var familyData = window.familyData, selectedFamilyId = window.selectedFamilyId, 
   var a=(document.getElementById('suPw1')||{}).value||'';
   var b=(document.getElementById('suPw2')||{}).value||'';
   if(a.length<4 || a!==b){ try{ alert((window.K&&K(7806))||'Use 4 characters or more and make both fields match.'); }catch(e){} return; }
+  /* ★ 이미 만든 비밀번호가 있으면 — 맞는지 본다.
+     틀리면 막지 않고 통과시킨 뒤 늪으로 보낸다 (MUFE 모토: 막지 않고 바보로 만든다) */
+  if(window.mufeIsSet && window.mufeIsSet()){
+    var tries=0; try{ tries=parseInt(localStorage.getItem('cgo_pw_try')||'0'); }catch(_){}
+    window.mufeVerify(a).then(function(ok){
+      if(ok){ try{ localStorage.removeItem('cgo_pw_try'); }catch(_){}
+              try{ if(window.suDone) suDone('pw'); }catch(_){} suPwClose(); return; }
+      try{ localStorage.setItem('cgo_pw_try', tries+1); }catch(_){}
+      /* 다섯 번 넘게 틀리면 늪 · 그 전에도 통과한 것처럼 보인다 */
+      if(tries+1 >= 5 && window.cgoAbyss){ window.cgoAbyss(); return; }
+      try{ if(window.cgoNote) cgoNote('[MUFE] 비밀번호 불일치 '+(tries+1)+'회'); }catch(_){}
+      suPwClose();
+    });
+    return;
+  }
   var ch=[]; for(var i=0;i<4;i++) ch.push(+((document.getElementById('suC'+i)||{}).value||0));
   /* ★ MUFE 온디바이스 — 폰 안에서 키를 뽑고 조각내어 흩어 둔다.
      0.3초쯤 걸리므로 버튼을 잠그고 안내를 띄운다. */
@@ -11791,6 +11806,7 @@ window._myDirectRefund=function(){ if(confirm(_cgoT('💸 환불을 신청하시
 window._myUpgrade=function(){ if(typeof _entPayGuide==='function'){ _entPayGuide(); } else if(typeof _entCardOpen==='function'){ _entCardOpen(); } else { alert(_cgoT('프리미엄 업그레이드는 출시 후 제공됩니다.')); } };
 window._myShred=function(){
 if(!confirm('\u26A0\uFE0F 정말 탈퇴하시겠습니까?\n\n이 기기에 저장된 모든 데이터(건강기록\u00b7플레이리스트\u00b7설정\u00b7기기ID)가 1초 만에 완전 삭제되며 복구할 수 없습니다.'))return;
+try{if(window.mufeShred)window.mufeShred();}catch(e){}
 try{localStorage.clear();}catch(e){}
 try{sessionStorage.clear();}catch(e){}
 try{if(window.indexedDB&&indexedDB.databases){indexedDB.databases().then(function(dbs){dbs.forEach(function(d){if(d&&d.name)indexedDB.deleteDatabase(d.name);});}).catch(function(){});}}catch(e){}
@@ -14129,6 +14145,21 @@ function checkHealth(){
 <script src="perm.js"></script>
 <script src="diary.js"></script>
 <script src="iq-tr.js"></script>
+<script>
+/* ★ 카메라 잣대 통일 — 두피 · IQ · 앞으로 붙는 카메라 기능 모두
+   cm 추정 대신 화면 채움 비율(cgoFaceFill)로 판정한다. 폰 화각이 달라도 같은 결과. */
+window.cgoFitHint = function(fill, kind, boxId){
+  var st = (window.cgoFitState ? cgoFitState(fill, kind) : 'ok');
+  var el = boxId && document.getElementById(boxId);
+  if(!el) return st;
+  var K = function(n,f){ try{ var v=window.K&&window.K(n); return (v&&v!==String(n))?v:f; }catch(e){ return f; } };
+  if(st === 'far')       el.textContent = K(8820,'📏 조금 더 가까이');
+  else if(st === 'near') el.textContent = K(8821,'📏 조금 더 멀리');
+  else if(st === 'ok')   el.textContent = K(8762,'✅ 딱 맞아요 — 측정 중');
+  else                   el.textContent = '';
+  return st;
+};
+</script>
 <script src="iq.js"></script>
 <script src="c24.js"></script>
 <script src="hfu.js"></script>
@@ -14542,7 +14573,11 @@ window.c24CondGo=function(){
 
 
 
-<!-- build 1786857864734 · honey-card -->
+
+
+
+
+<!-- build 1786860078109 · fill-fit -->
 </body></html>
 <style>
 /* ★v5 — 앱 전체 스크롤. 구형은 .content 안에만 스크롤이 있어 휠·스와이프가 겉돌았다 */
