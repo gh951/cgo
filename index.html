@@ -10524,7 +10524,10 @@ var familyData = window.familyData, selectedFamilyId = window.selectedFamilyId, 
   el.value = '';
   bubble('me', t);
   var wait = bubble('ai', '…');
-  var body = { message: t, feature: 'c24', lang: (window.CGO_T && CGO_T.cur && CGO_T.cur()) || 'ko' };
+  var body = { message: t, feature: (window._cgoChatFeature || 'c24'),
+    lang: (window.CGO_T && CGO_T.cur && CGO_T.cur()) || 'ko',
+    env: (window.cgoEnvBrief ? cgoEnvBrief() : ''),
+    result: (window._c24 && window._c24.lastResult) || null };
   try{
     fetch('/api/groq', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) })
       .then(function(r){ return r.json(); })
@@ -11038,20 +11041,8 @@ window.scStop=function(){
    <div style="padding:0 16px;">
     <div data-k="8850" style="font-size:15px;font-weight:900;color:#0f172a;"></div>
    </div>
-   <div style="padding:0 0 14px;">
-    <div style="position:relative;background:#000;border-radius:0;overflow:hidden;margin-top:11px;aspect-ratio:3/4;">
-     <video id="c39-video" autoplay playsinline muted style="width:100%;height:100%;object-fit:cover;display:block;transform:scaleX(-1);"></video>
-     <canvas id="c39-canvas" style="display:none;"></canvas>
-     <div id="c39-idle" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(2,20,16,.72);color:#fff;text-align:center;padding:20px;">
-      <div style="font-size:30px;line-height:1;">🛰️</div>
-      <div data-k="8851" style="font-size:12.5px;font-weight:800;color:#34d399;margin-top:8px;"></div>
-      <div data-k="8852" style="font-size:11px;color:rgba(255,255,255,.72);margin-top:5px;line-height:1.6;"></div>
-     </div>
-    </div>
-   </div>
-
    <div style="padding:0 16px 4px;">
-    <button type="button" onclick="c39Start()"
+    <button type="button" onclick="c39Begin((window._c39&&window._c39.course)||10)"
       style="width:100%;margin-top:16px;padding:15px;border:0;border-radius:13px;background:#0f172a;
       color:#fff;font-size:14.5px;font-weight:900;cursor:pointer;font-family:inherit;">
       <span data-k="8860"></span></button>
@@ -13981,6 +13972,7 @@ function checkHealth(){
   };
 })();
 </script>
+<script src="env.js"></script>
 <script src="perm.js"></script>
 <script src="diary.js"></script>
 <script src="iq-tr.js"></script>
@@ -14451,7 +14443,17 @@ window.c24CondGo=function(){
 
 
 
-<!-- build 1786867035366 · c39-cam-small -->
+
+
+
+
+
+
+
+
+
+
+<!-- build 1786882706360 · chat-env -->
 </body></html>
 <style>
 /* ★v5 — 앱 전체 스크롤. 구형은 .content 안에만 스크롤이 있어 휠·스와이프가 겉돌았다 */
