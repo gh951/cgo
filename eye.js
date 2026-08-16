@@ -160,11 +160,11 @@ window.eyeNext = function(){
     + '</g></svg>';
 
   body.innerHTML =
-    '<div style="background:#fff;border:1px solid #d7eee8;border-radius:16px;padding:26px 16px;margin-top:13px;'
+    '<div style="background:#fff;border:1px solid #d7eee8;border-radius:16px;padding:16px;margin-top:10px;'
     + 'display:flex;flex-direction:column;align-items:center;gap:10px;">'
     + '<div style="font-size:11px;color:#64748b;font-weight:700;">' + _ek(9958,'틈이 어느 쪽인가요?') + '</div>'
     + svg + '</div>'
-    + '<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:12px;justify-items:center;">'
+    + '<div style="display:grid;grid-template-columns:repeat(3,56px);grid-auto-rows:56px;gap:0;margin-top:10px;justify-content:center;">'
     + '<span></span>' + _eyeBtn('up','▲') + '<span></span>'
     + _eyeBtn('left','◀') + '<span></span>' + _eyeBtn('right','▶')
     + '<span></span>' + _eyeBtn('down','▼') + '<span></span>'
@@ -174,8 +174,8 @@ window.eyeNext = function(){
 
 function _eyeBtn(d, ch){
   return '<button type="button" onclick="eyeAnswer(\'' + d + '\')" '
-    + 'style="width:62px;height:62px;border-radius:16px;border:1.5px solid #d7eee8;background:#fff;'
-    + 'font-size:22px;color:#0f172a;cursor:pointer;font-family:inherit;">' + ch + '</button>';
+    + 'style="width:56px;height:56px;border:1px solid #d7eee8;background:#fff;'
+    + 'font-size:20px;color:#0f172a;cursor:pointer;font-family:inherit;margin:0;padding:0;">' + ch + '</button>';
 }
 
 
