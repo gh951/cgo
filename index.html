@@ -8,8 +8,11 @@
    덮는 동안 뒤 페이지는 그리지 않는다 — 보이는 것만 살린다. */
 #c24GuidePop,#c39GuidePop,#c39CarePop,#scGuidePop,#scAreaPop,#scStepPop,
 #iqGuidePop,#iqTestPop,#c39TestPop,#c24ChatPop,#mypage-pop,#wf10-pop,#cgoGuidePopup{
-  top:0!important; padding-top:var(--hdrH,56px)!important; box-sizing:border-box!important;
+  top:calc(var(--hdrH,56px) - 1px)!important;
 }
+/* 페이지도 헤더에 가려지지 않게 위 여백을 준다 — 마이페이지 제목이 잘렸다 */
+.content{ padding-top:0 }
+#page-mypage,#page-signup,#page-c24,#page-c39,#page-scalp,#page-iq{ padding-top:8px }
 html.cgo-pop #page-dashboard{ content-visibility:hidden!important }
 </style>
 
@@ -14514,7 +14517,9 @@ window.c24CondGo=function(){
 
 
 
-<!-- build 1786888057741 · pop-full -->
+
+
+<!-- build 1786888678071 · pop-fix2 -->
 </body></html>
 <style>
 /* ★v5 — 앱 전체 스크롤. 구형은 .content 안에만 스크롤이 있어 휠·스와이프가 겉돌았다 */
