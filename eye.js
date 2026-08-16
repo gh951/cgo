@@ -98,8 +98,29 @@ function eyeFitLoop(){
     window._eye.locked = lock;
     var body = document.getElementById('eyeTestBody');
     if(body){
-      body.style.opacity = lock ? '0.25' : '1';
       body.style.pointerEvents = lock ? 'none' : '';
+      /* ★ 거리가 벗어나면 빨간 막으로 덮는다 — 흐리게만 하면 왜 안 눌리는지 모른다 */
+      /* ★ 카메라가 아니라 문제를 덮는다 — 카메라를 가리면 거리를 못 잰다 */
+      var wrap = body;
+      if(getComputedStyle(wrap).position === 'static') wrap.style.position = 'relative';
+      if(wrap){
+        var m0 = document.getElementById('eye-lock');
+        if(lock){
+          if(!m0){
+            m0 = document.createElement('div');
+            m0.id = 'eye-lock';
+            m0.style.cssText = 'position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;'
+              + 'align-items:center;justify-content:center;gap:6px;background:rgba(190,18,60,.82);'
+              + 'color:#fff;text-align:center;padding:12px;font-weight:900;';
+            wrap.appendChild(m0);
+          }
+          m0.innerHTML = '<div style="font-size:26px;line-height:1">📏</div>'
+            + '<div style="font-size:13px;line-height:1.5">'
+            + (st === 'far' ? _ek(8820,'조금 더 가까이') : _ek(8821,'조금 더 멀리')) + '</div>'
+            + '<div style="font-size:11px;font-weight:700;opacity:.9">' + _ek(9959,'화면에서 7cm') + '</div>';
+        } else if(m0) m0.remove();
+      }
+      body.style.opacity = '1';
     }
     if(st === 'far')       box.textContent = _ek(8820,'📏 조금 더 가까이');
     else if(st === 'near') box.textContent = _ek(8821,'📏 조금 더 멀리');
