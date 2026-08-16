@@ -371,6 +371,8 @@ window.iqBegin = function(level){
   window._iqRun = { tier:tier, qs:qs, at:0, answers:[], t0:Date.now(), tq:Date.now() };
   var pop = document.getElementById('iqTestPop');
   if(pop){ pop.style.display='block'; pop.scrollTop=0; }
+  /* 문제를 푸는 동안 카메라가 함께 돈다 — 인지 건강과 같은 방식 */
+  try{ iqCamStart(); }catch(e){}
   iqRender();
 };
 
@@ -438,6 +440,7 @@ window.iqAnswer = function(i){
 
 window.iqFinish = function(){
   var s = window._iqRun; if(!s) return;
+  try{ iqCamStop(); }catch(e){}
   var right = s.answers.filter(function(a){ return a.ok; }).length;
   var total = s.qs.length;
   var rate = total ? right / total : 0;
@@ -494,64 +497,9 @@ window.iqTestClose = function(){
 
 /* ══ 검사 중 카메라 — 문제 위에 붙여 둔다 ══ */
 window.iqCamEnsure = function(){
-  var host = document.getElementById('iqCamHost');
-  if(!host) return;
-  if(host.getAttribute('data-on') === '1') return;
-  host.setAttribute('data-on','1');
-  /* ★ 얼굴은 확인만 하면 되므로 오른쪽 위에 작게 띄운다.
-     크게 두면 문제와 보기가 한 화면에 안 들어와 스크롤이 필요했다. */
-  host.innerHTML =
-    /* ★ 문제와 같은 폭으로 눕혀 둔다 — 작게 두었더니 폰에서 카메라를 보려면
-       화면을 올리고, 문제를 보려면 내려야 해서 둘을 같이 볼 수 없었다.
-       낮고 넓은 띠로 두면 얼굴 확인과 문제 풀이가 한 화면에 들어온다. */
-    '<div style="position:relative;background:#000;border-radius:14px;overflow:hidden;width:100%;aspect-ratio:16/9;box-shadow:0 2px 10px rgba(2,20,16,.18);">'
-    + '<video id="iq-video" autoplay playsinline muted style="width:100%;height:100%;object-fit:cover;display:block;transform:scaleX(-1);"></video>'
-    + '<div id="iq-cam-idle" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;'
-    + 'justify-content:center;background:rgba(2,20,16,.78);color:#fff;text-align:center;padding:6px;">'
-    + '<div style="font-size:24px;line-height:1;">🛰️</div>'
-    + '<div style="font-size:11px;font-weight:800;color:#34d399;margin-top:6px;line-height:1.4;">' + _k(9730,'카메라 준비 중') + '</div>'
-    + '<div style="font-size:9.5px;color:rgba(255,255,255,.7);margin-top:3px;line-height:1.5;">' + _k(9731,'얼굴을 화면 안에 두고 문제를 푸세요') + '</div></div>'
-    + '<div style="position:absolute;left:6px;top:6px;display:flex;align-items:center;gap:4px;padding:2px 6px;'
-    + 'border-radius:999px;background:rgba(2,20,16,.6);">'
-    + '<span style="width:5px;height:5px;border-radius:999px;background:#f43f5e;"></span>'
-    + '<span style="font-size:8px;font-weight:900;color:#fff;letter-spacing:.05em;">rPPG</span></div></div>';
-  function _iqCamMsg(t){
-    var idle = document.getElementById('iq-cam-idle');
-    if(!idle) return;
-    idle.style.display = 'flex';
-    idle.innerHTML = '<div style="font-size:16px;line-height:1">📷</div>'
-      + '<div style="font-size:8px;font-weight:800;color:#fca5a5;margin-top:4px;line-height:1.3;'
-      + 'padding:0 4px;overflow-wrap:anywhere">' + t + '</div>';
-  }
-  function _iqCamGo(){
-    if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
-      _iqCamMsg(_k(9732,'이 브라우저는 카메라를 열 수 없습니다')); return;
-    }
-    navigator.mediaDevices.getUserMedia({ video:{ facingMode:'user', width:{ideal:640}, height:{ideal:480} } })
-      .catch(function(){ return navigator.mediaDevices.getUserMedia({ video:true }); })
-      .then(function(s){
-        window._iqStream = s;
-        var v = document.getElementById('iq-video');
-        if(v){ v.srcObject = s; v.muted = true; v.play().catch(function(){}); }
-        var idle = document.getElementById('iq-cam-idle');
-        if(idle) idle.style.display = 'none';
-      })
-      .catch(function(err){
-        var n = (err && err.name) || '';
-        _iqCamMsg(n === 'NotAllowedError' ? _k(9733,'카메라 허용을 눌러 주세요')
-                : n === 'NotFoundError'  ? _k(9734,'카메라를 찾지 못했습니다')
-                : _k(9735,'카메라를 열지 못했습니다'));
-      });
-  }
-  /* 화면이 붙은 다음에 켠다 — 바로 부르면 video 가 아직 없어 조용히 실패했다 */
-  setTimeout(_iqCamGo, 60);
-  /* 한 번 실패해도 다시 시도한다 — 폰이 앞 화면의 카메라를 놓아주기 전이면 처음엔 막힌다 */
-  setTimeout(function(){ if(!window._iqStream) _iqCamGo(); }, 900);
-  setTimeout(function(){ if(!window._iqStream) _iqCamGo(); }, 2200);
-  /* 그래도 안 열리면 눌러서 켤 수 있게 한다 */
-  var box = host.firstChild;
-  if(box) box.onclick = function(){ if(!window._iqStream) _iqCamGo(); };
-};
+  /* ★ 카메라는 팝업 위쪽에 붙박이로 하나만 둔다 (인지 건강과 같은 구조).
+     예전엔 여기서 또 하나를 만들어 문항을 아래로 밀어냈다. */
+};;
 
 window.iqCamStop = function(){
   try{
@@ -576,4 +524,26 @@ window._iqTr = function(t){
     if(D && D[t]) return D[t];
   }catch(e){}
   return t;
+};
+
+/* ══ IQ — 카메라 (문제를 푸는 동안 함께 돈다) ══ */
+window.iqCamStart = function(){
+  var v = document.getElementById('iq-video'), idle = document.getElementById('iq-idle');
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return;
+  navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:{ideal:640},height:{ideal:480},frameRate:{ideal:30}}})
+    .catch(function(){ return navigator.mediaDevices.getUserMedia({video:true}); })
+    .then(function(s){
+      window._iqStream = s;
+      if(v){ v.srcObject = s; v.play().catch(function(){}); }
+      if(idle) idle.style.display = 'none';
+    })
+    .catch(function(){});
+};
+window.iqCamStop = function(){
+  try{
+    var s = window._iqStream;
+    if(s){ s.getTracks().forEach(function(t){ t.stop(); }); window._iqStream = null; }
+  }catch(e){}
+  var v = document.getElementById('iq-video'); if(v) v.srcObject = null;
+  var idle = document.getElementById('iq-idle'); if(idle) idle.style.display = 'flex';
 };
