@@ -407,11 +407,25 @@ window.iqRender = function(){
     + '<div style="height:100%;width:' + pct + '%;background:linear-gradient(90deg,#0d9488,#14b8a6);transition:width .25s;"></div></div>';
 
   var isSvg = /^\s*<svg/i.test(String(q.q || ''));
+  /* ★ 도형 그림 — pattern-images/p001.jpeg … 100장.
+     못 불러오면 글자 도형(pattern)으로 조용히 떨어진다. */
+  var imgHtml = '';
+  if(q.image){
+    imgHtml = '<img src="' + q.image + '" alt="" '
+      + 'style="max-width:100%;height:auto;display:block;margin:0 auto;border-radius:10px;" '
+      + 'onerror="this.style.display=\'none\';var t=this.nextElementSibling;if(t)t.style.display=\'block\';">'
+      + '<div style="display:none;font-size:22px;font-weight:800;color:#0f172a;text-align:center;'
+      + 'letter-spacing:.12em;line-height:1.8;">' + (q.pattern || '') + '</div>';
+  }
   body.innerHTML =
-    '<div style="background:#fff;border:1px solid #d7eee8;border-radius:16px;padding:18px 16px;margin-top:13px;">'
+    '<div style="background:#fff;border:1px solid #d7eee8;border-radius:16px;padding:14px;margin-top:11px;'
+    + (imgHtml ? 'display:flex;align-items:center;gap:12px;' : '') + '">'
+    + (imgHtml ? '<div style="flex:1;min-width:0;">' : '')
     + (isSvg
         ? '<div style="display:flex;justify-content:center;">' + q.q + '</div>'
-        : '<div style="font-size:14.5px;font-weight:800;color:#0f172a;line-height:1.65;text-wrap:pretty;">' + _iqTr(q.q) + '</div>')
+        : '<div style="font-size:13.5px;font-weight:800;color:#0f172a;line-height:1.6;text-wrap:pretty;">' + _iqTr(q.q) + '</div>')
+    + (imgHtml ? '</div>' : '')
+    + (imgHtml ? '<div style="flex:none;width:44%;max-width:190px;">' + imgHtml + '</div>' : '')
     + '</div>'
     + '<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:12px;">'
     + q.opts.map(function(o, i){
