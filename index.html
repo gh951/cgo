@@ -2,6 +2,20 @@
 <html lang="ko" translate="no"><head>
 <meta charset="utf-8">
 <meta name="google" content="notranslate">
+<style>
+/* ★ 그림자·흐림이 232곳·66곳이나 되어, 마우스가 지날 때마다 다시 그렸다.
+   대시보드 큰 카드에만 남기고, 목록·팝업 안 카드에서는 덜어낸다. */
+#page-signup [style*="box-shadow"],
+#page-c24 [style*="box-shadow"],
+#page-c39 [style*="box-shadow"],
+#page-scalp [style*="box-shadow"],
+#page-iq [style*="box-shadow"],
+#page-mypage [style*="box-shadow"]{ box-shadow:none!important }
+.fdash-grid [style*="box-shadow"]{ box-shadow:none!important }
+/* 흐림은 상단 바와 팝업 머리만 — 나머지는 불투명으로 대신한다 */
+[style*="backdrop-filter"]:not(.topbar):not([style*="sticky"]){ backdrop-filter:none!important }
+</style>
+
 <script>
 /* ★ 되살아난 화면이면 대문을 그려지기 전에 감춘다.
    document.write 는 문서 파싱을 끊어 뒤따르는 스크립트(초시계 등)를 죽였다 —
@@ -10226,16 +10240,7 @@ var familyData = window.familyData, selectedFamilyId = window.selectedFamilyId, 
    document.getElementById('c39CareTitle').textContent=K(TITLE[w]);
    document.getElementById('c39CareBody').innerHTML=VIEW[w]();
   }
-  function hook(){
-   if(!window.CGO_T || CGO_T.__c39Wrapped) return false;
-   var orig=CGO_T.set;
-   CGO_T.set=function(){ var r=orig.apply(this,arguments);
-     [0,60,240].forEach(function(d){ setTimeout(redraw,d); });
-     return r; };
-   CGO_T.__c39Wrapped=true;
-   return true;
-  }
-  [0,300,1200,3000].forEach(function(d){ setTimeout(hook,d); });
+  if(window.cgoRepaintOn) cgoRepaintOn(redraw);
  })();
 })();
 </script>
@@ -10290,12 +10295,7 @@ var familyData = window.familyData, selectedFamilyId = window.selectedFamilyId, 
    if(!p||getComputedStyle(p).display==='none') return;
    document.getElementById('scAreaTitle').textContent=K(A[n][0]);
    document.getElementById('scAreaBody').innerHTML=build(n); }
-  function hook(){ if(!window.CGO_T||CGO_T.__scWrapped) return false;
-   var orig=CGO_T.set;
-   CGO_T.set=function(){ var r=orig.apply(this,arguments);
-     [0,60,240].forEach(function(d){ setTimeout(redraw,d); }); return r; };
-   CGO_T.__scWrapped=true; return true; }
-  [0,300,1200,3000].forEach(function(d){ setTimeout(hook,d); });
+  if(window.cgoRepaintOn) cgoRepaintOn(redraw);
  })();
 })();
 </script>
@@ -10339,12 +10339,7 @@ var familyData = window.familyData, selectedFamilyId = window.selectedFamilyId, 
    if(!p||getComputedStyle(p).display==='none') return;
    document.getElementById('scStepTitle').textContent=K(S[n].t);
    document.getElementById('scStepBody').innerHTML=build(n); }
-  function hook(){ if(!window.CGO_T||CGO_T.__scStepWrapped) return false;
-   var orig=CGO_T.set;
-   CGO_T.set=function(){ var r=orig.apply(this,arguments);
-     [0,60,240].forEach(function(d){ setTimeout(redraw,d); }); return r; };
-   CGO_T.__scStepWrapped=true; return true; }
-  [0,300,1200,3000].forEach(function(d){ setTimeout(hook,d); });
+  if(window.cgoRepaintOn) cgoRepaintOn(redraw);
  })();
 })();
 </script>
@@ -13969,6 +13964,23 @@ function checkHealth(){
 </script>
 <script src="mufe.js"></script>
 <script src="guard.js"></script>
+<script>
+/* ★ 안 보이는 화면의 시계는 멈춘다.
+   배너·타이머·걸음 시계가 화면에 없어도 계속 돌아 화면 다시 그리기를 붙잡았다.
+   폰이 뒤로 물러나면 모두 쉬고, 돌아오면 다시 돈다. */
+(function(){
+  var orig = window.setInterval;
+  var live = [];
+  window.setInterval = function(fn, ms){
+    var id = orig(function(){
+      if(document.hidden) return;   /* 뒤로 물러나 있으면 건너뛴다 */
+      try{ fn(); }catch(e){}
+    }, ms);
+    live.push(id);
+    return id;
+  };
+})();
+</script>
 <script src="perm.js"></script>
 <script src="diary.js"></script>
 <script src="iq-tr.js"></script>
@@ -13986,6 +13998,28 @@ window.cgoFitHint = function(fill, kind, boxId){
   else                   el.textContent = '';
   return st;
 };
+</script>
+<script>
+/* ★ 열려 있는 팝업 다시 그리기 — 하나로 합친다.
+   기능마다 CGO_T.set 을 감싸 감시자가 넷이 되었고, 그만큼 화면이 무거워졌다.
+   이제 등록만 하면 이 하나가 대신 그린다. */
+(function(){
+  var jobs = [];
+  window.cgoRepaintOn = function(fn){ if(typeof fn === 'function') jobs.push(fn); };
+  function run(){ for(var i=0;i<jobs.length;i++){ try{ jobs[i](); }catch(e){} } }
+  function hook(){
+    if(!window.CGO_T || CGO_T.__oneRepaint) return false;
+    var orig = CGO_T.set;
+    CGO_T.set = function(){
+      var r = orig.apply(this, arguments);
+      setTimeout(run, 60);
+      return r;
+    };
+    CGO_T.__oneRepaint = true;
+    return true;
+  }
+  [0, 300, 1200, 3000].forEach(function(d){ setTimeout(hook, d); });
+})();
 </script>
 <script src="c39.js"></script>
 <script src="iq.js"></script>
@@ -14413,7 +14447,9 @@ window.c24CondGo=function(){
 
 
 
-<!-- build 1786864275179 · c39-i18n -->
+
+
+<!-- build 1786866089532 · speed-back -->
 </body></html>
 <style>
 /* ★v5 — 앱 전체 스크롤. 구형은 .content 안에만 스크롤이 있어 휠·스와이프가 겉돌았다 */
