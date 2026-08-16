@@ -3,6 +3,17 @@
 <meta charset="utf-8">
 <meta name="google" content="notranslate">
 <style>
+/* ★ 전체 화면 팝업은 위쪽 한 줄 틈 없이 화면을 덮는다.
+   틈으로 뒤 슬라이드가 비쳐 움직임이 눈에 띄었다.
+   덮는 동안 뒤 페이지는 그리지 않는다 — 보이는 것만 살린다. */
+#c24GuidePop,#c39GuidePop,#c39CarePop,#scGuidePop,#scAreaPop,#scStepPop,
+#iqGuidePop,#iqTestPop,#c39TestPop,#c24ChatPop,#mypage-pop,#wf10-pop,#cgoGuidePopup{
+  top:0!important; padding-top:var(--hdrH,56px)!important; box-sizing:border-box!important;
+}
+html.cgo-pop #page-dashboard{ content-visibility:hidden!important }
+</style>
+
+<style>
 /* ★ 그림자·흐림이 232곳·66곳이나 되어, 마우스가 지날 때마다 다시 그렸다.
    대시보드 큰 카드에만 남기고, 목록·팝업 안 카드에서는 덜어낸다. */
 #page-signup [style*="box-shadow"],
@@ -6322,12 +6333,12 @@ window.entSplashGo=entSplashGo;
 <div class="page active" id="page-dashboard">
 
       <!-- ✦ 삼성 스타일 홍보 배너 슬라이드 ✦ -->
-      <div id="cgo-hero-banner" style="position:relative;border-radius:0;overflow:hidden;margin-bottom:16px;background:#020817;">
+      <div id="cgo-hero-banner" style="position:relative;border-radius:0;overflow:hidden;margin-bottom:16px;background:#020817;padding-top:6px;">
         <!-- 슬라이드 컨테이너 -->
         <div id="cgo-slides" style="display:flex;transition:transform .5s cubic-bezier(.4,0,.2,1);">
 
           <!-- 슬라이드 1: 메인 브랜드 -->
-          <div style="min-width:100%;padding:28px 48px 24px;background:linear-gradient(135deg,#020817 0%,#0a1628 50%,#020817 100%);position:relative;overflow:hidden;">
+          <div style="min-width:100%;padding:44px 48px 28px;background:linear-gradient(135deg,#020817 0%,#0a1628 50%,#020817 100%);position:relative;overflow:hidden;">
             <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 30% 50%,rgba(2,132,199,.1),transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(52,211,153,.07),transparent 50%);pointer-events:none;"></div>
             <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#0284c7,#34d399,#38bdf8,#0284c7);"></div>
             <div data-k="412" style="font-size:10px;font-weight:800;color:#0284c7;letter-spacing:.18em;margin-bottom:10px;" data-i18n="slide1_badge">CGO-FULI</div>
@@ -6342,7 +6353,7 @@ window.entSplashGo=entSplashGo;
           </div>
 
           <!-- 슬라이드 2: ILI 소개 -->
-          <div style="min-width:100%;padding:28px 48px 24px;background:linear-gradient(135deg,#0a0f20 0%,#0d1a35 100%);position:relative;overflow:hidden;">
+          <div style="min-width:100%;padding:44px 48px 28px;background:linear-gradient(135deg,#0a0f20 0%,#0d1a35 100%);position:relative;overflow:hidden;">
             <div style="position:absolute;inset:0;background:radial-gradient(circle at 70% 40%,rgba(2,132,199,.12),transparent 55%);pointer-events:none;"></div>
             <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#0284c7,#fbbf24,#0284c7);"></div>
             <div data-k="422" style="font-size:10px;font-weight:800;color:#0284c7;letter-spacing:.2em;margin-bottom:10px;" data-i18n="slide2_badge">ILI · Integrated Life Index</div>
@@ -6356,7 +6367,7 @@ window.entSplashGo=entSplashGo;
           </div>
 
           <!-- 슬라이드 3: 기능 소개 -->
-          <div style="min-width:100%;padding:28px 48px 24px;background:linear-gradient(135deg,#050d1a 0%,#0a1628 100%);position:relative;overflow:hidden;">
+          <div style="min-width:100%;padding:44px 48px 28px;background:linear-gradient(135deg,#050d1a 0%,#0a1628 100%);position:relative;overflow:hidden;">
             <div style="position:absolute;inset:0;background:radial-gradient(circle at 20% 60%,rgba(227,192,106,.1),transparent 55%);pointer-events:none;"></div>
             <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#0284c7,#fbbf24,#0284c7);"></div>
             <!-- [슬라이드3 교체 C-build] 줄바꿈=모바일 · 금/흰 톤 · 태그7 · 복구:index_before_slide3.html -->
@@ -6366,7 +6377,7 @@ window.entSplashGo=entSplashGo;
             <div data-k="434" style="font-size:clamp(12px,3.4vw,16px);font-weight:700;color:#e3c06a;line-height:1.5;margin-bottom:12px;">Health · Beauty · Metaphysics · Music · Travel · Investment · Fashion & more</div>
           </div>
           <!-- 슬라이드 4: 330원 카피 -->
-          <div style="min-width:100%;padding:28px 48px 24px;background:linear-gradient(135deg,#030b18 0%,#08111e 50%,#030b18 100%);position:relative;overflow:hidden;">
+          <div style="min-width:100%;padding:44px 48px 28px;background:linear-gradient(135deg,#030b18 0%,#08111e 50%,#030b18 100%);position:relative;overflow:hidden;">
             <div style="position:absolute;inset:0;background:radial-gradient(circle at 50% 40%,rgba(2,132,199,.1),transparent 60%);pointer-events:none;"></div>
             <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#34d399,#0284c7,#34d399);"></div>
             <div style="text-align:center;padding:6px 0 10px;">
@@ -13980,6 +13991,23 @@ function checkHealth(){
 })();
 </script>
 <script src="env.js"></script>
+<script>
+/* ★ 팝업이 떠 있는 동안 뒤 대시보드를 재운다 — 특허(보이는 것만 살린다)를 팝업에도 적용 */
+(function(){
+  var IDS=['c24GuidePop','c39GuidePop','c39CarePop','scGuidePop','scAreaPop','scStepPop',
+           'iqGuidePop','iqTestPop','c39TestPop','c24ChatPop','mypage-pop','wf10-pop','cgoGuidePopup'];
+  function anyOpen(){
+    for(var i=0;i<IDS.length;i++){
+      var e=document.getElementById(IDS[i]);
+      if(e && getComputedStyle(e).display!=='none') return true;
+    }
+    return false;
+  }
+  function tick(){ try{ document.documentElement.classList.toggle('cgo-pop', anyOpen()); }catch(e){} }
+  document.addEventListener('click', function(){ setTimeout(tick,60); setTimeout(tick,320); }, true);
+  [600,1600,3200].forEach(function(d){ setTimeout(tick,d); });
+})();
+</script>
 <script src="perm.js"></script>
 <script src="diary.js"></script>
 <script src="iq-tr.js"></script>
@@ -14484,7 +14512,9 @@ window.c24CondGo=function(){
 
 
 
-<!-- build 1786885508812 · pick-then-start -->
+
+
+<!-- build 1786888057741 · pop-full -->
 </body></html>
 <style>
 /* ★v5 — 앱 전체 스크롤. 구형은 .content 안에만 스크롤이 있어 휠·스와이프가 겉돌았다 */
