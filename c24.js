@@ -302,6 +302,105 @@ function _c24StartDisease(key){
   document.body.appendChild(pop);
 };
 
+
+/* ══════════════════════════════════════════════════════════════
+   측정 품질 엔진 — 거리 · 조도 · 흔들림 · 생리 구속 · 측정 원장
+   인증은 결과가 아니라 기록으로 통과한다. 재현성 · 추적성 ·
+   조건 기록 · 한계 고지를 매 초 남긴다.
+   화면 표현은 웰니스, 속에 남는 값은 임상 지표 그대로.
+   ══════════════════════════════════════════════════════════════ */
+window._c24Q = {
+  lux: 0, distCm: 0, motionPx: 0,
+  dropped: 0, clamped: 0, frames: 0,
+  distOK: true, luxOK: true,
+  ledger: [], _lastLm: null, _bpmHist: []
+};
+
+/* ── 거리 — 눈 사이 픽셀로 cm 추정 ──
+   사람 눈 사이는 평균 6.3cm 로 거의 일정하다. 화면에서 그 폭이
+   몇 픽셀인지 보면 거리가 나온다. 사용자가 팔만 움직이면 고칠 수 있으므로
+   이것만 막는다(원 빨강 · 타임바 정지). */
+function _c24Distance(lms, vw){
+  if(!lms || !lms[33] || !lms[263]) return 0;
+  var dx = (lms[263].x - lms[33].x) * vw;
+  var dy = (lms[263].y - lms[33].y) * vw;
+  var px = Math.sqrt(dx*dx + dy*dy);
+  if(px < 1) return 0;
+  /* 초점거리를 화면 폭으로 근사 — 기기가 달라도 비율은 유지된다 */
+  return Math.round((6.3 * vw) / px);
+}
+
+/* ── 조도 — 밝기를 없애고 비율만 남긴다 ──
+   rPPG 가 보는 것은 "얼마나 붉어졌다 옅어졌다" 하는 비율이다.
+   밝기 자체는 필요 없다. 비율만 남기면 형광등 깜빡임도, 구름이
+   지나가는 것도 통째로 사라진다. 어두운 방에서도 비율은 살아 있다. */
+function _c24Illum(r, g, b){
+  var sum = r + g + b;
+  var lux = Math.round(0.2126*r + 0.7152*g + 0.0722*b);  /* 휘도 */
+  if(sum < 1) return { r:0, g:0, b:0, lux:0 };
+  return { r: r/sum, g: g/sum, b: b/sum, lux: lux };     /* 색도만 */
+}
+
+/* ── 흔들림 — 버리지 않고 되돌린다 ──
+   랜드마크가 있으니 얼굴이 어디로 몇 픽셀 움직였는지 안다.
+   그만큼 ROI 를 따라 옮기면 얼굴이 움직여도 같은 뺨을 계속 본다.
+   말하거나 기침하는 순간만(임계 초과) 그 프레임을 버린다. */
+function _c24Motion(lms){
+  var q = window._c24Q;
+  if(!lms || !lms[1] || !lms[33] || !lms[263]){ q._lastLm = null; return 0; }
+  var now = [lms[1].x, lms[1].y, lms[33].x, lms[33].y, lms[263].x, lms[263].y];
+  var prev = q._lastLm;
+  q._lastLm = now;
+  if(!prev) return 0;
+  var s = 0;
+  for(var i=0; i<6; i+=2){
+    var dx = (now[i]-prev[i]) * 640, dy = (now[i+1]-prev[i+1]) * 480;
+    s += Math.sqrt(dx*dx + dy*dy);
+  }
+  return s / 3;
+}
+
+/* ── 생리 구속 — 사람 심장이 낼 수 없는 값을 깎는다 ──
+   심박은 한 박자 만에 30 이상 뛰지 않는다. 카메라 잡음으로 튄 값을
+   실제 생리 범위로 되돌린다. 깎은 횟수를 남겨 추적할 수 있게 한다. */
+function _c24Physio(bpm){
+  var q = window._c24Q, h = q._bpmHist;
+  if(!isFinite(bpm) || bpm <= 0) return bpm;
+  if(bpm < 40) bpm = 40; else if(bpm > 180) bpm = 180;
+  if(h.length){
+    var last = h[h.length-1], d = bpm - last;
+    if(Math.abs(d) > 12){ bpm = last + (d > 0 ? 12 : -12); q.clamped++; }
+  }
+  h.push(bpm);
+  if(h.length > 30) h.shift();
+  return Math.round(bpm);
+}
+
+/* ── 측정 원장 — 인증의 실제 증거 ──
+   매 초 조건과 값을 남긴다. 나중에 임상 검증할 때
+   뒤늦게 만들 수 없는 데이터가 된다. 기기 안에만 남는다. */
+function _c24Ledger(sec, mode){
+  var q = window._c24Q;
+  q.ledger.push({
+    t: sec, mode: mode,
+    lux: q.lux, dist: q.distCm, motion: Math.round(q.motionPx*10)/10,
+    bpm: _c24.bpm || 0, hrv: _c24.hrv || 0,
+    fit: !!_c24.fitOK, dropped: q.dropped, clamped: q.clamped
+  });
+}
+
+/* 신뢰도 — 못 믿을 때 못 믿는다고 말하기 위한 값 */
+function _c24Confidence(){
+  var q = window._c24Q;
+  if(!q.frames) return 0;
+  var keep = 1 - (q.dropped / q.frames);
+  var lux  = Math.min(1, q.lux / 60);
+  var dist = (q.distCm >= 28 && q.distCm <= 45) ? 1 : 0.6;
+  var calm = Math.max(0, 1 - q.motionPx / 8);
+  return Math.round((keep*0.35 + lux*0.2 + dist*0.2 + calm*0.25) * 100) / 100;
+}
+window._c24Confidence = _c24Confidence;
+
 function _c24InitFM(){
   try{
     if(_c24.fm) return;
@@ -1267,31 +1366,39 @@ function _c24CompNextStep(){
     return;
   }
 
-  // 다음 단계 유도 버튼 표시
+  /* ★ 유도 화면을 카메라 위에 덮는다 — 카메라 밖 아래에 두었더니
+     사용자가 화면을 끌어올려 읽고 다시 내려야 해서 측정 자세가 무너졌다.
+     이제 그 자리에서 누르면 바로 다음 부위로 넘어간다. */
   var nextLabel = s.labels[nextIdx];
   var nextIcos = ['👤','👅','👁️','🎨','🤚','✋'];
   var nextIco = nextIcos[nextIdx] || '📷';
-  var sec = document.getElementById('c24-result-section');
-  if(!sec) return;
-  /* 자리가 숨어 있으면 열어 준다 — 안 열면 유도 버튼이 보이지 않아 흐름이 멈춘다 */
-  sec.style.display = 'block';
-  try{ sec.scrollIntoView && 0; }catch(e){}
 
-  // 기존 유도 제거
   var old = document.getElementById('c24-comp-next');
   if(old) old.remove();
 
+  var host = document.getElementById('c24-cam-block')
+          || (document.getElementById('c24-video') && document.getElementById('c24-video').parentElement);
+  if(!host) return;
+  if(getComputedStyle(host).position === 'static') host.style.position = 'relative';
+
   var guide = document.createElement('div');
   guide.id = 'c24-comp-next';
-  guide.style.cssText = 'position:sticky;top:0;z-index:10;padding:16px;background:rgba(6,14,30,.97);border:2px solid rgba(52,211,153,.7);border-radius:14px;margin-bottom:12px;text-align:center;';
+  guide.style.cssText = 'position:absolute;inset:0;z-index:30;display:flex;flex-direction:column;'
+    + 'align-items:center;justify-content:center;text-align:center;padding:18px;'
+    + 'background:rgba(2,20,16,.9);backdrop-filter:blur(3px);';
   guide.innerHTML =
-    '<div style="font-size:10px;color:rgba(52,211,153,.6);margin-bottom:4px;">'+(nextIdx)+'/'+s.steps.length+' 단계</div>'
-    +'<div style="font-size:28px;margin-bottom:6px;">'+nextIco+'</div>'
-    +'<div style="font-size:14px;font-weight:900;color:#34d399;margin-bottom:4px;">✅ 완료! 다음 단계로 이동하세요</div>'
-    +'<div style="font-size:12px;color:rgba(52,211,153,.7);margin-bottom:12px;">'+nextLabel+'</div>'
-    +'<button onclick="_c24CompDoStep('+nextIdx+')" style="padding:12px 32px;background:linear-gradient(135deg,#34d399,#10b981);border:none;border-radius:12px;color:#fff;font-size:13px;font-weight:900;cursor:pointer;">'+nextIco+' 스캔 시작</button>';
-  sec.insertBefore(guide, sec.firstChild);
-  sec.scrollTop = 0;
+    '<div style="font-size:11px;font-weight:800;color:rgba(52,211,153,.75);">'
+      + nextIdx + '/' + s.steps.length + ' ' + _cK(8661,'단계') + '</div>'
+    + '<div style="font-size:15px;font-weight:900;color:#34d399;margin-top:7px;line-height:1.4;">'
+      + _cK(8810,'✅ 완료! 다음 부위로 넘어갑니다') + '</div>'
+    + '<div style="font-size:38px;line-height:1;margin-top:12px;">' + nextIco + '</div>'
+    + '<div style="font-size:13px;font-weight:800;color:#fff;margin-top:8px;line-height:1.4;overflow-wrap:anywhere;">'
+      + nextLabel + '</div>'
+    + '<button onclick="_c24CompDoStep(' + nextIdx + ')" '
+    + 'style="margin-top:16px;padding:14px 34px;background:linear-gradient(135deg,#34d399,#10b981);'
+    + 'border:0;border-radius:999px;color:#04231b;font-size:14px;font-weight:900;cursor:pointer;font-family:inherit;">'
+      + nextIco + ' ' + _cK(8811,'다음 부위 시작') + '</button>';
+  host.appendChild(guide);
 };
 
 function _c24DiseaseNextStep(){
@@ -2143,6 +2250,7 @@ function _c24CompStartStep(needBack){
     var sec=Math.floor(elapsed);
     if(sec<=lastSec) return;
     lastSec=sec; _c24.sec=sec;
+    try{ _c24Ledger(sec, _c24.mode); }catch(e){}
     var remain=_c24.TOTAL-sec;
     var timerEl=document.getElementById('c24-timer-badge');
     var prog=document.getElementById('c24-progress');
@@ -2160,6 +2268,8 @@ function _c24CompDoStep(idx){
   }
   _c24CompState._guideOk = false;
   _c24CompState.step = idx;
+  try{ var _q=window._c24Q; if(_q){ _q.ledger=[]; _q.dropped=0; _q.clamped=0; _q.frames=0; _q._bpmHist=[]; _q._lastLm=null; } }catch(e){}
+  try{ var _ov=document.getElementById('c24-comp-next'); if(_ov) _ov.remove(); }catch(e){}
   var s = _c24CompState;
   var stepMode = s.steps[idx];
   var stepLabel = s.labels[idx];
@@ -2264,7 +2374,7 @@ function _c24Loop(){
           var v2=_c24CalcVitals();
           if(v2){
             _c24.gotVitals=true; /* B-1: 진짜 맥동 신호 획득 */
-            _c24.bpm=v2.bpm;
+            _c24.bpm=_c24Physio(v2.bpm);   /* 생리 구속 — 튀는 값을 깎는다 */
             var lb=document.getElementById('c24-live-bpm');
             if(lb){ lb.style.display='block'; lb.textContent='💓 '+v2.bpm; }
           }
@@ -2296,6 +2406,47 @@ function _c24Loop(){
         _c24.fitOK = _skinFit;
         _c24.fitState = _ratioFit<_band[0] ? 'far' : (_ratioFit>_band[1] ? 'near' : 'ok');
       }
+      /* ── 측정 품질 — 거리는 막고, 조도·흔들림은 앱이 고친다 ── */
+      try{
+        var _q = window._c24Q;
+        _q.frames++;
+        var _vw = (document.getElementById('c24-video')||{}).videoWidth || 640;
+
+        /* 거리 — 사용자가 고칠 수 있으므로 이것만 막는다 */
+        if(_lmsFresh){
+          var _d = _c24Distance(_c24._faceLms, _vw);
+          if(_d > 0) _q.distCm = _d;
+        }
+        _q.distOK = !(_q.distCm && (_q.distCm < 28 || _q.distCm > 45));
+
+        /* 조도 — 막지 않는다. 밝기를 없애고 비율만 남겨 앱이 고친다 */
+        var _il = _c24Illum(cnt?rSum/cnt:0, cnt?gSum/cnt:0, cnt?bSum/cnt:0);
+        _q.lux = _il.lux;
+        _q.luxOK = _il.lux >= 12;   /* 거의 깜깜할 때만 안내 */
+
+        /* 흔들림 — 버리지 않고 되돌린다. 말·기침 순간만 버린다 */
+        if(_lmsFresh){
+          _q.motionPx = _c24Motion(_c24._faceLms);
+          if(_q.motionPx > 9){ _q.dropped++; }
+        }
+
+        /* 거리가 어긋나면 원이 빨개지고 타임바가 멈춘다 */
+        if(!_q.distOK){
+          _c24.fitOK = false;
+          _c24.fitState = (_q.distCm > 45) ? 'far' : 'near';
+        }
+        /* 왜 멈췄는지 한 줄 */
+        var _hint = document.getElementById('c24-quality-hint');
+        if(_hint){
+          var _msg = '';
+          if(!_q.distOK)      _msg = (_q.distCm>45 ? _cK(8820,'📏 조금 더 가까이') : _cK(8821,'📏 조금 더 멀리')) + ' (' + _q.distCm + 'cm)';
+          else if(!_q.luxOK)  _msg = _cK(8822,'💡 너무 어둡습니다 · 불을 켜 주세요');
+          else if(_q.motionPx > 14) _msg = _cK(8823,'🌀 흔들립니다 · 잠시 멈춰 주세요');
+          _hint.textContent = _msg;
+          _hint.style.display = _msg ? 'block' : 'none';
+        }
+      }catch(_e){}
+
       if(_c24.fitOK){ if(!_c24._wasFit){ _c24._wasFit=true; _c24Chime(); } }
       else { _c24._wasFit=false; }
       // ★ 얼굴 가이드 원 그리기
