@@ -88,46 +88,61 @@ function eyeFitLoop(){
   var box = document.getElementById('eye-fit');
   var v = document.getElementById('eye-video');
   if(!box || !v) return;
+  /* ★ FaceMesh 를 기다리지 않고 영상에서 바로 잰다 — 얼굴 화소가 화면을 얼마나 채우는가.
+     앞서 FaceMesh 좌표만 보다가, 눈 검사에서는 그것이 없어 거리 글이 비어 있었다. */
+  var cv = document.createElement('canvas'); cv.width = 64; cv.height = 48;
+  var cx = cv.getContext('2d', { willReadFrequently:true });
+  function measure(){
+    try{
+      if(!v.videoWidth) return 0;
+      cx.drawImage(v, 0, 0, 64, 48);
+      var im = cx.getImageData(0, 0, 64, 48).data, skin = 0, n = 0;
+      for(var p = 0; p < im.length; p += 4){
+        var R = im[p], G = im[p+1], B = im[p+2];
+        n++;
+        if(R > 70 && R > G && G > B && (R - B) > 12 && (R - B) < 130) skin++;
+      }
+      return n ? skin / n : 0;
+    }catch(e){ return 0; }
+  }
+  var last = 0;
   function tick(){
     if(!window._eye.stream) return;
-    var fill = 0;
-    try{ if(window._c24 && _c24._faceLms && _c24._faceLms.length && window.cgoFaceFill) fill = cgoFaceFill(_c24._faceLms); }catch(e){}
-    var st = window.cgoFitState ? cgoFitState(fill, 'eye') : 'ok';
-    /* ★ 거리가 벗어나면 시표를 가리고 답을 못 하게 잠근다 (구 CGO와 같은 방식) */
+    var fill = measure();
+    /* 살색 비율은 채움 비율보다 낮게 나온다 — 눈 7cm 에 맞춰 폭을 잡는다 */
+    var st = (fill < 0.06) ? 'none' : (fill < 0.30 ? 'far' : (fill > 0.80 ? 'near' : 'ok'));
     var lock = (st === 'far' || st === 'near');
     window._eye.locked = lock;
+
     var body = document.getElementById('eyeTestBody');
     if(body){
       body.style.pointerEvents = lock ? 'none' : '';
-      /* ★ 거리가 벗어나면 빨간 막으로 덮는다 — 흐리게만 하면 왜 안 눌리는지 모른다 */
-      /* ★ 카메라가 아니라 문제를 덮는다 — 카메라를 가리면 거리를 못 잰다 */
-      var wrap = body;
-      if(getComputedStyle(wrap).position === 'static') wrap.style.position = 'relative';
-      if(wrap){
-        var m0 = document.getElementById('eye-lock');
-        if(lock){
-          if(!m0){
-            m0 = document.createElement('div');
-            m0.id = 'eye-lock';
-            m0.style.cssText = 'position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;'
-              + 'align-items:center;justify-content:center;gap:6px;background:rgba(190,18,60,.82);'
-              + 'color:#fff;text-align:center;padding:12px;font-weight:900;';
-            wrap.appendChild(m0);
-          }
-          m0.innerHTML = '<div style="font-size:26px;line-height:1">📏</div>'
-            + '<div style="font-size:13px;line-height:1.5">'
-            + (st === 'far' ? _ek(8820,'조금 더 가까이') : _ek(8821,'조금 더 멀리')) + '</div>'
-            + '<div style="font-size:11px;font-weight:700;opacity:.9">' + _ek(9959,'화면에서 7cm') + '</div>';
-        } else if(m0) m0.remove();
-      }
-      body.style.opacity = '1';
+      if(getComputedStyle(body).position === 'static') body.style.position = 'relative';
+      var m0 = document.getElementById('eye-lock');
+      if(lock){
+        if(!m0){
+          m0 = document.createElement('div');
+          m0.id = 'eye-lock';
+          m0.style.cssText = 'position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;'
+            + 'align-items:center;justify-content:center;gap:6px;background:rgba(190,18,60,.9);'
+            + 'color:#fff;text-align:center;padding:12px;font-weight:900;border-radius:16px;';
+          body.appendChild(m0);
+        }
+        m0.innerHTML = '<div style="font-size:30px;line-height:1">📏</div>'
+          + '<div style="font-size:14px;line-height:1.5">'
+          + (st === 'far' ? _ek(8820,'조금 더 가까이') : _ek(8821,'조금 더 멀리')) + '</div>'
+          + '<div style="font-size:11px;font-weight:700;opacity:.9">' + _ek(9959,'화면에서 7cm') + '</div>';
+      } else if(m0) m0.remove();
     }
+
     if(st === 'far')       box.textContent = _ek(8820,'📏 조금 더 가까이');
     else if(st === 'near') box.textContent = _ek(8821,'📏 조금 더 멀리');
-    else if(st === 'ok'){  box.textContent = _ek(8762,'✅ 딱 맞아요');
-                           try{ if(window.cgoFitBeep) cgoFitBeep('eye'); }catch(e){} }
-    else box.textContent = '';
-    requestAnimationFrame(tick);
+    else if(st === 'ok'){
+      box.textContent = _ek(8762,'✅ 딱 맞아요');
+      if(last !== 1){ try{ if(window.cgoFitBeep) cgoFitBeep('eye'); }catch(e){} }
+    } else box.textContent = _ek(8753,'🔍 얼굴을 찾는 중…');
+    last = (st === 'ok') ? 1 : 0;
+    setTimeout(function(){ requestAnimationFrame(tick); }, 200);
   }
   requestAnimationFrame(tick);
 }
