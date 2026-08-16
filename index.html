@@ -20,6 +20,9 @@
 }
 /* 상단 바는 팝업보다 위에 둔다 — 팝업이 덮어도 로고는 눌린다 */
 .topbar{ z-index:100000!important }
+/* ★ 대문·언어 관문이 지나기 전에는 상단 바를 아예 감춘다.
+   앞서 잠깐 떴다 사라져 깜빡임이 보였다. */
+html:not(.cgo-ready) .topbar{ display:none!important }
 /* ★ 페이지 머리가 헤더에 닿지 않게 — 스크롤 도중에도 제목이 안 잘린다 */
 .content{ padding-top:0 }
 #page-mypage > div:first-child,
@@ -157,7 +160,7 @@ window.CGO_I18N=window.CGO_I18N||{};   /* 옛 코드가 이 이름을 찾는다 
   var r=[], ap=document.querySelector('.page.active');
   if(ap) r.push(ap);
   /* 대문·입구·팝업이 목록에 없어 한 번도 칠해지지 않았다 */
-  ['header','.bottom-nav','.modal.on','.popup.on','#entSplash','#phase0','#mypage-pop','#wf10-pop','#acc-guide-popup','#page-account','#cgoAccUsage','#cgoAccPricing','#cgoGuidePopup','#suInfoPop','#suTermsPop','#suSocialPop','#suPwPop','#c24GuidePop','#c39GuidePop','#c39CarePop','#scGuidePop','#scAreaPop','#scStepPop','#iqGuidePop','#suPayPop'].forEach(function(s){
+  ['header','.bottom-nav','.modal.on','.popup.on','#entSplash','#phase0','#mypage-pop','#wf10-pop','#acc-guide-popup','#page-account','#cgoAccUsage','#cgoAccPricing','#cgoGuidePopup','#suInfoPop','#suTermsPop','#suSocialPop','#suPwPop','#c24GuidePop','#c39GuidePop','#c39CarePop','#scGuidePop','#scAreaPop','#scStepPop','#iqGuidePop','#iqTestPop','#c39TestPop','#c24ChatPop','#suPayPop'].forEach(function(s){
    var e=document.querySelector(s); if(e) r.push(e); });
   return r.length?r:[document.body];
  }
@@ -8274,6 +8277,32 @@ document.addEventListener('DOMContentLoaded', function(){
   if(window['suOpen_'+id]) return window['suOpen_'+id]();
   alert((window.K?K(7522):null)||'Coming soon');
  };
+ /* ★ 죽은 코드로 잘못 지웠던 셋을 되살린다 — 정보 입력·소셜·비밀번호 */
+ window.suOpen_info=function(){
+  var p=document.getElementById('suInfoPop'), slot=document.getElementById('suInfoSlot');
+  var ip=document.getElementById('sec-ip');
+  if(!p||!slot) return;
+  if(ip && !slot.contains(ip)) slot.appendChild(ip);
+  if(ip) ip.style.display='block';
+  p.style.display='block'; p.scrollTop=0;
+  try{ if(window.CGO_T) CGO_T.paint(p); }catch(e){}
+  try{ if(window.cgoCullScan) cgoCullScan(p); }catch(e){}
+ };
+ window.suOpen_social=function(){
+  var p=document.getElementById('suSocialPop'); if(!p) return;
+  p.style.display='block'; p.scrollTop=0;
+  try{ if(window.CGO_T) CGO_T.paint(p); }catch(e){}
+ };
+ window.suOpen_pw=function(){
+  var p=document.getElementById('suPwPop'); if(!p) return;
+  p.style.display='block'; p.scrollTop=0;
+  try{ if(window.CGO_T) CGO_T.paint(p); }catch(e){}
+ };
+ window.suOpen_pay=window.suOpen_pay||function(){
+  var p=document.getElementById('suPayPop'); if(!p) return;
+  p.style.display='block'; p.scrollTop=0;
+  try{ if(window.CGO_T) CGO_T.paint(p); }catch(e){}
+ };
  /* 약관 — 보여준 뒤 동의를 눌러야 완료로 기록한다 */
  window.suOpen_terms=function(){
   var p=document.getElementById('mypage-pop');
@@ -14051,6 +14080,25 @@ function checkHealth(){
   document.addEventListener('click', function(){ [60,320].forEach(function(d){ setTimeout(top0,d); }); }, true);
 })();
 </script>
+<script>
+/* ★ 관문을 지난 뒤에만 상단 바를 보인다 */
+(function(){
+  function ready(){
+    var e=document.getElementById('entSplash'), p=document.getElementById('phase0');
+    var open=false;
+    [e,p].forEach(function(el){
+      if(!el) return;
+      var cs=getComputedStyle(el);
+      if(cs.display!=='none' && cs.visibility!=='hidden' && parseFloat(cs.opacity||'1')>0.05) open=true;
+    });
+    try{ document.documentElement.classList.toggle('cgo-ready', !open); }catch(_){}
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', ready);
+  ready();
+  var n=0, iv=setInterval(function(){ ready(); if(++n>80) clearInterval(iv); }, 120);
+  document.addEventListener('click', function(){ setTimeout(ready,60); setTimeout(ready,400); }, true);
+})();
+</script>
 <script src="perm.js"></script>
 <script src="diary.js"></script>
 <script src="iq-tr.js"></script>
@@ -14577,7 +14625,13 @@ window.c24CondGo=function(){
 
 
 
-<!-- build 1786896594792 · spd-all -->
+
+
+
+
+
+
+<!-- build 1786900868283 · paint-test -->
 </body></html>
 <style>
 /* ★v5 — 앱 전체 스크롤. 구형은 .content 안에만 스크롤이 있어 휠·스와이프가 겉돌았다 */

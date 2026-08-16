@@ -561,3 +561,16 @@ window.iqCamStop = function(){
   var v = document.getElementById('iq-video'); if(v) v.srcObject = null;
   var idle = document.getElementById('iq-idle'); if(idle) idle.style.display = 'flex';
 };
+
+/* ★ 검사 중에 언어를 바꾸면 그 자리에서 문제를 다시 그린다.
+   앞서는 한 번 그린 뒤 다시 그리지 않아, 언어를 바꿔도 앞 언어가 남았다. */
+(function(){
+  function redraw(){
+    if(!window._iqRun) return;
+    var p=document.getElementById('iqTestPop');
+    if(!p || getComputedStyle(p).display==='none') return;
+    try{ iqRender(); }catch(e){}
+  }
+  if(window.cgoRepaintOn) cgoRepaintOn(redraw);
+  else [300,1200,3000].forEach(function(d){ setTimeout(function(){ if(window.cgoRepaintOn) cgoRepaintOn(redraw); }, d); });
+})();
