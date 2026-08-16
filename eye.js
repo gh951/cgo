@@ -88,30 +88,52 @@ function eyeFitLoop(){
   var box = document.getElementById('eye-fit');
   var v = document.getElementById('eye-video');
   if(!box || !v) return;
-  /* ★ FaceMesh 를 기다리지 않고 영상에서 바로 잰다 — 얼굴 화소가 화면을 얼마나 채우는가.
-     앞서 FaceMesh 좌표만 보다가, 눈 검사에서는 그것이 없어 거리 글이 비어 있었다. */
-  var cv = document.createElement('canvas'); cv.width = 64; cv.height = 48;
+  /* ★ 구 CGO 방식 그대로 — 중앙 50% 영역을 64x64 로 줄여 살색 화소를 센다.
+     FaceMesh 를 쓰지 않아 바로 돌고, 살색 비율로 cm 를 추정한다. */
+  var cv = document.createElement('canvas'); cv.width = 64; cv.height = 64;
   var cx = cv.getContext('2d', { willReadFrequently:true });
-  function measure(){
+  var lastOK = false;
+
+  var iv = setInterval(function(){
+    if(!window._eye.stream){ clearInterval(iv); return; }
+    if(!v.videoWidth || v.readyState < 2) return;
+    var skinRatio = 0;
     try{
-      if(!v.videoWidth) return 0;
-      cx.drawImage(v, 0, 0, 64, 48);
-      var im = cx.getImageData(0, 0, 64, 48).data, skin = 0, n = 0;
-      for(var p = 0; p < im.length; p += 4){
-        var R = im[p], G = im[p+1], B = im[p+2];
-        n++;
-        if(R > 70 && R > G && G > B && (R - B) > 12 && (R - B) < 130) skin++;
+      var vw = v.videoWidth, vh = v.videoHeight;
+      var sw = vw * 0.5, sh = vh * 0.5;
+      cx.drawImage(v, (vw-sw)/2, (vh-sh)/2, sw, sh, 0, 0, 64, 64);
+      var dt = cx.getImageData(0, 0, 64, 64).data;
+      var skin = 0, tot = 0;
+      for(var y = 8; y < 56; y++){
+        for(var x = 8; x < 56; x++){
+          var p = (y*64 + x) * 4;
+          var R = dt[p], G = dt[p+1], B = dt[p+2];
+          if(R > 80 && G > 40 && B > 20 && R > G && R > B && (R - G) > 10) skin++;
+          tot++;
+        }
       }
-      return n ? skin / n : 0;
-    }catch(e){ return 0; }
-  }
-  var last = 0;
-  function tick(){
-    if(!window._eye.stream) return;
-    var fill = measure();
-    /* 살색 비율은 채움 비율보다 낮게 나온다 — 눈 7cm 에 맞춰 폭을 잡는다 */
-    var st = (fill < 0.06) ? 'none' : (fill < 0.30 ? 'far' : (fill > 0.80 ? 'near' : 'ok'));
-    var lock = (st === 'far' || st === 'near');
+      skinRatio = tot ? skin / tot : 0;
+    }catch(e){ return; }
+
+    var hasFace = skinRatio > 0.12;
+    /* 살색 비율 → cm (구 CGO 표) */
+    var cm = 70;
+    if(skinRatio > 0.45) cm = 15;
+    else if(skinRatio > 0.35) cm = 22;
+    else if(skinRatio > 0.28) cm = 28;
+    else if(skinRatio > 0.22) cm = 33;
+    else if(skinRatio > 0.17) cm = 38;
+    else if(skinRatio > 0.13) cm = 45;
+    else if(skinRatio > 0.10) cm = 55;
+    window._eye.cm = cm;
+
+    var st;
+    if(!hasFace) st = 'none';
+    else if(cm > 40) st = 'far';       /* 멀다 → 가까이 오세요 */
+    else if(cm < 28) st = 'near';      /* 가깝다 → 멀리 가세요 */
+    else st = 'ok';                    /* 30~40cm 표준 */
+
+    var lock = (st !== 'ok');
     window._eye.locked = lock;
 
     var body = document.getElementById('eyeTestBody');
@@ -128,23 +150,25 @@ function eyeFitLoop(){
             + 'color:#fff;text-align:center;padding:12px;font-weight:900;border-radius:16px;';
           body.appendChild(m0);
         }
+        var msg = (st === 'none') ? _ek(8753,'얼굴을 찾는 중…')
+                : (st === 'far')  ? _ek(8820,'조금 더 가까이')
+                                  : _ek(8821,'조금 더 멀리');
         m0.innerHTML = '<div style="font-size:30px;line-height:1">📏</div>'
-          + '<div style="font-size:14px;line-height:1.5">'
-          + (st === 'far' ? _ek(8820,'조금 더 가까이') : _ek(8821,'조금 더 멀리')) + '</div>'
-          + '<div style="font-size:11px;font-weight:700;opacity:.9">' + _ek(9959,'화면에서 7cm') + '</div>';
+          + '<div style="font-size:14px;line-height:1.5">' + msg + '</div>'
+          + '<div style="font-size:11px;font-weight:700;opacity:.9">' + _ek(9959,'화면에서 30~40cm') + ' · ' + cm + 'cm</div>';
       } else if(m0) m0.remove();
     }
 
-    if(st === 'far')       box.textContent = _ek(8820,'📏 조금 더 가까이');
-    else if(st === 'near') box.textContent = _ek(8821,'📏 조금 더 멀리');
-    else if(st === 'ok'){
-      box.textContent = _ek(8762,'✅ 딱 맞아요');
-      if(last !== 1){ try{ if(window.cgoFitBeep) cgoFitBeep('eye'); }catch(e){} }
-    } else box.textContent = _ek(8753,'🔍 얼굴을 찾는 중…');
-    last = (st === 'ok') ? 1 : 0;
-    setTimeout(function(){ requestAnimationFrame(tick); }, 200);
-  }
-  requestAnimationFrame(tick);
+    if(st === 'none')      box.textContent = _ek(8753,'🔍 얼굴을 찾는 중…');
+    else if(st === 'far')  box.textContent = _ek(8820,'📏 조금 더 가까이') + ' · ' + cm + 'cm';
+    else if(st === 'near') box.textContent = _ek(8821,'📏 조금 더 멀리') + ' · ' + cm + 'cm';
+    else{
+      box.textContent = _ek(8762,'✅ 딱 맞아요') + ' · ' + cm + 'cm';
+      if(!lastOK){ try{ if(window.cgoFitBeep){ cgoFitBeepReset('eye'); cgoFitBeep('eye'); } }catch(e){} }
+    }
+    lastOK = (st === 'ok');
+  }, 100);
+  window._eye.fitIv = iv;
 }
 
 window.eyeCamStop = function(){
