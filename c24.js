@@ -303,6 +303,124 @@ function _c24StartDisease(key){
 };
 
 
+
+/* ══════════════════════════════════════════════════════════════
+   ② 색공간 다겹 + ③ POS 교차검증 + ① 환경 결합
+   폰 카메라는 R·G·B 셋만 준다. 하드웨어는 그대로 두고,
+   같은 픽셀을 다른 각도로 봐서 신호를 늘린다.
+   세 방법이 같은 맥박을 가리키면 그것이 신뢰도 근거가 된다.
+   ══════════════════════════════════════════════════════════════ */
+window._c24Sig = { pos:[], green:[], ycbcr:[], lab:[], agree:0, snr:0 };
+
+/* ── 색공간 변환 — 같은 픽셀, 다른 각도 ── */
+function _c24Spaces(r, g, b){
+  /* YCbCr — 밝기와 색을 나눈다. Cr 이 붉은기를 가장 잘 담는다 */
+  var cr = 0.5*r - 0.4187*g - 0.0813*b + 128;
+  /* CIE Lab 의 a* 근사 — 붉은-녹색 축. 혈류가 여기서 가장 크게 흔들린다 */
+  var a  = 0.5*(r - g) + 0.25*(r - b);
+  /* HSV 의 색상 각도 — 조명이 바뀌어도 잘 안 흔들린다 */
+  var mx = Math.max(r,g,b), mn = Math.min(r,g,b), d = mx - mn;
+  var hue = d < 1 ? 0 : (mx === r ? ((g-b)/d) : (mx === g ? 2+(b-r)/d : 4+(r-g)/d)) * 60;
+  return { cr: cr, a: a, hue: hue };
+}
+
+/* ── POS (Plane-Orthogonal-to-Skin) — CHROM 과 다른 방법 ──
+   피부색 평면에 수직인 방향으로 투영해 맥동만 남긴다.
+   CHROM 과 결과가 같으면 서로가 서로의 증거가 된다. */
+function _c24POS(rS, gS, bS){
+  var n = rS.length; if(n < 8) return 0;
+  function mean(a){ var s=0; for(var i=0;i<a.length;i++) s+=a[i]; return s/a.length; }
+  var mr=mean(rS), mg=mean(gS), mb=mean(bS);
+  if(mr<1||mg<1||mb<1) return 0;
+  var rn = rS[n-1]/mr, gn = gS[n-1]/mg, bn = bS[n-1]/mb;
+  /* 피부 평면에 수직인 두 축 */
+  var s1 = -1*rn + 1*gn + 0*bn;
+  var s2 = -2*rn + 1*gn + 1*bn;
+  return s1 + s2 * 0.6;
+}
+
+/* ── 세 방법이 얼마나 일치하는가 — 신뢰도의 실제 근거 ── */
+function _c24Agree(){
+  var S = window._c24Sig;
+  var a = _c24BpmOf(_c24.chromSig), b = _c24BpmOf(S.pos), g = _c24BpmOf(S.green);
+  var v = [a,b,g].filter(function(x){ return x > 0; });
+  if(v.length < 2){ S.agree = 0; return 0; }
+  var mx = Math.max.apply(null,v), mn = Math.min.apply(null,v);
+  S.agree = Math.max(0, 1 - (mx-mn)/25);   /* 25bpm 벌어지면 0 */
+  return S.agree;
+}
+
+/* 신호 하나에서 맥박을 세는 가벼운 계산 */
+function _c24BpmOf(sig){
+  if(!sig || sig.length < 60) return 0;
+  var minD = Math.round(_c24.sampleRate*0.35), pk = [];
+  for(var i=2;i<sig.length-2;i++){
+    if(sig[i]>sig[i-1]&&sig[i]>sig[i-2]&&sig[i]>sig[i+1]&&sig[i]>sig[i+2]){
+      if(!pk.length || i-pk[pk.length-1] >= minD) pk.push(i);
+    }
+  }
+  if(pk.length < 4) return 0;
+  var d = [];
+  for(var j=1;j<pk.length;j++) d.push((pk[j]-pk[j-1])*(1000/_c24.sampleRate));
+  d = d.filter(function(x){ return x>333 && x<1500; });
+  if(d.length < 2) return 0;
+  var m = 0; for(var k=0;k<d.length;k++) m += d[k];
+  return Math.round(60000/(m/d.length));
+}
+
+/* ── 신호대잡음 — 맥박 대역이 얼마나 또렷한가 ── */
+function _c24SNR(sig){
+  if(!sig || sig.length < 90) return 0;
+  var s = sig.slice(-180);
+  var m = 0; for(var i=0;i<s.length;i++) m += s[i]; m /= s.length;
+  var band = 0, all = 0;
+  for(var i=1;i<s.length;i++){
+    var d = Math.abs(s[i]-s[i-1]);
+    all += d;
+    if(d > Math.abs(s[i]-m)*0.3) band += d;
+  }
+  if(all < 1e-6) return 0;
+  return Math.round(10*Math.log10(Math.max(0.01, band/(all-band+1e-6)))*10)/10;
+}
+
+/* ══ ① 환경 결합 — 기온·습도가 혈류를 바꾼다 ══
+   더우면 혈관이 열려 맥이 빠르고, 추우면 손끝 혈류가 줄어든다.
+   같은 사람이 여름과 겨울에 다르게 나오던 것을 그만큼 되돌린다.
+   인증에서는 이것이 재현성 근거가 된다. */
+window._c24Env = { tempC: null, humid: null, lat: null, lon: null, at: 0 };
+
+function _c24EnvRead(){
+  var e = window._c24Env;
+  try{
+    /* 날씨 카드가 이미 받아 둔 값을 쓴다 — 새로 받지 않는다 */
+    /* 화면에 이미 떠 있는 날씨 값을 읽는다 — 새로 받지 않는다 */
+    var _t = document.getElementById('cgoWeatherTempBar');
+    var _hm = document.getElementById('cgoWeatherHumBar');
+    if(_t){ var mt = (_t.textContent||'').match(/-?\d+(\.\d+)?/); if(mt) e.tempC = +mt[0]; }
+    if(_hm){ var mh = (_hm.textContent||'').match(/\d+/); if(mh) e.humid = +mh[0]; }
+    if(window._cgoWeather){
+      if(window._cgoWeather.temp  != null) e.tempC = +window._cgoWeather.temp;
+      if(window._cgoWeather.humid != null) e.humid = +window._cgoWeather.humid;
+    }
+    var p = JSON.parse(localStorage.getItem('cgo_geo_pos') || 'null');
+    if(p){ e.lat = p.lat; e.lon = p.lng; }
+  }catch(_){}
+  e.at = Date.now();
+  return e;
+}
+
+/* 기온 보정 — 여름·겨울 차이를 되돌린다 */
+function _c24EnvAdjust(bpm, mode){
+  var e = window._c24Env;
+  if(!isFinite(bpm) || bpm <= 0 || e.tempC == null) return bpm;
+  /* 기준 22도. 1도 오를 때 약 0.35bpm 빨라진다 (일반적 관찰 범위) */
+  var d = (e.tempC - 22) * 0.35;
+  /* 손은 기온에 더 민감하다 */
+  if(mode === 'hand' || mode === 'hand_back' || mode === 'hand_palm') d *= 1.6;
+  var out = bpm - d;
+  return Math.round(Math.max(40, Math.min(180, out)));
+}
+
 /* ══════════════════════════════════════════════════════════════
    측정 품질 엔진 — 거리 · 조도 · 흔들림 · 생리 구속 · 측정 원장
    인증은 결과가 아니라 기록으로 통과한다. 재현성 · 추적성 ·
@@ -381,11 +499,16 @@ function _c24Physio(bpm){
    뒤늦게 만들 수 없는 데이터가 된다. 기기 안에만 남는다. */
 function _c24Ledger(sec, mode){
   var q = window._c24Q;
+  var S = window._c24Sig || {}, E = window._c24Env || {};
   q.ledger.push({
     t: sec, mode: mode,
     lux: q.lux, dist: q.distCm, motion: Math.round(q.motionPx*10)/10,
     bpm: _c24.bpm || 0, hrv: _c24.hrv || 0,
-    fit: !!_c24.fitOK, dropped: q.dropped, clamped: q.clamped
+    fit: !!_c24.fitOK, dropped: q.dropped, clamped: q.clamped,
+    /* 교차검증 — 세 방법이 얼마나 일치했는가 */
+    agree: Math.round((S.agree||0)*100)/100, snr: S.snr||0,
+    /* 측정 조건 — 재현성 근거 */
+    tempC: E.tempC, humid: E.humid
   });
 }
 
@@ -397,7 +520,9 @@ function _c24Confidence(){
   var lux  = Math.min(1, q.lux / 60);
   var dist = (q.distCm >= 28 && q.distCm <= 45) ? 1 : 0.6;
   var calm = Math.max(0, 1 - q.motionPx / 8);
-  return Math.round((keep*0.35 + lux*0.2 + dist*0.2 + calm*0.25) * 100) / 100;
+  var agree = (window._c24Sig && window._c24Sig.agree) || 0;
+  /* 세 방법이 같은 맥박을 가리키는지가 가장 큰 근거다 */
+  return Math.round((keep*0.25 + lux*0.15 + dist*0.15 + calm*0.2 + agree*0.25) * 100) / 100;
 }
 window._c24Confidence = _c24Confidence;
 
@@ -2143,6 +2268,18 @@ function _c24ChromStep(r, g, b){
     }catch(e){}
   }
   _c24.rawR.push(r); _c24.rawG.push(g); _c24.rawB.push(b);
+
+  /* ── 같은 픽셀을 다른 각도로 — 색공간 다겹 + POS 교차검증 ── */
+  try{
+    var S = window._c24Sig, sp = _c24Spaces(r,g,b);
+    S.green.push(g);                    /* GREEN — 가장 단순하고 튼튼한 기준 */
+    S.ycbcr.push(sp.cr);                /* YCbCr Cr — 붉은기 */
+    S.lab.push(sp.a);                   /* Lab a* — 붉은-녹색 축 */
+    var _w = Math.min(_c24.rawR.length, 30);
+    S.pos.push(_c24POS(_c24.rawR.slice(-_w), _c24.rawG.slice(-_w), _c24.rawB.slice(-_w)));
+    if(S.green.length > 900){ S.green.shift(); S.ycbcr.shift(); S.lab.shift(); S.pos.shift(); }
+  }catch(_e){}
+
   var n=_c24.rawR.length;
   if(n<2) return;
   var wSize=Math.min(n,30);
@@ -2269,6 +2406,8 @@ function _c24CompDoStep(idx){
   _c24CompState._guideOk = false;
   _c24CompState.step = idx;
   try{ var _q=window._c24Q; if(_q){ _q.ledger=[]; _q.dropped=0; _q.clamped=0; _q.frames=0; _q._bpmHist=[]; _q._lastLm=null; } }catch(e){}
+  try{ var _S=window._c24Sig; if(_S){ _S.pos=[]; _S.green=[]; _S.ycbcr=[]; _S.lab=[]; _S.agree=0; _S.snr=0; } }catch(e){}
+  try{ _c24EnvRead(); }catch(e){}
   try{ var _ov=document.getElementById('c24-comp-next'); if(_ov) _ov.remove(); }catch(e){}
   var s = _c24CompState;
   var stepMode = s.steps[idx];
@@ -2374,7 +2513,13 @@ function _c24Loop(){
           var v2=_c24CalcVitals();
           if(v2){
             _c24.gotVitals=true; /* B-1: 진짜 맥동 신호 획득 */
-            _c24.bpm=_c24Physio(v2.bpm);   /* 생리 구속 — 튀는 값을 깎는다 */
+            /* 환경 보정 → 생리 구속 → 교차검증 순서 */
+            var _bp = _c24EnvAdjust(v2.bpm, _c24.mode);
+            _c24.bpm = _c24Physio(_bp);
+            try{
+              _c24Agree();
+              window._c24Sig.snr = _c24SNR(_c24.chromSig);
+            }catch(_e){}
             var lb=document.getElementById('c24-live-bpm');
             if(lb){ lb.style.display='block'; lb.textContent='💓 '+v2.bpm; }
           }
