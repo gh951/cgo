@@ -361,6 +361,9 @@ var Q_POOL = {
 window._iqRun = null;
 
 window.iqBegin = function(level){
+  /* 앞 기능(건강·두피 등)이 카메라를 쥐고 있으면 IQ 카메라가 열리지 않는다 — 먼저 놓아준다 */
+  try{ if(window._cgoStopAllCams) window._cgoStopAllCams(); }catch(e){}
+  try{ window._iqStream = null; }catch(e){}
   var tier = ({25:'quick',35:'mensa',351:'standard',50:'formal',80:'precision'})[level] || 'quick';
   var qs;
   try{ qs = _iqBuildQuestions(tier); }catch(e){ qs = []; }
@@ -370,6 +373,16 @@ window.iqBegin = function(level){
   if(pop){ pop.style.display='block'; pop.scrollTop=0; }
   iqRender();
 };
+
+/* ★ 문제·보기 글자를 고른 언어로 바꾼다 — iq-tr.js 의 표를 쓴다 */
+function _iqLang(){ try{ return (window.CGO_T && CGO_T.cur && CGO_T.cur()) || 'ko'; }catch(e){ return 'ko'; } }
+function _iqT(s){
+  if(typeof s !== 'string' || !s) return s;
+  var L = _iqLang();
+  if(L === 'ko' || !window.IQ_TR || !window.IQ_TR[L]) return s;
+  var v = window.IQ_TR[L][s];
+  return v || s;
+}
 
 function _k(n, f){ try{ var v=window.K&&window.K(n); return (v&&v!==String(n))?v:f; }catch(e){ return f; } }
 
@@ -488,7 +501,10 @@ window.iqCamEnsure = function(){
   /* ★ 얼굴은 확인만 하면 되므로 오른쪽 위에 작게 띄운다.
      크게 두면 문제와 보기가 한 화면에 안 들어와 스크롤이 필요했다. */
   host.innerHTML =
-    '<div style="position:relative;background:#000;border-radius:14px;overflow:hidden;width:100%;height:132px;box-shadow:0 2px 10px rgba(2,20,16,.14);">'
+    /* ★ 문제와 같은 폭으로 눕혀 둔다 — 작게 두었더니 폰에서 카메라를 보려면
+       화면을 올리고, 문제를 보려면 내려야 해서 둘을 같이 볼 수 없었다.
+       낮고 넓은 띠로 두면 얼굴 확인과 문제 풀이가 한 화면에 들어온다. */
+    '<div style="position:relative;background:#000;border-radius:14px;overflow:hidden;width:100%;aspect-ratio:16/9;box-shadow:0 2px 10px rgba(2,20,16,.18);">'
     + '<video id="iq-video" autoplay playsinline muted style="width:100%;height:100%;object-fit:cover;display:block;transform:scaleX(-1);"></video>'
     + '<div id="iq-cam-idle" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;'
     + 'justify-content:center;background:rgba(2,20,16,.78);color:#fff;text-align:center;padding:6px;">'
@@ -529,6 +545,12 @@ window.iqCamEnsure = function(){
   }
   /* 화면이 붙은 다음에 켠다 — 바로 부르면 video 가 아직 없어 조용히 실패했다 */
   setTimeout(_iqCamGo, 60);
+  /* 한 번 실패해도 다시 시도한다 — 폰이 앞 화면의 카메라를 놓아주기 전이면 처음엔 막힌다 */
+  setTimeout(function(){ if(!window._iqStream) _iqCamGo(); }, 900);
+  setTimeout(function(){ if(!window._iqStream) _iqCamGo(); }, 2200);
+  /* 그래도 안 열리면 눌러서 켤 수 있게 한다 */
+  var box = host.firstChild;
+  if(box) box.onclick = function(){ if(!window._iqStream) _iqCamGo(); };
 };
 
 window.iqCamStop = function(){
