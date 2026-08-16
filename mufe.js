@@ -107,6 +107,8 @@
       try{ localStorage.setItem('cgo_mufe_c4', c.join(',')); }catch(e){}
       /* 옛 자리는 지운다 — 원문 흔적을 남기지 않는다 */
       try{ localStorage.removeItem('cgo_pw'); }catch(e){}
+      /* 양자내성 키쌍도 이때 만들어 둔다 (뒤에서 조용히) */
+      try{ if(window.mufeKemInit) window.mufeKemInit(); }catch(e){}
       if(onDone) onDone(true);
       return true;
     });
@@ -141,5 +143,51 @@
       설정됨: !!gather(),
       원문보관: '없음'
     };
+  };
+})();
+
+/* ══ ML-KEM-768 — 양자내성 키쌍 ══
+   지금은 만들어 두기만 한다. 실제로 쓰이는 곳은 서버와 주고받을 때다.
+   라이브러리는 머리에 달지 않는다 — 비밀번호를 만들 때 처음 받는다 (속도 특허). */
+(function(){
+  var LIB = 'https://cdn.jsdelivr.net/npm/mlkem@2.3.1/+esm';
+  var loading = null;
+
+  function load(){
+    if(window.MlKem768) return Promise.resolve(window.MlKem768);
+    if(loading) return loading;
+    loading = import(LIB).then(function(m){
+      window.MlKem768 = m.MlKem768;
+      return m.MlKem768;
+    }).catch(function(){ loading = null; return null; });
+    return loading;
+  }
+
+  /* 키쌍을 만들어 이 기기에만 둔다. 공개키는 서버에 줄 것, 비밀키는 안 나간다. */
+  window.mufeKemInit = function(){
+    try{ if(localStorage.getItem('cgo_kem_pub')) return Promise.resolve(true); }catch(e){}
+    return load().then(function(K){
+      if(!K) return false;
+      var kem = new K();
+      return kem.generateKeyPair().then(function(kp){
+        var pub = kp[0], sec = kp[1];
+        function hex(a){ return Array.prototype.map.call(a,function(b){return ('0'+b.toString(16)).slice(-2);}).join(''); }
+        try{
+          localStorage.setItem('cgo_kem_pub', hex(pub));
+          localStorage.setItem('cgo_kem_sec', hex(sec));
+          localStorage.setItem('cgo_kem_alg', 'ML-KEM-768');
+        }catch(e){}
+        return true;
+      });
+    }).catch(function(){ return false; });
+  };
+
+  window.mufeKemState = function(){
+    try{
+      var p = localStorage.getItem('cgo_kem_pub');
+      return { 알고리즘:'ML-KEM-768 (NIST FIPS 203)',
+               키쌍: p ? '있음 · 공개키 '+(p.length/2)+'바이트' : '아직 없음',
+               비밀키: '이 기기 밖으로 나가지 않음' };
+    }catch(e){ return {}; }
   };
 })();
