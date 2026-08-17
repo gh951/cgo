@@ -619,10 +619,12 @@ window.eyeBlinkResult = function(){
     }
     /* ★ 시각을 재지 않는다 — 지금 눈·코·입 좌표가 있으면 그것으로 충분하다.
        시각을 보다가 그 시각을 못 적으면 얼굴이 보여도 잠긴 채였다. */
+    /* ★ 좌표를 기다리지 않는다. 카메라가 켜져 화면이 나오면 그걸로 열린다.
+       좌표(FaceMesh)는 늦게 오거나 안 오는 폰이 있어 계속 잠긴 채였다. */
     var fresh = false;
     try{
-      var lms = _eyeGetLms();
-      fresh = !!(lms && lms.length > 400 && lms[33] && lms[133] && lms[1] && lms[13]);
+      var v = document.getElementById('eye-video');
+      fresh = !!(v && v.srcObject && v.readyState >= 2 && v.videoWidth > 0);
     }catch(_){}
     var el = box(); if(!el) return;
     if(fresh){ el.style.display = 'none'; return; }
