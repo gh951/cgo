@@ -72,6 +72,8 @@ window._eye = { side:null, tier:'basic', run:null, stream:null };
 try{ var _et=localStorage.getItem('cgo_eye_tier'); if(_et) window._eye.tier=_et; }catch(e){}
 
 window.eyePick = function(side){
+  /* ★ eyeStart 는 _eye.eye 를 읽는다 — 이름이 달라 고른 것이 전달되지 않았다 */
+  window._eye.eye = side;
   window._eye.side = side;
   ['L','R'].forEach(function(s){
     var el = document.getElementById('eye-pick-' + s);
