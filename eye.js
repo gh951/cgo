@@ -157,7 +157,8 @@ window.eyeStart = function(){
     try{ alert(_ek(9956, '어느 쪽 눈을 측정할지 먼저 골라주세요.')); }catch(e){}
     return;
   }
-  window._eye.run = { trials:_eyeMakeTrials(), at:0, hits:[], t0:Date.now(), timer:null, shownAt:0 };
+  /* ★ 구 CGO 25문항 방식에 맞춘다 — 앞서 옛 구조(trials)를 만들어 1번에서 멈췄다 */
+  window._eye.run = { at:0, answers:[], t0:Date.now(), tq:Date.now() };
   var p = document.getElementById('eyeTestPop');
   if(p){ p.style.display = 'block'; p.scrollTop = 0; }
   eyeCamStart();
@@ -383,52 +384,51 @@ window.eyeHit = function(){
 window.eyeFinish = function(){
   var r = window._eye.run; if(!r) return;
   eyeCamStop();
+  var right = r.answers.filter(function(a){ return a.ok; }).length;
+  var total = EYE_QUESTIONS.length;
+  var avg = r.answers.length
+    ? Math.round(r.answers.reduce(function(t,a){ return t + a.ms; }, 0) / r.answers.length) : 0;
+  /* 맞힌 가장 작은 글자 단계로 시력을 잡는다 (구 CGO 방식) */
+  var top = 0;
+  r.answers.forEach(function(a){ if(a.ok && a.level > top) top = a.level; });
+  var vision = ({0:0,1:0.1,2:0.2,3:0.32,4:0.5,5:0.8})[top] || 0;
+  var score = Math.round(right / total * 100);
 
-  var good = r.hits.filter(function(h){ return !h.early && h.ms > 90 && h.ms < 1500; });
-  var avg = good.length ? Math.round(good.reduce(function(t,h){ return t + h.ms; }, 0) / good.length) : 0;
-  var early = r.hits.filter(function(h){ return h.early; }).length;
-  /* 작은 점을 잘 잡았는지 — 선명도 단계 */
-  var small = good.filter(function(h){ return h.size <= 32; }).length;
-  var smallAll = r.hits.filter(function(h){ return h.size <= 32; }).length;
-  var sharp = smallAll ? Math.round(small / smallAll * 100) : 0;
-  /* 눈 선명도 지수 — 반응 속도 + 작은 점 포착 + 헛누름 */
-  var evi = Math.max(0, Math.min(100,
-    Math.round(sharp * 0.55 + Math.max(0, (700 - avg) / 7) * 0.35 - early * 2)));
+  var byLv = {};
+  r.answers.forEach(function(a){
+    if(!byLv[a.level]) byLv[a.level] = { n:0, ok:0 };
+    byLv[a.level].n++; if(a.ok) byLv[a.level].ok++;
+  });
 
   var head = document.getElementById('eyeTestHead');
   var body = document.getElementById('eyeTestBody');
-  if(head) head.innerHTML = '<div style="font-size:12px;font-weight:900;color:#0f766e;">' + _ek(9720, '검사 결과') + '</div>';
+  if(head) head.innerHTML = '<div style="font-size:12px;font-weight:900;color:#0f766e;">' + _ek(9720,'검사 결과') + '</div>';
   if(!body) return;
-
   body.innerHTML =
-    '<div style="background:linear-gradient(135deg,#0f766e,#0d9488);border-radius:18px;padding:22px 16px;margin-top:13px;text-align:center;">'
-    + '<div style="font-size:11px;font-weight:800;color:#d1fae5;">' + _ek(9940, '눈 선명도 지수') + '</div>'
-    + '<div style="font-size:44px;font-weight:900;color:#fff;line-height:1.1;margin-top:4px;">' + evi + '</div></div>'
+    '<div style="background:#fff;border:1px solid #d7eee8;border-radius:18px;padding:22px 16px;margin-top:13px;text-align:center;">'
+    + '<div style="font-size:11px;color:#64748b;font-weight:700;">' + _ek(9957,'추정 시력') + '</div>'
+    + '<div style="font-size:44px;font-weight:900;color:#0f766e;line-height:1.1;margin-top:4px;">' + vision.toFixed(1) + '</div>'
+    + '<div style="font-size:11px;color:#475569;margin-top:6px;">'
+    + _ek(9722,'정답') + ' ' + right + '/' + total + ' · ' + _ek(9723,'평균 반응') + ' ' + (avg/1000).toFixed(1) + 's</div>'
+    + '<div style="font-size:11px;color:#0f766e;font-weight:800;margin-top:8px;">'
+    + _ek(9958,'눈 선명도 지수') + ' ' + score + '</div></div>'
     + '<div style="background:#fff;border:1px solid #d7eee8;border-radius:16px;padding:15px 16px;margin-top:11px;">'
-    + [[_ek(9938,'반응'), (avg/1000).toFixed(2) + 's'],
-       [_ek(9960,'작은 점 포착'), sharp + '%'],
-       [_ek(9961,'헛누름'), early + _ek(9962,'회')]].map(function(p){
-        return '<div style="display:flex;justify-content:space-between;font-size:12px;padding:7px 0;'
-          + 'border-bottom:1px solid #f1f5f9;"><span style="color:#475569;font-weight:700;">' + p[0]
-          + '</span><span style="color:#0f766e;font-weight:900;">' + p[1] + '</span></div>';
+    + '<div style="font-size:12.5px;font-weight:900;color:#0f766e;">' + _ek(9724,'영역별 결과') + '</div>'
+    + Object.keys(byLv).map(function(lv){
+        var v = byLv[lv], p = Math.round(v.ok / v.n * 100);
+        var px = (EYE_SIZE_BY_LEVEL[lv] || {}).px || '';
+        return '<div style="margin-top:11px;">'
+          + '<div style="display:flex;justify-content:space-between;font-size:11.5px;font-weight:700;color:#0f172a;">'
+          + '<span>Lv' + lv + ' · ' + px + 'px</span><span style="color:#0f766e;">' + v.ok + '/' + v.n + '</span></div>'
+          + '<div style="height:7px;border-radius:999px;background:#e2e8f0;margin-top:5px;overflow:hidden;">'
+          + '<div style="height:100%;width:' + p + '%;background:#14b8a6;"></div></div></div>';
       }).join('')
     + '</div>'
-    + '<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:13px 14px;margin-top:11px;">'
-    + '<div style="font-size:10.5px;color:#64748b;line-height:1.75;">' + _ek(9927, '') + '</div></div>'
     + '<button type="button" onclick="eyeTestClose()" style="width:100%;margin-top:14px;padding:15px;border:0;'
     + 'border-radius:999px;background:#0f172a;color:#fff;font-size:14px;font-weight:900;cursor:pointer;font-family:inherit;">'
-    + _ek(9725, '✓ 닫기') + '</button>';
-
-  /* 페이지 지표판에도 옮겨 적는다 */
-  try{
-    var set = function(id, v){ var el = document.getElementById(id); if(el) el.textContent = v; };
-    set('eye-evi', evi);
-    set('eye-react', (avg/1000).toFixed(2) + 's');
-    set('eye-stable', (100 - early * 4) + '');
-  }catch(e){}
-
-  window._eye.run = null;
+    + _ek(9725,'✓ 닫기') + '</button>';
 };
+
 
 window.eyeTestClose = function(){
   eyeCancelMeasure();
