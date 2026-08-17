@@ -111,6 +111,7 @@ window.eyeStart = function(){
   var s = window._eye;
   if(!s.eye){ try{ alert(_ek(9962,'왼쪽·오른쪽 눈을 먼저 골라주세요.')); }catch(e){} return; }
   s.run = { eye:s.eye, vi:5, best:0, miss:0, step:0, answers:[], done:false, wrongAt2:false, cur:null };
+  try{ window._eyeCam = window._eyeCam || {}; window._eyeCam.faceFrames = 0; window._eyeCam.sawFace = false; window._eyeCam.lastSeen = 0; }catch(_){}
   var pop = document.getElementById('eyeTestPop');
   if(pop){ pop.style.display='block'; pop.scrollTop=0; }
   eyeCamStart();
@@ -295,6 +296,10 @@ window.eyeNowCm = function(){
   try{
     var lms = window._eyeLms;
     if(!lms || lms.length < 400) return 0;
+    /* ★ 얼굴을 한 번이라도 잡았다는 표시 — 결과를 낼 자격이 된다 */
+    if(!window._eyeCam) window._eyeCam = {};
+    window._eyeCam.sawFace = true;
+    window._eyeCam.lastSeen = Date.now();
     var L = lms[468] || lms[33], R = lms[473] || lms[263];
     if(!L || !R) return 0;
     var v = document.getElementById('eye-video');
@@ -361,6 +366,12 @@ window.eyeDraw = function(){
 };
 
 window.eyeAnswer = function(i){
+  /* 이 문항을 풀 때 얼굴이 보였는가 — 1초 안에 좌표가 들어왔으면 인정 */
+  try{
+    if(!window._eyeCam) window._eyeCam = {};
+    var fresh = window._eyeCam.lastSeen && (Date.now() - window._eyeCam.lastSeen) < 1000;
+    window._eyeCam.faceFrames = (window._eyeCam.faceFrames || 0) + (fresh ? 1 : 0);
+  }catch(_){}
   var r = window._eye.run; if(!r || !r.cur) return;
   var ok = (i === r.cur.dir);
   r.answers.push({ vi: r.cur.vi, ok: ok, ms: Date.now() - r.cur.t0, cm: window.eyeNowCm() });
@@ -379,6 +390,34 @@ window.eyeAnswer = function(i){
 };
 window.eyeFinish = function(){
   var r = window._eye.run; if(!r) return;
+  /* ★ 얼굴이 한 번도 안 잡혔다면 결과를 내지 않는다.
+     카메라가 꺼진 채로도 점수가 나오던 것이 오류였다 — 거리를 모르면 글자 크기가 뜻을 잃는다. */
+  /* ★ 한 번 잡힌 것으로는 안 된다 — 문항마다 얼굴이 보였어야 한다.
+     눈·코·입 좌표가 들어온 문항 수를 세어, 절반도 못 되면 결과를 내지 않는다. */
+  var seen = false;
+  try{
+    var ok = (window._eyeCam && window._eyeCam.faceFrames) || 0;
+    var need = Math.max(1, Math.ceil((r.answers.length || 1) * 0.5));
+    seen = (ok >= need);
+  }catch(_){}
+  if(!seen){
+    eyeCamStop();
+    var hd0 = document.getElementById('eyeTestHead');
+    var bd0 = document.getElementById('eyeTestBody');
+    if(hd0) hd0.innerHTML = '';
+    if(bd0) bd0.innerHTML =
+      '<div style="background:#fff1f2;border:1px solid #fecdd3;border-radius:16px;padding:22px 18px;margin-top:13px;text-align:center;">'
+      + '<div style="font-size:30px;line-height:1;">📷</div>'
+      + '<div style="font-size:14px;font-weight:900;color:#be123c;margin-top:10px;line-height:1.5;">'
+      + _ek(9998,'얼굴이 한 번도 잡히지 않아 결과를 낼 수 없습니다') + '</div>'
+      + '<div style="font-size:11.5px;color:#475569;margin-top:8px;line-height:1.75;">'
+      + _ek(9999,'거리를 알 수 없으면 글자 크기가 뜻을 잃습니다. 카메라를 허용하고 얼굴이 보이는 상태에서 다시 재 주세요.') + '</div>'
+      + '<button type="button" onclick="eyeTestClose()" style="width:100%;margin-top:16px;padding:14px;border:0;'
+      + 'border-radius:999px;background:#0f172a;color:#fff;font-size:13.5px;font-weight:900;cursor:pointer;font-family:inherit;">'
+      + _ek(9725,'✓ 닫기') + '</button></div>';
+    window._eye.run = null;
+    return;
+  }
   eyeCamStop();
   try{ if(window.eyeGuardOff) eyeGuardOff(); }catch(e){}
   var vision = EYE_VIS[r.best] || 0.1;
@@ -534,3 +573,50 @@ window.eyeBlinkResult = function(){
     sec: Math.round(sec)
   };
 };
+
+
+/* ══ 얼굴이 안 보이면 문항을 잠근다 ══
+   거리를 모른 채 답한 것은 시력이 아니다. 얼굴이 돌아오면 저절로 열린다. */
+(function(){
+  var LOCK_ID = 'eye-face-lock';
+  function box(){
+    var host = document.getElementById('eyeTestBody');
+    if(!host) return null;
+    var el = document.getElementById(LOCK_ID);
+    if(el) return el;
+    el = document.createElement('div');
+    el.id = LOCK_ID;
+    el.style.cssText = 'position:absolute;inset:0;z-index:9;display:flex;flex-direction:column;'
+      + 'align-items:center;justify-content:center;gap:8px;padding:18px;text-align:center;'
+      + 'background:rgba(190,18,60,.93);color:#fff;border-radius:16px;';
+    el.innerHTML = '<div style="font-size:30px;line-height:1">📷</div>'
+      + '<div id="eye-face-lock-msg" style="font-size:13.5px;font-weight:900;line-height:1.5"></div>'
+      + '<div id="eye-face-lock-sub" style="font-size:11px;opacity:.9;line-height:1.65"></div>';
+    if(getComputedStyle(host).position === 'static') host.style.position = 'relative';
+    host.appendChild(el);
+    return el;
+  }
+  function K(n, f){ try{ var v = window.K && window.K(n); return (v && v !== String(n)) ? v : f; }catch(e){ return f; } }
+  function tick(){
+    var run = window._eye && window._eye.run;
+    var pop = document.getElementById('eyeTestPop');
+    if(!run || !pop || getComputedStyle(pop).display === 'none'){
+      var old = document.getElementById(LOCK_ID);
+      if(old) old.style.display = 'none';
+      return;
+    }
+    var fresh = false;
+    try{
+      fresh = !!(window._eyeCam && window._eyeCam.lastSeen
+              && (Date.now() - window._eyeCam.lastSeen) < 900);
+    }catch(_){}
+    var el = box(); if(!el) return;
+    if(fresh){ el.style.display = 'none'; return; }
+    el.style.display = 'flex';
+    var m = document.getElementById('eye-face-lock-msg');
+    var s = document.getElementById('eye-face-lock-sub');
+    if(m) m.textContent = K(10000, '얼굴이 보이지 않습니다');
+    if(s) s.textContent = K(10001, '눈·코·입이 화면에 들어오게 해 주세요 · 얼굴이 잡히면 이어서 풀 수 있습니다');
+  }
+  setInterval(tick, 400);
+})();
