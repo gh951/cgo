@@ -587,52 +587,52 @@ window.eyeBlinkResult = function(){
 };
 
 
-/* ══ 얼굴이 안 보이면 문항을 잠근다 ══
-   거리를 모른 채 답한 것은 시력이 아니다. 얼굴이 돌아오면 저절로 열린다. */
+/* ══ 거리를 벗어나면 문항을 가린다 ══
+   구 CGO도 "거리를 맞춰주세요"로 막았다. 다만 폰은 40cm까지 못 떨어지는 일이 많아
+   허용 범위를 20~70cm로 넓혔다. 화면에 나오는 cm 값을 그대로 쓰므로 확실하다. */
 (function(){
-  var LOCK_ID = 'eye-face-lock';
+  var LOCK = 'eye-face-lock';
+  function K(n, f){ try{ var v = window.K && window.K(n); return (v && v !== String(n)) ? v : f; }catch(e){ return f; } }
   function box(){
     var host = document.getElementById('eyeTestBody');
     if(!host) return null;
-    var el = document.getElementById(LOCK_ID);
+    var el = document.getElementById(LOCK);
     if(el) return el;
     el = document.createElement('div');
-    el.id = LOCK_ID;
+    el.id = LOCK;
     el.style.cssText = 'position:absolute;inset:0;z-index:9;display:flex;flex-direction:column;'
       + 'align-items:center;justify-content:center;gap:8px;padding:18px;text-align:center;'
       + 'background:rgba(190,18,60,.93);color:#fff;border-radius:16px;';
-    el.innerHTML = '<div style="font-size:30px;line-height:1">📷</div>'
-      + '<div id="eye-face-lock-msg" style="font-size:13.5px;font-weight:900;line-height:1.5"></div>'
-      + '<div id="eye-face-lock-sub" style="font-size:11px;opacity:.9;line-height:1.65"></div>';
+    el.innerHTML = '<div style="font-size:30px;line-height:1">📏</div>'
+      + '<div id="eye-lock-msg" style="font-size:13.5px;font-weight:900;line-height:1.5"></div>'
+      + '<div id="eye-lock-sub" style="font-size:11px;opacity:.92;line-height:1.65"></div>';
     if(getComputedStyle(host).position === 'static') host.style.position = 'relative';
     host.appendChild(el);
     return el;
   }
-  function K(n, f){ try{ var v = window.K && window.K(n); return (v && v !== String(n)) ? v : f; }catch(e){ return f; } }
   function tick(){
     var run = window._eye && window._eye.run;
     var pop = document.getElementById('eyeTestPop');
     if(!run || !pop || getComputedStyle(pop).display === 'none'){
-      var old = document.getElementById(LOCK_ID);
+      var old = document.getElementById(LOCK);
       if(old) old.style.display = 'none';
       return;
     }
-    /* ★ 시각을 재지 않는다 — 지금 눈·코·입 좌표가 있으면 그것으로 충분하다.
-       시각을 보다가 그 시각을 못 적으면 얼굴이 보여도 잠긴 채였다. */
-    /* ★ 좌표를 기다리지 않는다. 카메라가 켜져 화면이 나오면 그걸로 열린다.
-       좌표(FaceMesh)는 늦게 오거나 안 오는 폰이 있어 계속 잠긴 채였다. */
-    var fresh = false;
-    try{
-      var v = document.getElementById('eye-video');
-      fresh = !!(v && v.srcObject && v.readyState >= 2 && v.videoWidth > 0);
-    }catch(_){}
+    var cm = 0;
+    try{ cm = (window.eyeNowCm && eyeNowCm()) || 0; }catch(_){}
+    /* 거리를 아직 모르면 막지 않는다 — 막아 두면 아무것도 못 한다 */
+    var ok = (!cm) || (cm >= 20 && cm <= 70);
     var el = box(); if(!el) return;
-    if(fresh){ el.style.display = 'none'; return; }
+    if(ok){
+      el.style.display = 'none';
+      return;
+    }
     el.style.display = 'flex';
-    var m = document.getElementById('eye-face-lock-msg');
-    var s = document.getElementById('eye-face-lock-sub');
-    if(m) m.textContent = K(10000, '얼굴이 보이지 않습니다');
-    if(s) s.textContent = K(10001, '눈·코·입이 화면에 들어오게 해 주세요 · 얼굴이 잡히면 이어서 풀 수 있습니다');
+    var m = document.getElementById('eye-lock-msg');
+    var s = document.getElementById('eye-lock-sub');
+    if(m) m.textContent = (cm < 20 ? K(8821,'📏 조금 더 멀리') : K(8820,'📏 조금 더 가까이'))
+      + '  ·  ' + Math.round(cm) + 'cm';
+    if(s) s.textContent = K(10002, '20~70cm 안에서만 문항이 열립니다 · 거리를 맞추면 이어서 풀 수 있습니다');
   }
   setInterval(tick, 400);
 })();
