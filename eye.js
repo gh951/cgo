@@ -1,3 +1,11 @@
+var EYE_SIZE_BY_LEVEL = {
+    1: {px: 80, vision: 0.1, label: '매우 큼'},
+    2: {px: 50, vision: 0.2, label: '큼'},
+    3: {px: 32, vision: 0.32, label: '중간'},
+    4: {px: 20, vision: 0.5, label: '작음'},
+    5: {px: 14, vision: 0.8, label: '매우 작음'}
+  };;
+
 function _eyeSized(level, content, type){
     var sz = EYE_SIZE_BY_LEVEL[level].px;
     if(type === 'shape' || type === 'symbol' || type === 'direction'){
