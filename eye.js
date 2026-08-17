@@ -299,6 +299,8 @@ window.eyeNowCm = function(){
     /* ★ 얼굴을 한 번이라도 잡았다는 표시 — 결과를 낼 자격이 된다 */
     if(!window._eyeCam) window._eyeCam = {};
     window._eyeCam.sawFace = true;
+    /* ★ 잠금이 이 시각을 본다 — 안 적어 얼굴이 보여도 잠긴 채였다 */
+    window._eyeCam.lastSeen = Date.now();
     window._eyeCam.lastSeen = Date.now();
     var L = lms[468] || lms[33], R = lms[473] || lms[263];
     if(!L || !R) return 0;
