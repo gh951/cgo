@@ -1,3 +1,11 @@
+/* ★ 얼굴 좌표는 c24 카메라가 담아 둔다 — eye.js 는 그것을 빌려 쓴다.
+   _eyeLms 는 아무도 채우지 않아, 얼굴이 보여도 잠긴 채였다. */
+function _eyeGetLms(){
+  try{
+    if(window._c24 && window._c24._faceLms) return window._c24._faceLms;
+  }catch(e){}
+  return null;
+}
 var EYE_SIZE_BY_LEVEL = {
     1: {px: 80, vision: 0.1, label: '매우 큼'},
     2: {px: 50, vision: 0.2, label: '큼'},
@@ -13,9 +21,9 @@ var EYE_SIZE_BY_LEVEL = {
 window.EYE_IPD_MM = 63;
 
 window.eyeMmPerPx = function(){
-  try{ var _l=(window._eyeLms)||(window._c24&&window._c24._faceLms); if(_l&&window.eyeBlinkFeed) eyeBlinkFeed(_l); }catch(_){}
+  try{ var _l=(_eyeGetLms())||(window._c24&&window._c24._faceLms); if(_l&&window.eyeBlinkFeed) eyeBlinkFeed(_l); }catch(_){}
   try{
-    var lms = (window._eyeLms) || (window._c24 && window._c24._faceLms);
+    var lms = (_eyeGetLms()) || (window._c24 && window._c24._faceLms);
     if(lms && lms.length > 400){
       var L = lms[468] || lms[33], R = lms[473] || lms[263];
       if(L && R){
@@ -294,7 +302,7 @@ window.eyeSizeFor = function(vis){
 /* 지금 거리 (cm) — 얼굴을 못 잡으면 0 */
 window.eyeNowCm = function(){
   try{
-    var lms = window._eyeLms;
+    var lms = _eyeGetLms();
     if(!lms || lms.length < 400) return 0;
     /* ★ 얼굴을 한 번이라도 잡았다는 표시 — 결과를 낼 자격이 된다 */
     if(!window._eyeCam) window._eyeCam = {};
@@ -501,7 +509,7 @@ window.eyeDistGuard = function(){
   var veil = document.getElementById('eye-veil');
   var st = 'ok', cm = 0;
   try{
-    var lms = window._eyeLms;
+    var lms = _eyeGetLms();
     if(lms && lms.length > 400){
       var L = lms[468] || lms[33], R = lms[473] || lms[263];
       var v = document.getElementById('eye-video');
@@ -611,7 +619,7 @@ window.eyeBlinkResult = function(){
        시각을 보다가 그 시각을 못 적으면 얼굴이 보여도 잠긴 채였다. */
     var fresh = false;
     try{
-      var lms = window._eyeLms;
+      var lms = _eyeGetLms();
       fresh = !!(lms && lms.length > 400 && lms[33] && lms[133] && lms[1] && lms[13]);
     }catch(_){}
     var el = box(); if(!el) return;
