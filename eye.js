@@ -295,8 +295,10 @@ window.EYE_DIRS = ['↑','→','↓','←'];
 /* 지금 거리에서, 그 시력에 해당하는 글자 크기(px) */
 window.eyeSizeFor = function(vis){
   var mm = 2.9 / vis;                       /* 40cm 기준 높이 */
-  var cm = window.eyeNowCm() || 40;
-  mm = mm * (cm / 40);                      /* 거리에 비례해 키운다 — 각도가 같아진다 */
+  /* ★ 채움 비율에 비례해 키운다 — cm 추정을 버렸다 (메뉴얼: 얼굴이 기준) */
+  var fill = 0; try{ var lm=_eyeGetLms(); fill = (window.cgoFaceFill&&lm)?cgoFaceFill(lm):0; }catch(_){}
+  var ref = 0.45;
+  if(fill) mm = mm * (ref / Math.max(0.15, Math.min(0.90, fill)));                      /* 거리에 비례해 키운다 — 각도가 같아진다 */
   var px = Math.round(mm / window.eyeMmPerPx());
   return Math.max(9, Math.min(260, px));
 };
@@ -622,7 +624,8 @@ window.eyeBlinkResult = function(){
     try{ cm = (window.eyeNowCm && eyeNowCm()) || 0; }catch(_){}
     /* 거리를 아직 모르면 막지 않는다 — 막아 두면 아무것도 못 한다 */
     /* 팔이 짧아도 되게 넓힌다 — 20cm는 사람이 맞추기 어려웠다 */
-    var ok = (!cm) || (cm >= 20 && cm <= 35);
+    var fill = 0; try{ var lm=_eyeGetLms(); fill = (window.cgoFaceFill&&lm)?cgoFaceFill(lm):0; }catch(_){}
+    var ok = (!fill) || (fill >= 0.30 && fill <= 0.72);
     var el = box(); if(!el) return;
     if(ok){
       el.style.display = 'none';
@@ -631,8 +634,8 @@ window.eyeBlinkResult = function(){
     el.style.display = 'flex';
     var m = document.getElementById('eye-lock-msg');
     var s = document.getElementById('eye-lock-sub');
-    if(m) m.textContent = (cm < 20 ? K(8821,'📏 조금 더 멀리') : K(8820,'📏 조금 더 가까이'))
-      + '  ·  ' + Math.round(cm) + 'cm';
+    if(m) m.textContent = (fill > 0.72 ? K(8821,'📏 조금 더 멀리') : K(8820,'📏 조금 더 가까이'))
+      ;
     if(s) s.textContent = K(10002, '20~70cm 안에서만 문항이 열립니다 · 거리를 맞추면 이어서 풀 수 있습니다');
   }
   setInterval(tick, 400);
@@ -674,3 +677,30 @@ window.eyeFMStart = function(){
   }catch(_){}
 };
 window.eyeFMStop = function(){ window._eyeFMLoop = false; };
+
+
+/* ══ 눈 질병 예측 지표 — 표현은 웰니스, 기술은 예측 가능하게 ══
+   rPPG 눈가 혈류 · 눈동자 흔들림 · 깜빡임 · 좌우 차이 · 충혈/황변 색조 */
+window.eyeRiskFlags = function(r){
+  var out = [];
+  try{
+    var L = (r && r.scoreL) || 0, R = (r && r.scoreR) || 0;
+    var diff = Math.abs(L - R);
+    var blink = (window._eyeCam && window._eyeCam.blinkPerMin) || 0;
+    var jitter = (window._eyeCam && window._eyeCam.jitter) || 0;
+    var redness = (window._eyeCam && window._eyeCam.redness) || 0;
+    var yellow = (window._eyeCam && window._eyeCam.yellow) || 0;
+
+    /* 좌우 차이 — 한쪽 눈만 나빠지는 흐름 */
+    if(diff >= 0.3) out.push({ k:10010, lv:'watch' });
+    /* 깜빡임 감소 — 안구건조 쪽 */
+    if(blink && blink < 8) out.push({ k:10011, lv:'watch' });
+    /* 눈동자 흔들림 큼 — 피로·초점 유지 어려움 */
+    if(jitter > 0.55) out.push({ k:10012, lv:'watch' });
+    /* 충혈 — 염증·피로 */
+    if(redness > 0.6) out.push({ k:10013, lv:'watch' });
+    /* 황변 — 간·대사 쪽 참고 */
+    if(yellow > 0.55) out.push({ k:10014, lv:'watch' });
+  }catch(e){}
+  return out;
+};
