@@ -199,6 +199,7 @@ window.eyeStart = function(){
   var p = document.getElementById('eyeTestPop');
   if(p){ p.style.display = 'block'; p.scrollTop = 0; }
   eyeCamStart();
+  eyeGuardOn();
   eyeNext();
 };
 
@@ -326,6 +327,19 @@ function eyeFitLoop(){
   }, 100);
   window._eye.fitIv = iv;
 }
+
+/* 반초마다 거리를 살핀다 */
+window._eyeGuardTimer = null;
+window.eyeGuardOn = function(){
+  if(window._eyeGuardTimer) return;
+  window._eyeGuardTimer = setInterval(function(){
+    try{ if(window._eye && window._eye.run) eyeDistGuard(); }catch(e){}
+  }, 500);
+};
+window.eyeGuardOff = function(){
+  if(window._eyeGuardTimer){ clearInterval(window._eyeGuardTimer); window._eyeGuardTimer = null; }
+  var v = document.getElementById('eye-veil'); if(v) v.remove();
+};
 
 window.eyeCamStop = function(){
   try{
@@ -486,3 +500,45 @@ window.eyeTestClose = function(){
     setTimeout(function(){ if(window.cgoRepaintOn) cgoRepaintOn(redraw); }, d);
   });
 })();
+
+/* ══ 거리 잠금 — 40cm 를 벗어나면 문항을 덮는다 ══
+   글자 크기가 실제 mm 로 계산되므로, 거리가 틀리면 시력도 틀린다.
+   그래서 벗어나면 답을 못 누르게 덮고, 맞으면 걷는다. */
+window.eyeDistGuard = function(){
+  var box = document.getElementById('eyeTestBody');
+  if(!box) return;
+  var veil = document.getElementById('eye-veil');
+  var st = 'ok', cm = 0;
+  try{
+    var lms = window._eyeLms;
+    if(lms && lms.length > 400){
+      var L = lms[468] || lms[33], R = lms[473] || lms[263];
+      var v = document.getElementById('eye-video');
+      var vw = (v && v.videoWidth) || 640;
+      if(L && R){
+        var dx = Math.abs(L.x - R.x) * vw;
+        /* 눈 사이 63mm 가 화면에서 몇 화소인지로 거리를 되짚는다 */
+        if(dx > 10) cm = Math.round((vw * 0.62) / dx * 10) / 10 * 10;
+        if(cm && (cm < 30 || cm > 50)) st = (cm < 30) ? 'near' : 'far';
+      }
+    }
+  }catch(e){}
+  if(st === 'ok'){
+    if(veil) veil.remove();
+    return;
+  }
+  if(!veil){
+    veil = document.createElement('div');
+    veil.id = 'eye-veil';
+    veil.style.cssText = 'position:absolute;inset:0;z-index:9;display:flex;flex-direction:column;'
+      + 'align-items:center;justify-content:center;background:rgba(190,18,60,.92);color:#fff;'
+      + 'border-radius:16px;text-align:center;padding:18px;';
+    box.style.position = 'relative';
+    box.appendChild(veil);
+  }
+  veil.innerHTML = '<div style="font-size:30px;line-height:1">📏</div>'
+    + '<div style="font-size:14px;font-weight:900;margin-top:8px;">'
+    + (st === 'near' ? _ek(8821,'📏 조금 더 멀리') : _ek(8820,'📏 조금 더 가까이')) + '</div>'
+    + '<div style="font-size:11.5px;margin-top:6px;opacity:.9;line-height:1.6;">'
+    + _ek(9959,'40cm 를 맞춰야 시력이 정확합니다') + (cm ? ' · ' + cm + 'cm' : '') + '</div>';
+};
