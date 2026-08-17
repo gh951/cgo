@@ -118,7 +118,7 @@ window.eyeStart = function(){
   try{ if(window.eyeBlinkStart) eyeBlinkStart(); }catch(_){}
   var s = window._eye;
   if(!s.eye){ try{ alert(_ek(9962,'왼쪽·오른쪽 눈을 먼저 골라주세요.')); }catch(e){} return; }
-  s.run = { eye:s.eye, vi:5, best:0, miss:0, step:0, answers:[], done:false, wrongAt2:false, cur:null };
+  s.run = { eye:s.eye, qs: window.eyeBank(), at:0, answers:[], lvStat:{1:{c:0,t:0},2:{c:0,t:0},3:{c:0,t:0},4:{c:0,t:0},5:{c:0,t:0}} };
   try{ window._eyeCam = window._eyeCam || {}; window._eyeCam.faceFrames = 0; window._eyeCam.sawFace = false; window._eyeCam.lastSeen = 0; }catch(_){}
   var pop = document.getElementById('eyeTestPop');
   if(pop){ pop.style.display='block'; pop.scrollTop=0; }
@@ -289,6 +289,53 @@ window.eyeCancelMeasure = function(){
    대신 그 순간의 거리에 맞춰 글자 크기를 바꿔, 보이는 각도를 늘 같게 만듭니다.
    맞히면 작게, 틀리면 크게 — 두 번 틀리는 지점이 그 사람의 시력입니다. */
 
+
+/* ★ 구 CGO 원문 그대로 — 25문항 · 5단계 고정 px (35cm 기준 · 5분각 문자)
+   레벨마다 크기를 고정하고 5단계만 두어, 폰 화소 격자에 걸리지 않는다.
+   사다리로 1.5까지 올리던 방식은 폰에서 시표가 더 작아지지 않아 값이 부풀었다. */
+window.EYE_LV = {
+  1:{px:80, vision:0.1,  label:'매우 큼'},
+  2:{px:50, vision:0.2,  label:'큼'},
+  3:{px:32, vision:0.32, label:'중간'},
+  4:{px:20, vision:0.5,  label:'작음'},
+  5:{px:14, vision:0.8,  label:'매우 작음'}
+};
+function _eSz(lv, c, type){
+  var sz = window.EYE_LV[lv].px;
+  /* 채움 비율로 보정 — 얼굴이 기준 (메뉴얼) */
+  try{ var f = (window.cgoFaceFill && window.cgoFaceFill(window._eyeLms)) || 0;
+       if(f > 0.05) sz = Math.round(sz * Math.max(0.7, Math.min(1.6, 0.45 / f))); }catch(_){}
+  if(type==='color') return '<span style="display:inline-block;width:'+sz+'px;height:'+sz+'px;background:'+c+';border-radius:'+(sz/10)+'px;"></span>';
+  return '<span style="font-size:'+sz+'px;font-weight:900;color:#0f172a;line-height:1;display:inline-block;">'+c+'</span>';
+}
+window.eyeBank = function(){ return [
+ {cat:'shape',lv:1,qk:9970,g:['▲','shape'],ok:0,ov:[9980,9981,9982,9983]},
+ {cat:'color',lv:1,qk:9971,g:['#e74c3c','color'],ok:0,ov:[9984,9985,9986,9987]},
+ {cat:'symbol',lv:1,qk:9972,g:['7','symbol'],ok:1,ov:['1','7','9','4']},
+ {cat:'direction',lv:1,qk:9973,g:['↑','direction'],ok:0,ov:[9988,9989,9990,9991]},
+ {cat:'shape',lv:1,qk:9970,g:['●','shape'],ok:2,ov:[9980,9981,9982,9992]},
+ {cat:'shape',lv:2,qk:9970,g:['■','shape'],ok:1,ov:[9980,9981,9982,9993]},
+ {cat:'color',lv:2,qk:9971,g:['#3498db','color'],ok:1,ov:[9984,9985,9986,9987]},
+ {cat:'symbol',lv:2,qk:9972,g:['3','symbol'],ok:1,ov:['8','3','5','9']},
+ {cat:'direction',lv:2,qk:9973,g:['→','direction'],ok:3,ov:[9988,9989,9990,9991]},
+ {cat:'symbol',lv:2,qk:9974,g:['A','symbol'],ok:0,ov:['A','R','P','B']},
+ {cat:'shape',lv:3,qk:9970,g:['◆','shape'],ok:1,ov:[9980,9994,9982,9992]},
+ {cat:'color',lv:3,qk:9971,g:['#27ae60','color'],ok:2,ov:[9984,9985,9986,9987]},
+ {cat:'symbol',lv:3,qk:9972,g:['5','symbol'],ok:1,ov:['2','5','6','8']},
+ {cat:'direction',lv:3,qk:9973,g:['←','direction'],ok:2,ov:[9988,9989,9990,9991]},
+ {cat:'symbol',lv:3,qk:9974,g:['E','symbol'],ok:0,ov:['E','F','B','P']},
+ {cat:'shape',lv:4,qk:9970,g:['★','shape'],ok:2,ov:[9980,9981,9992,9982]},
+ {cat:'color',lv:4,qk:9971,g:['#9b59b6','color'],ok:0,ov:[9995,9985,9996,9997]},
+ {cat:'symbol',lv:4,qk:9972,g:['8','symbol'],ok:2,ov:['3','6','8','9']},
+ {cat:'direction',lv:4,qk:9973,g:['↓','direction'],ok:1,ov:[9988,9989,9990,9991]},
+ {cat:'symbol',lv:4,qk:9974,g:['C','symbol'],ok:0,ov:['C','G','O','Q']},
+ {cat:'shape',lv:5,qk:9970,g:['▼','shape'],ok:1,ov:[9998,9999,9994,9981]},
+ {cat:'symbol',lv:5,qk:9972,g:['4','symbol'],ok:1,ov:['1','4','7','9']},
+ {cat:'direction',lv:5,qk:9973,g:['↗','direction'],ok:0,ov:['↗','↘','↖','↙']},
+ {cat:'fixation',lv:0,qk:10010,g:['●','fix'],ok:0,ov:[],auto:3000},
+ {cat:'fixation',lv:0,qk:10011,g:['👁️','fix'],ok:0,ov:[],auto:4000}
+]; };
+
 window.EYE_VIS = [0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.63, 0.8, 1.0, 1.25, 1.5];
 window.EYE_DIRS = ['↑','→','↓','←'];
 
@@ -331,12 +378,8 @@ window.eyeNowCm = function(){
 
 window.eyeNext = function(){
   var r = window._eye.run; if(!r) return;
-  if(r.done || r.wrongAt2){ eyeFinish(); return; }
-  if(r.step >= 24){ eyeFinish(); return; }
-
-  var dir = Math.floor(Math.random() * 4);
-  r.cur = { vi: r.vi, dir: dir, t0: Date.now() };
-  r.step++;
+  if(r.at >= r.qs.length){ eyeFinish(); return; }
+  r.cur = r.qs[r.at]; r.cur.t0 = Date.now();
   eyeDraw();
 };
 
@@ -345,74 +388,65 @@ window.eyeDraw = function(){
   var head = document.getElementById('eyeTestHead');
   var body = document.getElementById('eyeTestBody');
   if(!head || !body) return;
-
-  var vis = EYE_VIS[r.cur.vi];
-  var px = window.eyeSizeFor(vis);
-  var cm = window.eyeNowCm();
+  var q = r.cur;
 
   head.innerHTML =
     '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">'
     + '<span style="font-size:12px;font-weight:900;color:#0f766e;">'
     + (r.eye === 'L' ? _ek(9930,'왼쪽 눈') : _ek(9931,'오른쪽 눈')) + '</span>'
-    + '<span style="font-size:11px;color:#64748b;">' + r.step + ' / 14'
-    + (cm ? ' · ' + cm + 'cm' : '') + '</span></div>'
+    + '<span style="font-size:11px;color:#64748b;">' + (r.at + 1) + ' / ' + r.qs.length + '</span></div>'
     + '<div style="height:6px;border-radius:999px;background:#e2e8f0;margin-top:7px;overflow:hidden;">'
-    + '<div style="height:100%;width:' + Math.round(r.step/24*100) + '%;background:linear-gradient(90deg,#0d9488,#14b8a6);transition:width .25s;"></div></div>';
+    + '<div style="height:100%;width:' + Math.round((r.at + 1) / r.qs.length * 100) + '%;background:linear-gradient(90deg,#0d9488,#14b8a6);transition:width .25s;"></div></div>';
+
+  var glyph = (q.g[1] === 'fix')
+    ? '<span style="font-size:60px;color:#0f766e;line-height:1;">' + q.g[0] + '</span>'
+    : _eSz(q.lv, q.g[0], q.g[1]);
+
+  var opts = '';
+  if(q.ov && q.ov.length){
+    opts = '<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px;">'
+      + q.ov.map(function(o, i){
+          var t = (typeof o === 'number') ? _ek(o, '') : o;
+          return '<button type="button" onclick="eyeAnswer(' + i + ')" '
+            + 'style="padding:0;min-height:52px;border-radius:14px;border:1.5px solid #d7eee8;background:#fff;'
+            + 'cursor:pointer;font-family:inherit;font-size:16px;font-weight:800;color:#0f766e;">' + t + '</button>';
+        }).join('')
+      + '</div>'
+      + '<button type="button" onclick="eyeAnswer(-1)" data-k="9961" '
+      + 'style="width:100%;margin-top:8px;padding:12px;border:1px solid #cbd5e1;border-radius:12px;'
+      + 'background:#f8fafc;color:#64748b;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;"></button>';
+  }
 
   body.innerHTML =
-    '<div style="background:#fff;border:1px solid #d7eee8;border-radius:16px;'
-    + 'height:22vh;min-height:110px;display:flex;align-items:center;justify-content:center;margin-top:10px;">'
-    + '<span id="eye-glyph" style="font-size:' + px + 'px;font-weight:900;color:#0f172a;line-height:1;">'
-    + EYE_DIRS[r.cur.dir] + '</span></div>'
-    + '<div data-k="9960" style="font-size:11px;color:#64748b;text-align:center;margin-top:9px;"></div>'
-    + '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:9px;">'
-    + EYE_DIRS.map(function(d, i){
-        return '<button type="button" onclick="eyeAnswer(' + i + ')" '
-          + 'style="padding:0;height:60px;border-radius:14px;border:1.5px solid #d7eee8;background:#fff;'
-          + 'cursor:pointer;font-family:inherit;font-size:26px;font-weight:900;color:#0f766e;">'
-          + d + '</button>';
-      }).join('')
-    + '</div>'
-    + '<button type="button" onclick="eyeAnswer(-1)" data-k="9961" '
-    + 'style="width:100%;margin-top:8px;padding:12px;border:1px solid #cbd5e1;border-radius:12px;'
-    + 'background:#f8fafc;color:#64748b;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;"></button>';
+    '<div data-k="' + q.qk + '" style="font-size:13px;font-weight:800;color:#0f172a;text-align:center;margin-top:10px;"></div>'
+    + '<div style="background:#fff;border:1px solid #d7eee8;border-radius:16px;'
+    + 'height:22vh;min-height:110px;display:flex;align-items:center;justify-content:center;margin-top:8px;">'
+    + glyph + '</div>' + opts;
+
   try{ if(window.CGO_T) CGO_T.paint(body); }catch(e){}
+
+  /* 시선 고정·깜빡임 문항은 시간이 지나면 저절로 넘어간다 */
+  if(q.auto){
+    if(r.timer) clearTimeout(r.timer);
+    r.timer = setTimeout(function(){ eyeAnswer(0); }, q.auto);
+  }
 };
 
 window.eyeAnswer = function(i){
-  /* 이 문항을 풀 때 얼굴이 보였는가 — 1초 안에 좌표가 들어왔으면 인정 */
-  try{
-    if(!window._eyeCam) window._eyeCam = {};
-    var fresh = window._eyeCam.lastSeen && (Date.now() - window._eyeCam.lastSeen) < 1000;
-    window._eyeCam.faceFrames = (window._eyeCam.faceFrames || 0) + (fresh ? 1 : 0);
-  }catch(_){}
   var r = window._eye.run; if(!r || !r.cur) return;
-  var ok = (i === r.cur.dir);
-  r.answers.push({ vi: r.cur.vi, ok: ok, ms: Date.now() - r.cur.t0, cm: window.eyeNowCm() });
-
-  /* ★ 한 단계에 3문항 · 2개 맞히면 통과 (안과 방식).
-     한 문항으로 올리면 네 개 중 하나를 찍어도 통과해 값이 흔들렸다. */
-  if(!r.lv || r.lv.vi !== r.cur.vi){ r.lv = { vi:r.cur.vi, n:0, ok:0 }; }
-  r.lv.n++;
-  if(ok) r.lv.ok++;
-
-  var pass = (r.lv.ok >= 2);
-  var fail = ((r.lv.n - r.lv.ok) >= 2);
-
-  if(pass){
-    r.best = Math.max(r.best, r.cur.vi);
-    r.miss = 0;
-    r.lv = null;
-    if(r.vi < EYE_VIS.length - 1) r.vi++;
-    else { r.done = true; }
-  }else if(fail){
-    r.miss++;
-    r.lv = null;
-    if(r.miss >= 2){ r.wrongAt2 = true; }
-    else if(r.vi > 0) r.vi--;
-  }
+  if(r.timer){ clearTimeout(r.timer); r.timer = null; }
+  var q = r.cur;
+  /* 이 문항을 풀 때 얼굴이 보였는가 — 1.2초 안에 좌표가 들어왔으면 인정 */
+  try{ if(!window._eyeCam) window._eyeCam = {};
+       var _fr = window._eyeCam.lastSeen && (Date.now() - window._eyeCam.lastSeen) < 1200;
+       window._eyeCam.faceFrames = (window._eyeCam.faceFrames || 0) + (_fr ? 1 : 0); }catch(_){}
+  var ok = (q.cat === 'fixation') ? true : (i === q.ok);
+  r.answers.push({ lv:q.lv, cat:q.cat, ok:ok, ms:Date.now() - q.t0 });
+  if(q.lv >= 1 && q.lv <= 5){ r.lvStat[q.lv].t++; if(ok) r.lvStat[q.lv].c++; }
+  r.at++;
   eyeNext();
 };
+
 window.eyeFinish = function(){
   var r = window._eye.run; if(!r) return;
   /* ★ 얼굴이 한 번도 안 잡혔다면 결과를 내지 않는다.
@@ -423,7 +457,7 @@ window.eyeFinish = function(){
   try{
     var ok = (window._eyeCam && window._eyeCam.faceFrames) || 0;
     var need = Math.max(1, Math.ceil((r.answers.length || 1) * 0.5));
-    seen = true;   /* ★ 구 CGO에 없던 조건이었다 — 얼굴을 못 잡아도 결과를 낸다 */
+    seen = (ok >= need);   /* 문항 절반 이상에서 얼굴이 보였어야 한다 */
   }catch(_){}
   if(!seen){
     eyeCamStop();
@@ -445,11 +479,18 @@ window.eyeFinish = function(){
   }
   eyeCamStop();
   try{ if(window.eyeGuardOff) eyeGuardOff(); }catch(e){}
-  var vision = EYE_VIS[r.best] || 0.1;
+  /* ★ 구 CGO 판정 — 레벨마다 70% 이상 맞히면 통과, 가장 높은 통과 레벨을 취한다.
+     사다리로 위로 올리던 방식은 폰에서 시표가 더 작아지지 않아 값이 부풀었다. */
+  var vision = 0, passLv = 0;
+  for(var _lv = 5; _lv >= 1; _lv--){
+    var _s = r.lvStat[_lv];
+    if(_s && _s.t > 0 && (_s.c / _s.t) >= 0.7){ passLv = _lv; vision = window.EYE_LV[_lv].vision; break; }
+  }
+  r.passLv = passLv;
   var right = r.answers.filter(function(a){ return a.ok; }).length;
   var avg = r.answers.length
     ? Math.round(r.answers.reduce(function(t,a){ return t + a.ms; }, 0) / r.answers.length) : 0;
-  var cms = r.answers.map(function(a){ return a.cm; }).filter(function(c){ return c > 0; });
+  var cms = [];
   var cm = cms.length ? Math.round(cms.reduce(function(t,c){ return t+c; },0) / cms.length) : 0;
 
   var head = document.getElementById('eyeTestHead');
@@ -462,7 +503,7 @@ window.eyeFinish = function(){
     + '<div style="font-size:11px;color:#64748b;font-weight:700;">' + _ek(9957,'추정 시력') + '</div>'
     + '<div style="font-size:46px;font-weight:900;color:#0f766e;line-height:1.1;margin-top:4px;">' + vision.toFixed(2) + '</div>'
     + '<div style="font-size:11px;color:#475569;margin-top:7px;line-height:1.7;">'
-    + _ek(9722,'정답') + ' ' + right + '/' + r.step
+    + _ek(9722,'정답') + ' ' + right + '/' + r.answers.length
     + ' · ' + _ek(9723,'평균 반응') + ' ' + (avg/1000).toFixed(1) + 's'
     + (cm ? '<br>' + _ek(9963,'측정 거리') + ' ' + cm + 'cm' : '') + '</div></div>'
     + (function(){
@@ -470,16 +511,16 @@ window.eyeFinish = function(){
         if(!bl || !bl.sec) return '';
         var bpmOk = (bl.bpm >= 12 && bl.bpm <= 22);
         return '<div style="background:#fff;border:1px solid #d7eee8;border-radius:16px;padding:15px 16px;margin-top:11px;">'
-          + '<div style="font-size:12.5px;font-weight:900;color:#0f766e;">' + _ek(9970,'👁️ 눈동자 · 깜빡임') + '</div>'
+          + '<div style="font-size:12.5px;font-weight:900;color:#0f766e;">' + _ek(10020,'👁️ 눈동자 · 깜빡임') + '</div>'
           + '<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:11px;">'
           + '<div style="padding:13px 12px;border-radius:13px;background:' + (bpmOk?'#f0fdf9':'#fffbeb') + ';border:1px solid ' + (bpmOk?'#99f6e4':'#fde68a') + ';">'
-          + '<div style="font-size:10px;color:#64748b;font-weight:700;">' + _ek(9971,'분당 깜빡임') + '</div>'
+          + '<div style="font-size:10px;color:#64748b;font-weight:700;">' + _ek(10021,'분당 깜빡임') + '</div>'
           + '<div style="font-size:19px;font-weight:900;color:' + (bpmOk?'#0f766e':'#b45309') + ';margin-top:3px;">' + bl.bpm + '</div>'
-          + '<div style="font-size:9.5px;color:#64748b;margin-top:2px;">' + _ek(9972,'정상 15~20회') + '</div></div>'
+          + '<div style="font-size:9.5px;color:#64748b;margin-top:2px;">' + _ek(10022,'정상 15~20회') + '</div></div>'
           + '<div style="padding:13px 12px;border-radius:13px;background:#eff6ff;border:1px solid #bfdbfe;">'
-          + '<div style="font-size:10px;color:#64748b;font-weight:700;">' + _ek(9973,'눈동자 흔들림') + '</div>'
+          + '<div style="font-size:10px;color:#64748b;font-weight:700;">' + _ek(10023,'눈동자 흔들림') + '</div>'
           + '<div style="font-size:19px;font-weight:900;color:#1d4ed8;margin-top:3px;">' + bl.jitter + '</div>'
-          + '<div style="font-size:9.5px;color:#64748b;margin-top:2px;">' + _ek(9974,'낮을수록 안정') + '</div></div>'
+          + '<div style="font-size:9.5px;color:#64748b;margin-top:2px;">' + _ek(10024,'낮을수록 안정') + '</div></div>'
           + '</div>'
           + (bpmOk ? '' : '<div style="font-size:10.5px;color:#b45309;margin-top:10px;line-height:1.7;">' + _ek(9975,'') + '</div>')
           + '</div>';
