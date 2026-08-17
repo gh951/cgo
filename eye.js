@@ -145,6 +145,7 @@ window.eyeCamStart = function(){
       window._eye.stream = s;
       if(v){ v.srcObject = s; v.play().catch(function(){}); }
       if(idle) idle.style.display = 'none';
+        try{ if(window.eyeFMStart) eyeFMStart(); }catch(_){}
       eyeFitLoop();
     })
     .catch(function(){
@@ -265,6 +266,7 @@ window.eyeGuardOff = function(){
 };
 
 window.eyeCamStop = function(){
+  try{ if(window.eyeFMStop) eyeFMStop(); }catch(_){}
   try{
     var s = window._eye.stream;
     if(s){ s.getTracks().forEach(function(t){ t.stop(); }); window._eye.stream = null; }
@@ -632,3 +634,40 @@ window.eyeBlinkResult = function(){
   }
   setInterval(tick, 400);
 })();
+
+/* ══ 눈 카메라에서 얼굴 좌표를 직접 얻는다 ══
+   눈 검사는 자기 카메라(eye-video)를 쓰므로 c24 의 FaceMesh 가 돌지 않았고,
+   그래서 좌표가 비어 얼굴이 보여도 잠긴 채였다. 여기서 직접 돌린다. */
+window._eyeFM = null;
+window.eyeFMStart = function(){
+  try{
+    if(typeof FaceMesh === 'undefined') return;
+    var v = document.getElementById('eye-video');
+    if(!v) return;
+    if(!window._eyeFM){
+      window._eyeFM = new FaceMesh({ locateFile:function(f){
+        return 'https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/' + f; } });
+      window._eyeFM.setOptions({ maxNumFaces:1, refineLandmarks:false,
+        minDetectionConfidence:0.5, minTrackingConfidence:0.5 });
+      window._eyeFM.onResults(function(r){
+        try{
+          if(r && r.multiFaceLandmarks && r.multiFaceLandmarks.length){
+            if(!window._c24) window._c24 = {};
+            window._c24._faceLms = r.multiFaceLandmarks[0];
+          }
+        }catch(_){}
+      });
+    }
+    if(window._eyeFMLoop) return;
+    window._eyeFMLoop = true;
+    (function loop(){
+      if(!window._eyeFMLoop) return;
+      try{
+        var vv = document.getElementById('eye-video');
+        if(vv && vv.readyState >= 2) window._eyeFM.send({ image: vv });
+      }catch(_){}
+      setTimeout(loop, 200);
+    })();
+  }catch(_){}
+};
+window.eyeFMStop = function(){ window._eyeFMLoop = false; };
