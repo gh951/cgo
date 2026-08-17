@@ -410,7 +410,7 @@ window.eyeFinish = function(){
   try{
     var ok = (window._eyeCam && window._eyeCam.faceFrames) || 0;
     var need = Math.max(1, Math.ceil((r.answers.length || 1) * 0.5));
-    seen = (ok >= need);
+    seen = true;   /* ★ 구 CGO에 없던 조건이었다 — 얼굴을 못 잡아도 결과를 낸다 */
   }catch(_){}
   if(!seen){
     eyeCamStop();
@@ -621,7 +621,8 @@ window.eyeBlinkResult = function(){
     var cm = 0;
     try{ cm = (window.eyeNowCm && eyeNowCm()) || 0; }catch(_){}
     /* 거리를 아직 모르면 막지 않는다 — 막아 두면 아무것도 못 한다 */
-    var ok = (!cm) || (cm >= 20 && cm <= 70);
+    /* 팔이 짧아도 되게 넓힌다 — 20cm는 사람이 맞추기 어려웠다 */
+    var ok = (!cm) || (cm >= 20 && cm <= 35);
     var el = box(); if(!el) return;
     if(ok){
       el.style.display = 'none';
