@@ -398,6 +398,15 @@ window.eyeDraw = function(){
     + '<div style="height:6px;border-radius:999px;background:#e2e8f0;margin-top:7px;overflow:hidden;">'
     + '<div style="height:100%;width:' + Math.round((r.at + 1) / r.qs.length * 100) + '%;background:linear-gradient(90deg,#0d9488,#14b8a6);transition:width .25s;"></div></div>';
 
+  /* ★ 문제와 보기 글자도 단계에 따라 작아진다 — 글자 자체가 시표다.
+     도형만 작아지면 "삼각형"이라는 큰 글자를 읽고 맞힐 수 있어 시력이 아니라 짐작이 된다. */
+  var _lvpx = q.lv ? window.EYE_LV[q.lv].px : 40;
+  var _fill = 0;
+  try{ _fill = (window.cgoFaceFill && window.cgoFaceFill(_eyeGetLms())) || 0; }catch(_){}
+  var _adj = (_fill > 0.05) ? Math.max(0.7, Math.min(1.6, 0.45 / _fill)) : 1;
+  var qpx = q.lv ? Math.max(11, Math.round(_lvpx * 0.42 * _adj)) : 14;
+  var opx = q.lv ? Math.max(12, Math.round(_lvpx * 0.34 * _adj)) : 15;
+
   var glyph = (q.g[1] === 'fix')
     ? '<span style="font-size:60px;color:#0f766e;line-height:1;">' + q.g[0] + '</span>'
     : _eSz(q.lv, q.g[0], q.g[1]);
@@ -408,8 +417,8 @@ window.eyeDraw = function(){
       + q.ov.map(function(o, i){
           var t = (typeof o === 'number') ? _ek(o, '') : o;
           return '<button type="button" onclick="eyeAnswer(' + i + ')" '
-            + 'style="padding:0;min-height:52px;border-radius:14px;border:1.5px solid #d7eee8;background:#fff;'
-            + 'cursor:pointer;font-family:inherit;font-size:16px;font-weight:800;color:#0f766e;">' + t + '</button>';
+            + 'style="padding:6px 4px;min-height:' + Math.max(44, opx + 26) + 'px;border-radius:14px;border:1.5px solid #d7eee8;background:#fff;'
+            + 'cursor:pointer;font-family:inherit;font-size:' + opx + 'px;font-weight:800;color:#0f766e;line-height:1.25;">' + t + '</button>';
         }).join('')
       + '</div>'
       + '<button type="button" onclick="eyeAnswer(-1)" data-k="9961" '
@@ -418,7 +427,7 @@ window.eyeDraw = function(){
   }
 
   body.innerHTML =
-    '<div data-k="' + q.qk + '" style="font-size:13px;font-weight:800;color:#0f172a;text-align:center;margin-top:10px;"></div>'
+    '<div data-k="' + q.qk + '" style="font-size:' + qpx + 'px;font-weight:800;color:#0f172a;text-align:center;margin-top:10px;line-height:1.4;"></div>'
     + '<div style="background:#fff;border:1px solid #d7eee8;border-radius:16px;'
     + 'height:22vh;min-height:110px;display:flex;align-items:center;justify-content:center;margin-top:8px;">'
     + glyph + '</div>' + opts;
@@ -437,9 +446,11 @@ window.eyeAnswer = function(i){
   var r = window._eye.run; if(!r || !r.cur) return;
   if(r.timer){ clearTimeout(r.timer); r.timer = null; }
   var q = r.cur;
-  /* 이 문항을 풀 때 얼굴이 보였는가 — 1.2초 안에 좌표가 들어왔으면 인정 */
+  /* 이 문항을 풀 때 얼굴이 보였는가 — 화면 표시(딱 맞아요)와 같은 좌표를 본다.
+     lastSeen 을 보던 것이 오류였다 — 그 시각을 적는 곳이 없어 늘 0이었다. */
   try{ if(!window._eyeCam) window._eyeCam = {};
-       var _fr = window._eyeCam.lastSeen && (Date.now() - window._eyeCam.lastSeen) < 1200;
+       var _lm = _eyeGetLms();
+       var _fr = !!(_lm && _lm.length > 100);
        window._eyeCam.faceFrames = (window._eyeCam.faceFrames || 0) + (_fr ? 1 : 0); }catch(_){}
   var ok = (q.cat === 'fixation') ? true : (i === q.ok);
   r.answers.push({ lv:q.lv, cat:q.cat, ok:ok, ms:Date.now() - q.t0 });
