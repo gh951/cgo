@@ -309,31 +309,31 @@ function _eSz(lv, c, type){
   return '<span style="font-size:'+sz+'px;font-weight:900;color:#0f172a;line-height:1;display:inline-block;">'+c+'</span>';
 }
 window.eyeBank = function(){ return [
- {cat:'shape',lv:1,qk:9970,g:['▲','shape'],ok:0,ov:[9980,9981,9982,9983]},
- {cat:'color',lv:1,qk:9971,g:['#e74c3c','color'],ok:0,ov:[9984,9985,9986,9987]},
- {cat:'symbol',lv:1,qk:9972,g:['7','symbol'],ok:1,ov:['1','7','9','4']},
- {cat:'direction',lv:1,qk:9973,g:['↑','direction'],ok:0,ov:[9988,9989,9990,9991]},
- {cat:'shape',lv:1,qk:9970,g:['●','shape'],ok:2,ov:[9980,9981,9982,9992]},
- {cat:'shape',lv:2,qk:9970,g:['■','shape'],ok:1,ov:[9980,9981,9982,9993]},
- {cat:'color',lv:2,qk:9971,g:['#3498db','color'],ok:1,ov:[9984,9985,9986,9987]},
- {cat:'symbol',lv:2,qk:9972,g:['3','symbol'],ok:1,ov:['8','3','5','9']},
- {cat:'direction',lv:2,qk:9973,g:['→','direction'],ok:3,ov:[9988,9989,9990,9991]},
- {cat:'symbol',lv:2,qk:9974,g:['A','symbol'],ok:0,ov:['A','R','P','B']},
- {cat:'shape',lv:3,qk:9970,g:['◆','shape'],ok:1,ov:[9980,9994,9982,9992]},
- {cat:'color',lv:3,qk:9971,g:['#27ae60','color'],ok:2,ov:[9984,9985,9986,9987]},
- {cat:'symbol',lv:3,qk:9972,g:['5','symbol'],ok:1,ov:['2','5','6','8']},
- {cat:'direction',lv:3,qk:9973,g:['←','direction'],ok:2,ov:[9988,9989,9990,9991]},
- {cat:'symbol',lv:3,qk:9974,g:['E','symbol'],ok:0,ov:['E','F','B','P']},
- {cat:'shape',lv:4,qk:9970,g:['★','shape'],ok:2,ov:[9980,9981,9992,9982]},
- {cat:'color',lv:4,qk:9971,g:['#9b59b6','color'],ok:0,ov:[9995,9985,9996,9997]},
- {cat:'symbol',lv:4,qk:9972,g:['8','symbol'],ok:2,ov:['3','6','8','9']},
- {cat:'direction',lv:4,qk:9973,g:['↓','direction'],ok:1,ov:[9988,9989,9990,9991]},
- {cat:'symbol',lv:4,qk:9974,g:['C','symbol'],ok:0,ov:['C','G','O','Q']},
- {cat:'shape',lv:5,qk:9970,g:['▼','shape'],ok:1,ov:[9998,9999,9994,9981]},
- {cat:'symbol',lv:5,qk:9972,g:['4','symbol'],ok:1,ov:['1','4','7','9']},
- {cat:'direction',lv:5,qk:9973,g:['↗','direction'],ok:0,ov:['↗','↘','↖','↙']},
- {cat:'fixation',lv:0,qk:10010,g:['●','fix'],ok:0,ov:[],auto:3000},
- {cat:'fixation',lv:0,qk:10011,g:['👁️','fix'],ok:0,ov:[],auto:4000}
+ {cat:'shape',lv:1,qk:10100,g:['▲','shape'],ok:0,ov:[10105,10106,10107,10108]},
+ {cat:'color',lv:1,qk:10101,g:['#e74c3c','color'],ok:0,ov:[10109,10110,10111,10112]},
+ {cat:'symbol',lv:1,qk:10102,g:['7','symbol'],ok:1,ov:['1','7','9','4']},
+ {cat:'direction',lv:1,qk:10103,g:['↑','direction'],ok:0,ov:[10113,10114,10115,10116]},
+ {cat:'shape',lv:1,qk:10100,g:['●','shape'],ok:2,ov:[10105,10106,10107,10117]},
+ {cat:'shape',lv:2,qk:10100,g:['■','shape'],ok:1,ov:[10105,10106,10107,10118]},
+ {cat:'color',lv:2,qk:10101,g:['#3498db','color'],ok:1,ov:[10109,10110,10111,10112]},
+ {cat:'symbol',lv:2,qk:10102,g:['3','symbol'],ok:1,ov:['8','3','5','9']},
+ {cat:'direction',lv:2,qk:10103,g:['→','direction'],ok:3,ov:[10113,10114,10115,10116]},
+ {cat:'symbol',lv:2,qk:10104,g:['A','symbol'],ok:0,ov:['A','R','P','B']},
+ {cat:'shape',lv:3,qk:10100,g:['◆','shape'],ok:1,ov:[10105,10119,10107,10117]},
+ {cat:'color',lv:3,qk:10101,g:['#27ae60','color'],ok:2,ov:[10109,10110,10111,10112]},
+ {cat:'symbol',lv:3,qk:10102,g:['5','symbol'],ok:1,ov:['2','5','6','8']},
+ {cat:'direction',lv:3,qk:10103,g:['←','direction'],ok:2,ov:[10113,10114,10115,10116]},
+ {cat:'symbol',lv:3,qk:10104,g:['E','symbol'],ok:0,ov:['E','F','B','P']},
+ {cat:'shape',lv:4,qk:10100,g:['★','shape'],ok:2,ov:[10105,10106,10117,10107]},
+ {cat:'color',lv:4,qk:10101,g:['#9b59b6','color'],ok:0,ov:[10120,10110,10121,10122]},
+ {cat:'symbol',lv:4,qk:10102,g:['8','symbol'],ok:2,ov:['3','6','8','9']},
+ {cat:'direction',lv:4,qk:10103,g:['↓','direction'],ok:1,ov:[10113,10114,10115,10116]},
+ {cat:'symbol',lv:4,qk:10104,g:['C','symbol'],ok:0,ov:['C','G','O','Q']},
+ {cat:'shape',lv:5,qk:10100,g:['▼','shape'],ok:1,ov:[10123,10124,10119,10106]},
+ {cat:'symbol',lv:5,qk:10102,g:['4','symbol'],ok:1,ov:['1','4','7','9']},
+ {cat:'direction',lv:5,qk:10103,g:['↗','direction'],ok:0,ov:['↗','↘','↖','↙']},
+ {cat:'fixation',lv:0,qk:10125,g:['●','fix'],ok:0,ov:[],auto:3000},
+ {cat:'fixation',lv:0,qk:10126,g:['👁️','fix'],ok:0,ov:[],auto:4000}
 ]; };
 
 window.EYE_VIS = [0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.63, 0.8, 1.0, 1.25, 1.5];
@@ -424,6 +424,7 @@ window.eyeDraw = function(){
     + glyph + '</div>' + opts;
 
   try{ if(window.CGO_T) CGO_T.paint(body); }catch(e){}
+  try{ if(window.eyeDistGuard) eyeDistGuard(); }catch(e){}
 
   /* 시선 고정·깜빡임 문항은 시간이 지나면 저절로 넘어간다 */
   if(q.auto){
@@ -563,39 +564,38 @@ window.eyeDistGuard = function(){
   var box = document.getElementById('eyeTestBody');
   if(!box) return;
   var veil = document.getElementById('eye-veil');
-  var st = 'ok', cm = 0;
+
+  /* ★ 채움 비율만 쓴다 — cm 추정은 폰마다 렌즈 화각이 달라 못 믿는다 (메뉴얼) */
+  var st = 'ok', fill = 0;
   try{
     var lms = _eyeGetLms();
-    if(lms && lms.length > 400){
-      var L = lms[468] || lms[33], R = lms[473] || lms[263];
-      var v = document.getElementById('eye-video');
-      var vw = (v && v.videoWidth) || 640;
-      if(L && R){
-        var dx = Math.abs(L.x - R.x) * vw;
-        /* 눈 사이 63mm 가 화면에서 몇 화소인지로 거리를 되짚는다 */
-        if(dx > 10) cm = Math.round((vw * 0.62) / dx * 10) / 10 * 10;
-        if(cm && (cm < 30 || cm > 50)) st = (cm < 30) ? 'near' : 'far';
+    if(lms && window.cgoFaceFill){
+      fill = window.cgoFaceFill(lms) || 0;
+      if(fill > 0.02){
+        if(fill > 0.62) st = 'near';
+        else if(fill < 0.30) st = 'far';
       }
     }
   }catch(e){}
-  if(st === 'ok'){
+
+  if(st === 'ok'){ if(veil) veil.remove(); return; }
+
+  /* 문항 칸 전체를 덮는다 — 도형과 보기까지 가려야 뜻이 있다 */
+  if(!veil || veil.parentNode !== box){
     if(veil) veil.remove();
-    return;
-  }
-  if(!veil){
     veil = document.createElement('div');
     veil.id = 'eye-veil';
-    veil.style.cssText = 'position:absolute;inset:0;z-index:9;display:flex;flex-direction:column;'
-      + 'align-items:center;justify-content:center;background:rgba(190,18,60,.92);color:#fff;'
-      + 'border-radius:16px;text-align:center;padding:18px;';
-    box.style.position = 'relative';
     box.appendChild(veil);
   }
-  veil.innerHTML = '<div style="font-size:30px;line-height:1">📏</div>'
-    + '<div style="font-size:14px;font-weight:900;margin-top:8px;">'
-    + (st === 'near' ? _ek(8821,'📏 조금 더 멀리') : _ek(8820,'📏 조금 더 가까이')) + '</div>'
-    + '<div style="font-size:11.5px;margin-top:6px;opacity:.9;line-height:1.6;">'
-    + _ek(9959,'40cm 를 맞춰야 시력이 정확합니다') + (cm ? ' · ' + cm + 'cm' : '') + '</div>';
+  box.style.position = 'relative';
+  veil.style.cssText = 'position:absolute;left:0;right:0;top:0;bottom:0;z-index:40;display:flex;'
+    + 'flex-direction:column;align-items:center;justify-content:center;background:rgba(190,18,60,.96);'
+    + 'color:#fff;border-radius:16px;text-align:center;padding:20px;';
+  veil.innerHTML = '<div style="font-size:34px;line-height:1">📏</div>'
+    + '<div style="font-size:15px;font-weight:900;margin-top:10px;">'
+    + (st === 'near' ? _ek(8821,'조금 더 멀리') : _ek(8820,'조금 더 가까이')) + '</div>'
+    + '<div style="font-size:12px;margin-top:8px;opacity:.92;line-height:1.6;">'
+    + _ek(9959,'얼굴이 화면에 알맞게 들어와야 정확합니다') + '</div>';
 };
 
 /* ══ ① 눈동자 추적 + 깜빡임 분석 ══
