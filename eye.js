@@ -1,3 +1,107 @@
+function _eyeSized(level, content, type){
+    var sz = EYE_SIZE_BY_LEVEL[level].px;
+    if(type === 'shape' || type === 'symbol' || type === 'direction'){
+      return '<span style="font-size:' + sz + 'px;font-weight:900;color:#134e4a;line-height:1;display:inline-block;">' + content + '</span>';
+    } else if(type === 'color'){
+      // 색상 박스 = 시력 크기 그대로 정사각형
+      var bg = content;  // hex 색
+      return '<span style="display:inline-block;width:' + sz + 'px;height:' + sz + 'px;background:' + bg + ';border-radius:' + (sz/10) + 'px;"></span>';
+    } else if(type === 'multi'){
+      // 여러 개 (개수 세기, 다른 거 찾기) — 더 작게
+      return '<span style="font-size:' + Math.round(sz*0.7) + 'px;color:#134e4a;letter-spacing:.3em;">' + content + '</span>';
+    }
+    return content;
+  }
+
+var EYE_QUESTIONS = [
+    // ━━━ Level 1 (시력 0.1 · 80px) 매우 큼 · 5문항 ━━━
+    {cat:'shape', level:1, q:'화면 도형은?',
+     emoji: _eyeSized(1, '▲', 'shape'),
+     opts:['삼각형','사각형','원','오각형'], correct:0},
+    {cat:'color', level:1, q:'화면 색은?',
+     emoji: _eyeSized(1, '#e74c3c', 'color'),
+     opts:['빨강','파랑','초록','노랑'], correct:0},
+    {cat:'symbol', level:1, q:'화면 숫자는?',
+     emoji: _eyeSized(1, '7', 'symbol'),
+     opts:['1','7','9','4'], correct:1},
+    {cat:'direction', level:1, q:'화살표 방향은?',
+     emoji: _eyeSized(1, '↑', 'direction'),
+     opts:['↑ 위','↓ 아래','← 왼쪽','→ 오른쪽'], correct:0},
+    {cat:'shape', level:1, q:'화면 도형은?',
+     emoji: _eyeSized(1, '●', 'shape'),
+     opts:['삼각형','사각형','원','별'], correct:2},
+
+    // ━━━ Level 2 (시력 0.2 · 50px) 큼 · 5문항 ━━━
+    {cat:'shape', level:2, q:'화면 도형은?',
+     emoji: _eyeSized(2, '■', 'shape'),
+     opts:['삼각형','사각형','원','육각형'], correct:1},
+    {cat:'color', level:2, q:'화면 색은?',
+     emoji: _eyeSized(2, '#3498db', 'color'),
+     opts:['빨강','파랑','초록','노랑'], correct:1},
+    {cat:'symbol', level:2, q:'화면 숫자는?',
+     emoji: _eyeSized(2, '3', 'symbol'),
+     opts:['8','3','5','9'], correct:1},
+    {cat:'direction', level:2, q:'화살표 방향은?',
+     emoji: _eyeSized(2, '→', 'direction'),
+     opts:['↑ 위','↓ 아래','← 왼쪽','→ 오른쪽'], correct:3},
+    {cat:'symbol', level:2, q:'화면 글자는?',
+     emoji: _eyeSized(2, '한', 'symbol'),
+     opts:['한','할','함','합'], correct:0},
+
+    // ━━━ Level 3 (시력 0.32 · 32px) 중간 · 5문항 ━━━
+    {cat:'shape', level:3, q:'화면 도형은?',
+     emoji: _eyeSized(3, '◆', 'shape'),
+     opts:['삼각형','마름모','원','별'], correct:1},
+    {cat:'color', level:3, q:'화면 색은?',
+     emoji: _eyeSized(3, '#27ae60', 'color'),
+     opts:['빨강','파랑','초록','노랑'], correct:2},
+    {cat:'symbol', level:3, q:'화면 숫자는?',
+     emoji: _eyeSized(3, '5', 'symbol'),
+     opts:['2','5','6','8'], correct:1},
+    {cat:'direction', level:3, q:'화살표 방향은?',
+     emoji: _eyeSized(3, '←', 'direction'),
+     opts:['↑ 위','↓ 아래','← 왼쪽','→ 오른쪽'], correct:2},
+    {cat:'symbol', level:3, q:'화면 글자는?',
+     emoji: _eyeSized(3, '동', 'symbol'),
+     opts:['동','등','독','돌'], correct:0},
+
+    // ━━━ Level 4 (시력 0.5 · 20px) 작음 · 5문항 ━━━
+    {cat:'shape', level:4, q:'화면 도형은?',
+     emoji: _eyeSized(4, '★', 'shape'),
+     opts:['삼각형','사각형','별','원'], correct:2},
+    {cat:'color', level:4, q:'화면 색은?',
+     emoji: _eyeSized(4, '#9b59b6', 'color'),
+     opts:['보라','파랑','분홍','회색'], correct:0},
+    {cat:'symbol', level:4, q:'화면 숫자는?',
+     emoji: _eyeSized(4, '8', 'symbol'),
+     opts:['3','6','8','9'], correct:2},
+    {cat:'direction', level:4, q:'화살표 방향은?',
+     emoji: _eyeSized(4, '↓', 'direction'),
+     opts:['↑ 위','↓ 아래','← 왼쪽','→ 오른쪽'], correct:1},
+    {cat:'symbol', level:4, q:'화면 글자는?',
+     emoji: _eyeSized(4, '서', 'symbol'),
+     opts:['서','석','선','설'], correct:0},
+
+    // ━━━ Level 5 (시력 0.8 · 14px) 매우 작음 · 3문항 ━━━
+    {cat:'shape', level:5, q:'화면 도형은?',
+     emoji: _eyeSized(5, '▼', 'shape'),
+     opts:['삼각형 위','삼각형 아래','마름모','사각형'], correct:1},
+    {cat:'symbol', level:5, q:'화면 숫자는?',
+     emoji: _eyeSized(5, '4', 'symbol'),
+     opts:['1','4','7','9'], correct:1},
+    {cat:'direction', level:5, q:'화살표 방향은?',
+     emoji: _eyeSized(5, '↗', 'direction'),
+     opts:['↗ 오른쪽 위','↘ 오른쪽 아래','↖ 왼쪽 위','↙ 왼쪽 아래'], correct:0},
+
+    // ━━━ 카메라 측정 (rPPG / 눈동자 / 깜빡임) · 2문항 ━━━
+    {cat:'fixation', level:0, q:'화면 중앙의 점을 3초간 응시하세요',
+     emoji:'<span style="font-size:60px;color:#0f766e;display:inline-block;animation:eyePulse 2s ease-in-out infinite;">●</span>',
+     opts:[], correct:0, autoTimer: 3000, hint:'카메라가 눈동자 안정성을 측정합니다'},
+    {cat:'fixation', level:0, q:'천천히 3회 깜빡이세요',
+     emoji:'<span style="font-size:60px;">👁️</span><div style="margin-top:8px;font-size:14px;color:#0f766e;font-weight:800;">깜빡 · 깜빡 · 깜빡</div>',
+     opts:[], correct:0, autoTimer: 4000, hint:'카메라가 깜빡임 횟수를 측정합니다'}
+  ];;
+
 /* ══ 나의 눈 건강 — 측정 (구 CGO 구조 + 오늘 넣은 정밀 기술) ══
    눈동자 추적 · 깜빡임 · 눈가 rPPG · 시각 반응 25문항 · 눈 선명도 지수
    거리 판정은 채움 비율(cgoFitState)로 — 눈 7cm 기준 */
@@ -129,17 +233,17 @@ function eyeFitLoop(){
 
     var st;
     if(!hasFace) st = 'none';
-    else if(cm > 40) st = 'far';       /* 멀다 → 가까이 오세요 */
-    else if(cm < 28) st = 'near';      /* 가깝다 → 멀리 가세요 */
+    else if(cm > 50) st = 'far';       /* 멀다 → 가까이 오세요 */
+    else if(cm < 22) st = 'near';      /* 가깝다 → 멀리 가세요 */
     else st = 'ok';                    /* 30~40cm 표준 */
 
     var lock = (st !== 'ok');
     window._eye.locked = lock;
 
     var body = document.getElementById('eyeTestBody');
-    if(body){
-      body.style.pointerEvents = lock ? 'none' : '';
-      if(getComputedStyle(body).position === 'static') body.style.position = 'relative';
+    var card = body && body.firstElementChild;   /* 시표 카드만 덮는다 — 화살표는 살려 둔다 */
+    if(card){
+      if(getComputedStyle(card).position === 'static') card.style.position = 'relative';
       var m0 = document.getElementById('eye-lock');
       if(lock){
         if(!m0){
@@ -148,7 +252,7 @@ function eyeFitLoop(){
           m0.style.cssText = 'position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;'
             + 'align-items:center;justify-content:center;gap:6px;background:rgba(190,18,60,.9);'
             + 'color:#fff;text-align:center;padding:12px;font-weight:900;border-radius:16px;';
-          body.appendChild(m0);
+          card.appendChild(m0);
         }
         var msg = (st === 'none') ? _ek(8753,'얼굴을 찾는 중…')
                 : (st === 'far')  ? _ek(8820,'조금 더 가까이')
@@ -157,6 +261,9 @@ function eyeFitLoop(){
           + '<div style="font-size:14px;line-height:1.5">' + msg + '</div>'
           + '<div style="font-size:11px;font-weight:700;opacity:.9">' + _ek(9959,'화면에서 30~40cm') + ' · ' + cm + 'cm</div>';
       } else if(m0) m0.remove();
+      /* ★ 잠금이 풀리면 반드시 되살린다 — 앞서 되돌리는 자리가 없어 계속 안 눌렸다 */
+      if(body){ body.style.pointerEvents = ''; body.style.opacity = '1'; }
+      card.style.pointerEvents = lock ? 'none' : '';
     }
 
     if(st === 'none')      box.textContent = _ek(8753,'🔍 얼굴을 찾는 중…');
@@ -193,44 +300,50 @@ window.eyeNext = function(){
   var head = document.getElementById('eyeTestHead');
   var body = document.getElementById('eyeTestBody');
   if(!head || !body) return;
-  if(r.at >= r.trials.length){ eyeFinish(); return; }
-  var t = r.trials[r.at];
-  var pct = Math.round(r.at / r.trials.length * 100);
+  if(r.at >= EYE_QUESTIONS.length){ eyeFinish(); return; }
+  var q = EYE_QUESTIONS[r.at];
+  var pct = Math.round(r.at / EYE_QUESTIONS.length * 100);
+
   head.innerHTML =
     '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">'
-    + '<span style="font-size:12px;font-weight:900;color:#0f766e;">' + _ek(9957,'시표 읽기') + ' · '
-    + (window._eye.side === 'L' ? _ek(9943,'왼쪽 눈') : _ek(9945,'오른쪽 눈')) + '</span>'
-    + '<span style="font-size:11px;color:#64748b;">' + (r.at+1) + ' / ' + r.trials.length + '</span></div>'
+    + '<span style="font-size:12px;font-weight:900;color:#0f766e;">' + _ek(9950,'시각 반응') + ' · Lv' + q.level + '</span>'
+    + '<span style="font-size:11px;color:#64748b;">' + (r.at+1) + ' / ' + EYE_QUESTIONS.length + '</span></div>'
     + '<div style="height:6px;border-radius:999px;background:#e2e8f0;margin-top:8px;overflow:hidden;">'
     + '<div style="height:100%;width:' + pct + '%;background:linear-gradient(90deg,#0d9488,#14b8a6);transition:width .25s;"></div></div>';
 
-  /* 란돌트 고리 — 단계가 오를수록 작아진다. 틈이 어느 쪽인지 답한다 */
-  var size = Math.max(14, 120 - r.at * 7);
-  var gap  = size * 0.2;
-  var dirs = ['up','right','down','left'];
-  var dir  = t.dir || dirs[Math.floor(Math.random()*4)];
-  t.dir = dir;
-  var rot  = { up:270, right:0, down:90, left:180 }[dir];
-  var half = size/2, ring = size*0.2;
-  var svg =
-    '<svg width="' + size + '" height="' + size + '" viewBox="0 0 100 100" style="display:block">'
-    + '<g transform="rotate(' + rot + ' 50 50)">'
-    + '<path d="M50 10 A40 40 0 1 1 49.9 10" fill="none" stroke="#0f172a" stroke-width="20"'
-    + ' stroke-dasharray="' + (2*Math.PI*40*0.86) + ' 999" transform="rotate(6 50 50)"/>'
-    + '</g></svg>';
-
   body.innerHTML =
-    '<div style="background:#fff;border:1px solid #d7eee8;border-radius:16px;padding:16px;margin-top:10px;'
-    + 'display:flex;flex-direction:column;align-items:center;gap:10px;">'
-    + '<div style="font-size:11px;color:#64748b;font-weight:700;">' + _ek(9958,'틈이 어느 쪽인가요?') + '</div>'
-    + svg + '</div>'
-    + '<div style="display:grid;grid-template-columns:repeat(3,56px);grid-auto-rows:56px;gap:0;margin-top:10px;justify-content:center;">'
-    + '<span></span>' + _eyeBtn('up','▲') + '<span></span>'
-    + _eyeBtn('left','◀') + '<span></span>' + _eyeBtn('right','▶')
-    + '<span></span>' + _eyeBtn('down','▼') + '<span></span>'
+    '<div id="eyeCard" style="background:#fff;border:1px solid #d7eee8;border-radius:16px;padding:26px 16px;margin-top:12px;text-align:center;position:relative;overflow:hidden;">'
+    + '<div style="font-size:12px;font-weight:800;color:#0f766e;">' + q.q + '</div>'
+    + '<div style="margin-top:18px;min-height:96px;display:flex;align-items:center;justify-content:center;">' + q.emoji + '</div>'
+    + '<div id="eyeLockVeil" style="display:none;position:absolute;inset:0;background:rgba(220,38,38,.94);'
+    + 'align-items:center;justify-content:center;flex-direction:column;gap:6px;color:#fff;padding:16px;">'
+    + '<div style="font-size:26px;line-height:1;">📏</div>'
+    + '<div id="eyeLockMsg" style="font-size:13px;font-weight:900;"></div></div>'
+    + '</div>'
+    + '<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:12px;">'
+    + q.opts.map(function(o, i){
+        return '<button type="button" onclick="eyeAnswer(' + i + ')" '
+          + 'style="padding:16px 12px;border-radius:14px;border:1.5px solid #d7eee8;background:#fff;'
+          + 'cursor:pointer;font-family:inherit;text-align:left;min-height:56px;display:flex;align-items:center;gap:9px;">'
+          + '<span style="flex:none;width:22px;height:22px;border-radius:999px;background:#f0fdf9;color:#0f766e;'
+          + 'font-size:11px;font-weight:900;display:inline-flex;align-items:center;justify-content:center;">'
+          + String.fromCharCode(65+i) + '</span>'
+          + '<span style="flex:1;min-width:0;font-size:14px;color:#0f172a;font-weight:700;line-height:1.5;'
+          + 'overflow-wrap:anywhere;">' + o + '</span></button>';
+      }).join('')
     + '</div>';
   r.tq = Date.now();
 };
+
+window.eyeAnswer = function(i){
+  var r = window._eye.run; if(!r) return;
+  if(window._eye.locked) return;              /* 거리가 벗어나면 답을 못 한다 */
+  var q = EYE_QUESTIONS[r.at];
+  r.answers.push({ i:i, ok:(i === q.correct), ms:(Date.now() - r.tq), level:q.level, cat:q.cat });
+  r.at++;
+  eyeNext();
+};
+
 
 function _eyeBtn(d, ch){
   return '<button type="button" onclick="eyeAnswer(\'' + d + '\')" '
