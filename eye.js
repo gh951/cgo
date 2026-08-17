@@ -245,8 +245,11 @@ function eyeFitLoop(){
     else if(cm < 22) st = 'near';      /* 가깝다 → 멀리 가세요 */
     else st = 'ok';                    /* 30~40cm 표준 */
 
-    var lock = (st !== 'ok');
+    /* ★ 얼굴을 못 찾을 때는 잠그지 않는다 — 못 찾아 답이 영영 안 눌렸다.
+     거리가 확실히 벗어난 때(가깝다·멀다)만 막는다. */
+  var lock = (st === 'far' || st === 'near');
     window._eye.locked = lock;
+  window._eye.fitState = st;
 
     var body = document.getElementById('eyeTestBody');
     var card = body && body.firstElementChild;   /* 시표 카드만 덮는다 — 화살표는 살려 둔다 */
@@ -345,7 +348,9 @@ window.eyeNext = function(){
 
 window.eyeAnswer = function(i){
   var r = window._eye.run; if(!r) return;
-  if(window._eye.locked) return;              /* 거리가 벗어나면 답을 못 한다 */
+  /* ★ 거리가 확실히 벗어난 때만 막는다. 얼굴을 못 찾는 것으로는 막지 않는다. */
+  var _st = window._eye.fitState;
+  if(_st === 'far' || _st === 'near') return;
   var q = EYE_QUESTIONS[r.at];
   r.answers.push({ i:i, ok:(i === q.correct), ms:(Date.now() - r.tq), level:q.level, cat:q.cat });
   r.at++;
