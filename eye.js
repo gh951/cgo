@@ -4,10 +4,47 @@ var EYE_SIZE_BY_LEVEL = {
     3: {px: 32, vision: 0.32, label: '중간'},
     4: {px: 20, vision: 0.5, label: '작음'},
     5: {px: 14, vision: 0.8, label: '매우 작음'}
-  };;
+  };
+
+/* ══ 얼굴이 자 대신이다 — 신용카드를 댈 필요가 없다 ══
+   두 눈동자 사이는 평균 63mm 로 사람마다 거의 변하지 않는다.
+   카메라에 잡힌 눈 사이 화소를 63mm 로 나누면 그 화면의 실제 크기가 나온다.
+   AR 메이크업이 얼굴 좌표로 자리를 잡는 것과 같은 방식이다. */
+window.EYE_IPD_MM = 63;
+
+window.eyeMmPerPx = function(){
+  try{
+    var lms = (window._eyeLms) || (window._c24 && window._c24._faceLms);
+    if(lms && lms.length > 400){
+      var L = lms[468] || lms[33], R = lms[473] || lms[263];
+      if(L && R){
+        var v = document.getElementById('eye-video');
+        var vw = (v && v.videoWidth) || 640;
+        var dx = Math.abs(L.x - R.x) * vw;
+        if(dx > 20){
+          var camMm = window.EYE_IPD_MM / dx;
+          var scr = window.innerWidth || 360;
+          return camMm * (vw / scr) * 0.92;
+        }
+      }
+    }
+  }catch(e){}
+  try{ return 25.4 / ((window.devicePixelRatio || 2) * 96); }catch(e){}
+  return 0.106;
+};
+
+/* 목표 시력에서 글자 크기를 거꾸로 구한다.
+   시력 1.0 = 40cm 에서 5분각 = 글자 높이 2.9mm */
+window.eyeLevelPx = function(level){
+  var vis = (EYE_SIZE_BY_LEVEL[level] || {}).vision || 0.5;
+  var mm = 2.9 / vis;
+  var px = Math.round(mm / window.eyeMmPerPx());
+  return Math.max(8, Math.min(220, px));
+};
+;
 
 function _eyeSized(level, content, type){
-    var sz = EYE_SIZE_BY_LEVEL[level].px;
+    var sz = (window.eyeLevelPx ? window.eyeLevelPx(level) : EYE_SIZE_BY_LEVEL[level].px);
     if(type === 'shape' || type === 'symbol' || type === 'direction'){
       return '<span style="font-size:' + sz + 'px;font-weight:900;color:#134e4a;line-height:1;display:inline-block;">' + content + '</span>';
     } else if(type === 'color'){
