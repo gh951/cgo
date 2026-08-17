@@ -332,7 +332,7 @@ window.eyeNowCm = function(){
 window.eyeNext = function(){
   var r = window._eye.run; if(!r) return;
   if(r.done || r.wrongAt2){ eyeFinish(); return; }
-  if(r.step >= 14){ eyeFinish(); return; }
+  if(r.step >= 24){ eyeFinish(); return; }
 
   var dir = Math.floor(Math.random() * 4);
   r.cur = { vi: r.vi, dir: dir, t0: Date.now() };
@@ -357,7 +357,7 @@ window.eyeDraw = function(){
     + '<span style="font-size:11px;color:#64748b;">' + r.step + ' / 14'
     + (cm ? ' · ' + cm + 'cm' : '') + '</span></div>'
     + '<div style="height:6px;border-radius:999px;background:#e2e8f0;margin-top:7px;overflow:hidden;">'
-    + '<div style="height:100%;width:' + Math.round(r.step/14*100) + '%;background:linear-gradient(90deg,#0d9488,#14b8a6);transition:width .25s;"></div></div>';
+    + '<div style="height:100%;width:' + Math.round(r.step/24*100) + '%;background:linear-gradient(90deg,#0d9488,#14b8a6);transition:width .25s;"></div></div>';
 
   body.innerHTML =
     '<div style="background:#fff;border:1px solid #d7eee8;border-radius:16px;'
@@ -390,13 +390,24 @@ window.eyeAnswer = function(i){
   var ok = (i === r.cur.dir);
   r.answers.push({ vi: r.cur.vi, ok: ok, ms: Date.now() - r.cur.t0, cm: window.eyeNowCm() });
 
-  if(ok){
+  /* ★ 한 단계에 3문항 · 2개 맞히면 통과 (안과 방식).
+     한 문항으로 올리면 네 개 중 하나를 찍어도 통과해 값이 흔들렸다. */
+  if(!r.lv || r.lv.vi !== r.cur.vi){ r.lv = { vi:r.cur.vi, n:0, ok:0 }; }
+  r.lv.n++;
+  if(ok) r.lv.ok++;
+
+  var pass = (r.lv.ok >= 2);
+  var fail = ((r.lv.n - r.lv.ok) >= 2);
+
+  if(pass){
     r.best = Math.max(r.best, r.cur.vi);
     r.miss = 0;
+    r.lv = null;
     if(r.vi < EYE_VIS.length - 1) r.vi++;
     else { r.done = true; }
-  }else{
+  }else if(fail){
     r.miss++;
+    r.lv = null;
     if(r.miss >= 2){ r.wrongAt2 = true; }
     else if(r.vi > 0) r.vi--;
   }
