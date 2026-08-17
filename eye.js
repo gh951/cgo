@@ -359,7 +359,7 @@ window.eyeDraw = function(){
 
   body.innerHTML =
     '<div style="background:#fff;border:1px solid #d7eee8;border-radius:16px;'
-    + 'height:38vh;min-height:150px;display:flex;align-items:center;justify-content:center;margin-top:10px;">'
+    + 'height:22vh;min-height:110px;display:flex;align-items:center;justify-content:center;margin-top:10px;">'
     + '<span id="eye-glyph" style="font-size:' + px + 'px;font-weight:900;color:#0f172a;line-height:1;">'
     + EYE_DIRS[r.cur.dir] + '</span></div>'
     + '<div data-k="9960" style="font-size:11px;color:#64748b;text-align:center;margin-top:9px;"></div>'
