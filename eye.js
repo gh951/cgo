@@ -607,10 +607,12 @@ window.eyeBlinkResult = function(){
       if(old) old.style.display = 'none';
       return;
     }
+    /* ★ 시각을 재지 않는다 — 지금 눈·코·입 좌표가 있으면 그것으로 충분하다.
+       시각을 보다가 그 시각을 못 적으면 얼굴이 보여도 잠긴 채였다. */
     var fresh = false;
     try{
-      fresh = !!(window._eyeCam && window._eyeCam.lastSeen
-              && (Date.now() - window._eyeCam.lastSeen) < 900);
+      var lms = window._eyeLms;
+      fresh = !!(lms && lms.length > 400 && lms[33] && lms[133] && lms[1] && lms[13]);
     }catch(_){}
     var el = box(); if(!el) return;
     if(fresh){ el.style.display = 'none'; return; }
