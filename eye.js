@@ -204,6 +204,7 @@ function eyeFitLoop(){
     window._eye.cm = cm;
 
     var st;
+    window._eyeFit = { skin: skinRatio, cm: cm, face: hasFace, at: Date.now() };
     if(!hasFace) st = 'none';
     else if(cm > 50) st = 'far';       /* 멀다 → 가까이 오세요 */
     else if(cm < 22) st = 'near';      /* 가깝다 → 멀리 가세요 */
@@ -313,8 +314,8 @@ window.eyeMmToPx = function(mm){ return mm * (96 / 25.4); };
 function _eSz(lv, c, type){
   var sz = window.eyeMmToPx(window.EYE_LV[lv].mm);
   /* 채움 비율로 보정 — 얼굴이 기준 (메뉴얼) */
-  try{ var f = (window.cgoFaceFill && window.cgoFaceFill(window._eyeLms)) || 0;
-       if(f > 0.05) sz = Math.round(sz * Math.max(0.7, Math.min(1.6, 0.45 / f))); }catch(_){}
+  try{ var _f = window._eyeFit;
+       if(_f && _f.face) sz = Math.round(sz * Math.max(0.6, Math.min(1.8, _f.cm / 35))); }catch(_){}
   if(type==='color') return '<span style="display:inline-block;width:'+sz+'px;height:'+sz+'px;background:'+c+';border-radius:'+(sz/10)+'px;"></span>';
   return '<span style="font-size:'+sz+'px;font-weight:900;color:#0f172a;line-height:1;display:inline-block;">'+c+'</span>';
 }
@@ -355,9 +356,8 @@ window.EYE_DIRS = ['↑','→','↓','←'];
 window.eyeSizeFor = function(vis){
   var mm = 2.9 / vis;                       /* 40cm 기준 높이 */
   /* ★ 채움 비율에 비례해 키운다 — cm 추정을 버렸다 (메뉴얼: 얼굴이 기준) */
-  var fill = 0; try{ var lm=_eyeGetLms(); fill = (window.cgoFaceFill&&lm)?cgoFaceFill(lm):0; }catch(_){}
-  var ref = 0.45;
-  if(fill) mm = mm * (ref / Math.max(0.15, Math.min(0.90, fill)));                      /* 거리에 비례해 키운다 — 각도가 같아진다 */
+  var _f = window._eyeFit;
+  if(_f && _f.face) mm = mm * Math.max(0.6, Math.min(1.8, _f.cm / 35));                      /* 거리에 비례해 키운다 — 각도가 같아진다 */
   var px = Math.round(mm / window.eyeMmPerPx());
   return Math.max(9, Math.min(260, px));
 };
@@ -405,7 +405,7 @@ window.eyeDraw = function(){
   head.innerHTML =
     '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">'
     + '<span style="font-size:12px;font-weight:900;color:#0f766e;">'
-    + (r.eye === 'L' ? _ek(9930,'왼쪽 눈') : _ek(9931,'오른쪽 눈')) + '</span>'
+    + (r.eye === 'L' ? _ek(10196,'왼쪽 눈') : _ek(10197,'오른쪽 눈')) + '</span>'
     + '<span style="font-size:11px;color:#64748b;">' + (r.at + 1) + ' / ' + r.qs.length + '</span></div>'
     + '<div style="height:6px;border-radius:999px;background:#e2e8f0;margin-top:7px;overflow:hidden;">'
     + '<div style="height:100%;width:' + Math.round((r.at + 1) / r.qs.length * 100) + '%;background:linear-gradient(90deg,#0d9488,#14b8a6);transition:width .25s;"></div></div>';
@@ -413,9 +413,9 @@ window.eyeDraw = function(){
   /* ★ 문제와 보기 글자도 단계에 따라 작아진다 — 글자 자체가 시표다.
      도형만 작아지면 "삼각형"이라는 큰 글자를 읽고 맞힐 수 있어 시력이 아니라 짐작이 된다. */
   var _lvpx = q.lv ? window.eyeMmToPx(window.EYE_LV[q.lv].mm) : 40;
-  var _fill = 0;
-  try{ _fill = (window.cgoFaceFill && window.cgoFaceFill(_eyeGetLms())) || 0; }catch(_){}
-  var _adj = (_fill > 0.05) ? Math.max(0.7, Math.min(1.6, 0.45 / _fill)) : 1;
+  var _adj = 1;
+  try{ var _ff = window._eyeFit;
+       if(_ff && _ff.face) _adj = Math.max(0.6, Math.min(1.8, _ff.cm / 35)); }catch(_){}
   var qpx = q.lv ? Math.max(11, Math.round(_lvpx * 0.42 * _adj)) : 14;
   var opx = q.lv ? Math.max(12, Math.round(_lvpx * 0.34 * _adj)) : 15;
 
@@ -461,8 +461,8 @@ window.eyeAnswer = function(i){
   /* 이 문항을 풀 때 얼굴이 보였는가 — 화면 표시(딱 맞아요)와 같은 좌표를 본다.
      lastSeen 을 보던 것이 오류였다 — 그 시각을 적는 곳이 없어 늘 0이었다. */
   try{ if(!window._eyeCam) window._eyeCam = {};
-       var _lm = _eyeGetLms();
-       var _fr = !!(_lm && _lm.length > 100);
+       var _f = window._eyeFit;
+       var _fr = !!(_f && _f.face && (Date.now() - _f.at) < 2500);
        window._eyeCam.faceFrames = (window._eyeCam.faceFrames || 0) + (_fr ? 1 : 0); }catch(_){}
   var ok = (q.cat === 'fixation') ? true : (i === q.ok);
   r.answers.push({ lv:q.lv, cat:q.cat, ok:ok, ms:Date.now() - q.t0 });
@@ -500,9 +500,9 @@ window.eyeFinish = function(){
       '<div style="background:#fff1f2;border:1px solid #fecdd3;border-radius:16px;padding:22px 18px;margin-top:13px;text-align:center;">'
       + '<div style="font-size:30px;line-height:1;">📷</div>'
       + '<div style="font-size:14px;font-weight:900;color:#be123c;margin-top:10px;line-height:1.5;">'
-      + _ek(9998,'얼굴이 한 번도 잡히지 않아 결과를 낼 수 없습니다') + '</div>'
+      + _ek(10194,'얼굴이 한 번도 잡히지 않아 결과를 낼 수 없습니다') + '</div>'
       + '<div style="font-size:11.5px;color:#475569;margin-top:8px;line-height:1.75;">'
-      + _ek(9999,'거리를 알 수 없으면 글자 크기가 뜻을 잃습니다. 카메라를 허용하고 얼굴이 보이는 상태에서 다시 재 주세요.') + '</div>'
+      + _ek(10195,'거리를 알 수 없으면 글자 크기가 뜻을 잃습니다. 카메라를 허용하고 얼굴이 보이는 상태에서 다시 재 주세요.') + '</div>'
       + '<button type="button" onclick="eyeTestClose()" style="width:100%;margin-top:16px;padding:14px;border:0;'
       + 'border-radius:999px;background:#0f172a;color:#fff;font-size:13.5px;font-weight:900;cursor:pointer;font-family:inherit;">'
       + _ek(9725,'✓ 닫기') + '</button></div>';
@@ -529,7 +529,7 @@ window.eyeFinish = function(){
   var head = document.getElementById('eyeTestHead');
   var body = document.getElementById('eyeTestBody');
   if(head) head.innerHTML = '<div style="font-size:12px;font-weight:900;color:#0f766e;">'
-    + (r.eye === 'L' ? _ek(9930,'왼쪽 눈') : _ek(9931,'오른쪽 눈')) + ' · ' + _ek(9720,'검사 결과') + '</div>';
+    + (r.eye === 'L' ? _ek(10196,'왼쪽 눈') : _ek(10197,'오른쪽 눈')) + ' · ' + _ek(9720,'검사 결과') + '</div>';
   if(!body) return;
   var _lvi = window.EYE_LV[passLv] || null;
   var _show = _lvi ? _lvi.show : '—';
@@ -628,18 +628,16 @@ window.eyeDistGuard = function(){
   if(!box) return;
   var veil = document.getElementById('eye-veil');
 
-  /* ★ 채움 비율만 쓴다 — cm 추정은 폰마다 렌즈 화각이 달라 못 믿는다 (메뉴얼) */
-  var st = 'ok', fill = 0;
-  try{
-    var lms = _eyeGetLms();
-    if(lms && window.cgoFaceFill){
-      fill = window.cgoFaceFill(lms) || 0;
-      if(fill > 0.02){
-        if(fill > 0.62) st = 'near';
-        else if(fill < 0.30) st = 'far';
-      }
-    }
-  }catch(e){}
+  /* ★ 화면 표시(딱 맞아요)와 같은 잣대를 쓴다 — 살색 비율.
+     FaceMesh 좌표를 보던 것이 오류였다. 눈 검사에서는 그 좌표가 늘 비어 있다. */
+  var f = window._eyeFit;
+  var fresh = f && (Date.now() - f.at) < 2500;
+  var st = 'ok';
+  if(fresh){
+    if(!f.face) st = 'none';
+    else if(f.cm > 50) st = 'far';
+    else if(f.cm < 22) st = 'near';
+  }
 
   if(st === 'ok'){ if(veil) veil.remove(); return; }
 
@@ -654,12 +652,14 @@ window.eyeDistGuard = function(){
   veil.style.cssText = 'position:absolute;left:0;right:0;top:0;bottom:0;z-index:40;display:flex;'
     + 'flex-direction:column;align-items:center;justify-content:center;background:rgba(190,18,60,.96);'
     + 'color:#fff;border-radius:16px;text-align:center;padding:20px;';
-  veil.innerHTML = '<div style="font-size:34px;line-height:1">📏</div>'
+  veil.innerHTML = '<div style="font-size:34px;line-height:1">' + (st === 'none' ? '📷' : '📏') + '</div>'
     + '<div style="font-size:15px;font-weight:900;margin-top:10px;">'
-    + (st === 'near' ? _ek(8821,'조금 더 멀리') : _ek(8820,'조금 더 가까이')) + '</div>'
+    + (st === 'none' ? _ek(10193,'얼굴이 보이지 않습니다')
+       : st === 'near' ? _ek(8821,'조금 더 멀리') : _ek(8820,'조금 더 가까이')) + '</div>'
     + '<div style="font-size:12px;margin-top:8px;opacity:.92;line-height:1.6;">'
-    + _ek(9959,'얼굴이 화면에 알맞게 들어와야 정확합니다') + '</div>';
+    + _ek(9959,'얼굴이 화면에 알맞게 들어와야 정확합니다') + (fresh && f.face ? ' · ' + f.cm + 'cm' : '') + '</div>';
 };
+
 
 /* ══ ① 눈동자 추적 + 깜빡임 분석 ══
    검사 중 카메라가 이미 돌고 있으니, 그 화면에서 눈 흔들림과 깜빡임을 함께 센다. */
@@ -739,8 +739,9 @@ window.eyeBlinkResult = function(){
     try{ cm = (window.eyeNowCm && eyeNowCm()) || 0; }catch(_){}
     /* 거리를 아직 모르면 막지 않는다 — 막아 두면 아무것도 못 한다 */
     /* 팔이 짧아도 되게 넓힌다 — 20cm는 사람이 맞추기 어려웠다 */
-    var fill = 0; try{ var lm=_eyeGetLms(); fill = (window.cgoFaceFill&&lm)?cgoFaceFill(lm):0; }catch(_){}
-    var ok = (!fill) || (fill >= 0.30 && fill <= 0.72);
+    var _f2 = window._eyeFit;
+  var _fr2 = _f2 && (Date.now() - _f2.at) < 2500;
+  var ok = (!_fr2) || (_f2.face && _f2.cm >= 22 && _f2.cm <= 50);
     var el = box(); if(!el) return;
     if(ok){
       el.style.display = 'none';
@@ -873,6 +874,7 @@ window.eyeBegin = function(m){
   }
   try{ window._eyeCam = window._eyeCam || {}; window._eyeCam.faceFrames = 0; }catch(_){}
   eyeTabs();
+  try{ if(window.eyeGuardOn) eyeGuardOn(); }catch(_){}
   if(m === 'asti') eyeAstiDraw();
   else if(m === 'color') eyeColorDraw();
   else if(m === 'focus') eyeFocusDraw();
@@ -888,7 +890,7 @@ window.eyeAstiDraw = function(){
 
   head.innerHTML = '<div style="display:flex;align-items:center;justify-content:space-between;">'
     + '<span style="font-size:12px;font-weight:900;color:#0f766e;">'
-    + (r.eye === 'L' ? _ek(9930,'왼쪽 눈') : _ek(9931,'오른쪽 눈')) + '</span>'
+    + (r.eye === 'L' ? _ek(10196,'왼쪽 눈') : _ek(10197,'오른쪽 눈')) + '</span>'
     + '<span data-k="10131" style="font-size:11px;color:#64748b;"></span></div>';
 
   /* 12방향 부챗살 */
@@ -930,8 +932,8 @@ window.eyeAstiDraw = function(){
 window.eyeAstiPick = function(deg){
   var r = window._eye.run; if(!r) return;
   /* 얼굴이 보였는지 센다 */
-  try{ var _lm = _eyeGetLms();
-       if(_lm && _lm.length > 100) window._eyeCam.faceFrames = (window._eyeCam.faceFrames||0) + 1; }catch(_){}
+  try{ var _f = window._eyeFit;
+       if(_f && _f.face && (Date.now() - _f.at) < 2500) window._eyeCam.faceFrames = (window._eyeCam.faceFrames||0) + 1; }catch(_){}
   r.axis = deg;
   window._eyeDone.asti = { axis: deg };
   eyeResultAsti();
@@ -1030,8 +1032,8 @@ window.eyeColorDraw = function(){
 
 window.eyeColorPick = function(i){
   var r = window._eye.run; if(!r) return;
-  try{ var _lm = _eyeGetLms();
-       if(_lm && _lm.length > 100) window._eyeCam.faceFrames = (window._eyeCam.faceFrames||0) + 1; }catch(_){}
+  try{ var _f = window._eyeFit;
+       if(_f && _f.face && (Date.now() - _f.at) < 2500) window._eyeCam.faceFrames = (window._eyeCam.faceFrames||0) + 1; }catch(_){}
   var q = r.qs[r.at];
   var ok = (i >= 0 && q.ov[i] === q.n);
   r.answers.push({ ok: ok });
@@ -1086,8 +1088,8 @@ window.eyeFocusDraw = function(){
 
 window.eyeFocusPick = function(i){
   var r = window._eye.run; if(!r || !r.cur) return;
-  try{ var _lm = _eyeGetLms();
-       if(_lm && _lm.length > 100) window._eyeCam.faceFrames = (window._eyeCam.faceFrames||0) + 1; }catch(_){}
+  try{ var _f = window._eyeFit;
+       if(_f && _f.face && (Date.now() - _f.at) < 2500) window._eyeCam.faceFrames = (window._eyeCam.faceFrames||0) + 1; }catch(_){}
   r.answers.push({ ok: (r.cur.opts[i] === r.cur.ch) });
   r.at++;
   eyeFocusDraw();
@@ -1112,8 +1114,8 @@ function _eyeFaceOk(){
 function _eyeNoFace(body){
   body.innerHTML = '<div style="background:#fff1f2;border:1px solid #fecdd3;border-radius:16px;padding:22px 18px;margin-top:13px;text-align:center;">'
     + '<div style="font-size:30px;line-height:1;">📷</div>'
-    + '<div data-k="9998" style="font-size:14px;font-weight:900;color:#be123c;margin-top:10px;line-height:1.5;"></div>'
-    + '<div data-k="9999" style="font-size:11.5px;color:#475569;margin-top:8px;line-height:1.75;"></div>'
+    + '<div data-k="10194" style="font-size:14px;font-weight:900;color:#be123c;margin-top:10px;line-height:1.5;"></div>'
+    + '<div data-k="10195" style="font-size:11.5px;color:#475569;margin-top:8px;line-height:1.75;"></div>'
     + _eyeAgain() + '</div>';
   try{ if(window.CGO_T) CGO_T.paint(body); }catch(e){}
 }
