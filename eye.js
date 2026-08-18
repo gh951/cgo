@@ -485,6 +485,7 @@ window.eyeDraw = function(){
     + glyph + '</div>' + opts;
 
   try{ if(window.CGO_T) CGO_T.paint(body); }catch(e){}
+  try{ var _v0 = document.getElementById('eye-veil'); if(_v0) _v0.remove(); }catch(e){}
   try{ if(window.eyeDistGuard) eyeDistGuard(); }catch(e){}
 
   /* 시선 고정·깜빡임 문항은 시간이 지나면 저절로 넘어간다 */
@@ -966,6 +967,7 @@ window.eyeAstiDraw = function(){
     + 'background:#f8fafc;color:#64748b;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;"></button>';
 
   try{ if(window.CGO_T) CGO_T.paint(body); }catch(e){}
+  try{ var _v0 = document.getElementById('eye-veil'); if(_v0) _v0.remove(); }catch(e){}
   try{ if(window.eyeDistGuard) eyeDistGuard(); }catch(e){}
 };
 
@@ -1067,6 +1069,7 @@ window.eyeColorDraw = function(){
     + 'background:#f8fafc;color:#64748b;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;"></button>';
 
   try{ if(window.CGO_T) CGO_T.paint(body); }catch(e){}
+  try{ var _v0 = document.getElementById('eye-veil'); if(_v0) _v0.remove(); }catch(e){}
   try{ if(window.eyeDistGuard) eyeDistGuard(); }catch(e){}
 };
 
