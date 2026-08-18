@@ -24,22 +24,36 @@
   //  거리 30~40cm 일정 유지 시 진짜 시력 측정 (박입 114 거리 측정 동기)
 
   // 시력 → 픽셀 매핑 (3음각 문자 기준, 35cm 거리 환산)
+  /* ★ 10단계 — 계단 0.2 → 0.1 아래. 몽골 시력(2.0)까지 담는다.
+     크기를 화소가 아니라 mm 로 둔다 — 폰마다 실제 크기가 다르기 때문이다.
+     35cm 기준 5분각: 시력 v 의 문자 높이 = 5.09 / v (mm) */
   var EYE_SIZE_BY_LEVEL = {
-    1: {px: 80, vision: 0.1, label: '매우 큼'},
-    2: {px: 50, vision: 0.2, label: '큼'},
-    3: {px: 32, vision: 0.32, label: '중간'},
-    4: {px: 20, vision: 0.5, label: '작음'},
-    5: {px: 14, vision: 0.8, label: '매우 작음'}
+    1:  {mm:50.9,  vision:0.1,  show:'1.0',  label:'매우 큼'},
+    2:  {mm:25.5,  vision:0.2,  show:'2.0',  label:'큼'},
+    3:  {mm:15.9,  vision:0.32, show:'3.0',  label:'중간'},
+    4:  {mm:10.2,  vision:0.5,  show:'5.0',  label:'작음'},
+    5:  {mm:8.08,  vision:0.63, show:'6.3',  label:'조금 더 작음'},
+    6:  {mm:6.36,  vision:0.8,  show:'8.0',  label:'매우 작음'},
+    7:  {mm:5.09,  vision:1.0,  show:'10.0', label:'아주 작음'},
+    8:  {mm:4.07,  vision:1.25, show:'12.5', label:'극히 작음'},
+    9:  {mm:3.18,  vision:1.6,  show:'16.0', label:'최상'},
+    10: {mm:2.55,  vision:2.0,  show:'20.0', label:'최상 (초원의 눈)'}
   };
+  /* mm 를 그 폰의 실제 화소로 옮기고, 그 순간의 거리에 맞춰 키운다 */
+  window._eyePxPublic = function(level){ return _eyePx(level); };
+  function _eyePx(level){
+    var mm = EYE_SIZE_BY_LEVEL[level].mm;
+    var cm = null;
+    try{ cm = window.eyeRulerCm ? eyeRulerCm() : null; }catch(_){}
+    if(cm) mm = mm * (cm / 35);          /* 거리에 비례 — 보이는 각도를 늘 같게 */
+    var px = (window.eyeMmPx ? eyeMmPx(mm) : mm * (96/25.4));
+    return Math.max(6, Math.round(px));
+  }
+
 
   // 시력 영역만 크기 가변 (도형/색상/숫자/방향). 시선 고정 등은 고정.
   function _eyeSized(level, content, type){
-    var sz = EYE_SIZE_BY_LEVEL[level].px;
-    /* ★ 자가 있으면 그 거리에 맞춰 크기를 바꾼다 — 35cm 기준, 멀면 크게 가까우면 작게 */
-    try{
-      var _cm = window.eyeRulerCm ? eyeRulerCm() : null;
-      if(_cm) sz = Math.round(sz * Math.max(0.55, Math.min(2.2, _cm / 35)));
-    }catch(_){}
+    var sz = _eyePx(level);
     if(type === 'shape' || type === 'symbol' || type === 'direction'){
       return '<span style="font-size:' + sz + 'px;font-weight:900;color:#134e4a;line-height:1;display:inline-block;">' + content + '</span>';
     } else if(type === 'color'){
@@ -53,94 +67,30 @@
     return content;
   }
 
-  var EYE_QUESTIONS = [
-    // ━━━ Level 1 (시력 0.1 · 80px) 매우 큼 · 5문항 ━━━
-    {cat:'shape', level:1, q:'화면 도형은?',
-     emoji: _eyeSized(1, '▲', 'shape'),
-     opts:['삼각형','사각형','원','오각형'], correct:0},
-    {cat:'color', level:1, q:'화면 색은?',
-     emoji: _eyeSized(1, '#e74c3c', 'color'),
-     opts:['빨강','파랑','초록','노랑'], correct:0},
-    {cat:'symbol', level:1, q:'화면 숫자는?',
-     emoji: _eyeSized(1, '7', 'symbol'),
-     opts:['1','7','9','4'], correct:1},
-    {cat:'direction', level:1, q:'화살표 방향은?',
-     emoji: _eyeSized(1, '↑', 'direction'),
-     opts:['↑ 위','↓ 아래','← 왼쪽','→ 오른쪽'], correct:0},
-    {cat:'shape', level:1, q:'화면 도형은?',
-     emoji: _eyeSized(1, '●', 'shape'),
-     opts:['삼각형','사각형','원','별'], correct:2},
+  var EYE_QUESTIONS = (function(){
+    var out = [];
+    /* 시력 — 란돌트 고리 10단계 × 3문항 (국제 규격) */
+    for(var lv = 1; lv <= 10; lv++){
+      for(var k = 0; k < 3; k++){
+        var di = Math.floor(Math.random() * 8);
+        out.push({ cat:'direction', level:lv, landolt:di,
+          q:'란돌트', emoji:'', opts:window.EYE_LANDOLT_DIRS.slice(), correct:di });
+      }
+    }
+    /* 색 구분 — 시력 판정에는 안 들어가고 따로 보여준다 */
+    out.push({cat:'color', level:0, emoji:_eyeSized(3,'#e74c3c','color'), opts:['빨강','파랑','초록','노랑'], correct:0});
+    out.push({cat:'color', level:0, emoji:_eyeSized(3,'#3498db','color'), opts:['빨강','파랑','초록','노랑'], correct:1});
+    out.push({cat:'color', level:0, emoji:_eyeSized(3,'#27ae60','color'), opts:['빨강','파랑','초록','노랑'], correct:2});
+    /* 카메라 측정 — 시선 고정·깜빡임 */
+    out.push({cat:'fixation', level:0, q:'화면 중앙의 점을 3초간 응시하세요',
+      emoji:'<span style="font-size:60px;color:#0f766e;display:inline-block;">●</span>',
+      opts:[], correct:0, autoTimer:3000, hint:'카메라가 눈동자 안정성을 측정합니다'});
+    out.push({cat:'fixation', level:0, q:'천천히 3회 깜빡이세요',
+      emoji:'<span style="font-size:60px;">👁️</span>',
+      opts:[], correct:0, autoTimer:4000, hint:'카메라가 깜빡임 횟수를 측정합니다'});
+    return out;
+  })();
 
-    // ━━━ Level 2 (시력 0.2 · 50px) 큼 · 5문항 ━━━
-    {cat:'shape', level:2, q:'화면 도형은?',
-     emoji: _eyeSized(2, '■', 'shape'),
-     opts:['삼각형','사각형','원','육각형'], correct:1},
-    {cat:'color', level:2, q:'화면 색은?',
-     emoji: _eyeSized(2, '#3498db', 'color'),
-     opts:['빨강','파랑','초록','노랑'], correct:1},
-    {cat:'symbol', level:2, q:'화면 숫자는?',
-     emoji: _eyeSized(2, '3', 'symbol'),
-     opts:['8','3','5','9'], correct:1},
-    {cat:'direction', level:2, q:'화살표 방향은?',
-     emoji: _eyeSized(2, '→', 'direction'),
-     opts:['↑ 위','↓ 아래','← 왼쪽','→ 오른쪽'], correct:3},
-    {cat:'symbol', level:2, q:'화면 글자는?',
-     emoji: _eyeSized(2, '한', 'symbol'),
-     opts:['한','할','함','합'], correct:0},
-
-    // ━━━ Level 3 (시력 0.32 · 32px) 중간 · 5문항 ━━━
-    {cat:'shape', level:3, q:'화면 도형은?',
-     emoji: _eyeSized(3, '◆', 'shape'),
-     opts:['삼각형','마름모','원','별'], correct:1},
-    {cat:'color', level:3, q:'화면 색은?',
-     emoji: _eyeSized(3, '#27ae60', 'color'),
-     opts:['빨강','파랑','초록','노랑'], correct:2},
-    {cat:'symbol', level:3, q:'화면 숫자는?',
-     emoji: _eyeSized(3, '5', 'symbol'),
-     opts:['2','5','6','8'], correct:1},
-    {cat:'direction', level:3, q:'화살표 방향은?',
-     emoji: _eyeSized(3, '←', 'direction'),
-     opts:['↑ 위','↓ 아래','← 왼쪽','→ 오른쪽'], correct:2},
-    {cat:'symbol', level:3, q:'화면 글자는?',
-     emoji: _eyeSized(3, '동', 'symbol'),
-     opts:['동','등','독','돌'], correct:0},
-
-    // ━━━ Level 4 (시력 0.5 · 20px) 작음 · 5문항 ━━━
-    {cat:'shape', level:4, q:'화면 도형은?',
-     emoji: _eyeSized(4, '★', 'shape'),
-     opts:['삼각형','사각형','별','원'], correct:2},
-    {cat:'color', level:4, q:'화면 색은?',
-     emoji: _eyeSized(4, '#9b59b6', 'color'),
-     opts:['보라','파랑','분홍','회색'], correct:0},
-    {cat:'symbol', level:4, q:'화면 숫자는?',
-     emoji: _eyeSized(4, '8', 'symbol'),
-     opts:['3','6','8','9'], correct:2},
-    {cat:'direction', level:4, q:'화살표 방향은?',
-     emoji: _eyeSized(4, '↓', 'direction'),
-     opts:['↑ 위','↓ 아래','← 왼쪽','→ 오른쪽'], correct:1},
-    {cat:'symbol', level:4, q:'화면 글자는?',
-     emoji: _eyeSized(4, '서', 'symbol'),
-     opts:['서','석','선','설'], correct:0},
-
-    // ━━━ Level 5 (시력 0.8 · 14px) 매우 작음 · 3문항 ━━━
-    {cat:'shape', level:5, q:'화면 도형은?',
-     emoji: _eyeSized(5, '▼', 'shape'),
-     opts:['삼각형 위','삼각형 아래','마름모','사각형'], correct:1},
-    {cat:'symbol', level:5, q:'화면 숫자는?',
-     emoji: _eyeSized(5, '4', 'symbol'),
-     opts:['1','4','7','9'], correct:1},
-    {cat:'direction', level:5, q:'화살표 방향은?',
-     emoji: _eyeSized(5, '↗', 'direction'),
-     opts:['↗ 오른쪽 위','↘ 오른쪽 아래','↖ 왼쪽 위','↙ 왼쪽 아래'], correct:0},
-
-    // ━━━ 카메라 측정 (rPPG / 눈동자 / 깜빡임) · 2문항 ━━━
-    {cat:'fixation', level:0, q:'화면 중앙의 점을 3초간 응시하세요',
-     emoji:'<span style="font-size:60px;color:#0f766e;display:inline-block;animation:eyePulse 2s ease-in-out infinite;">●</span>',
-     opts:[], correct:0, autoTimer: 3000, hint:'카메라가 눈동자 안정성을 측정합니다'},
-    {cat:'fixation', level:0, q:'천천히 3회 깜빡이세요',
-     emoji:'<span style="font-size:60px;">👁️</span><div style="margin-top:8px;font-size:14px;color:#0f766e;font-weight:800;">깜빡 · 깜빡 · 깜빡</div>',
-     opts:[], correct:0, autoTimer: 4000, hint:'카메라가 깜빡임 횟수를 측정합니다'}
-  ];
 
   // ── 비프 음 (Web Audio API) ──────────────────────────────
   var eyeAudioCtx = null;
@@ -296,7 +246,8 @@
     eyeStartCamera().then(function(){
       // ★ 박입 78 — 측정 시작 비프 (띠—) + 사용자 안내
       eyeBeepStart();
-      eyeDebug('🔔 측정 시작! 카메라 ON · 25문항 시작합니다');
+      try{ if(window.eyeLuxStart) eyeLuxStart(); }catch(_){}
+      eyeDebug('🔔 측정 시작! 카메라 ON');
       setTimeout(function(){
         eyeShowQuestion(0);
         eyeStartRppgLoop();
@@ -363,7 +314,7 @@
 
     var qText = document.getElementById('eye-question-text');
     qText.innerHTML = '<div style="font-size:10px;color:#0f766e;font-weight:800;letter-spacing:.15em;margin-bottom:14px;">' + catLabel.toUpperCase() + ' 식별</div>' +
-                      '<div style="display:flex;align-items:center;justify-content:center;min-height:110px;line-height:1;">' + _eyeScale(q.emoji) + '</div>' +
+                      '<div style="display:flex;align-items:center;justify-content:center;min-height:110px;line-height:1;">' + (q.landolt !== undefined ? window.eyeLandolt(q.level, q.landolt) : _eyeScale(q.emoji)) + '</div>' +
                       (q.hint ? '<div style="font-size:10px;color:#0f766e;margin-top:8px;background:rgba(20,184,166,.1);padding:6px 10px;border-radius:6px;display:inline-block;">💡 ' + q.hint + '</div>' : '');
 
     var grid = document.getElementById('eye-options-grid');
@@ -846,7 +797,7 @@
     // ★ 박입 117 — 시력 추정 (Level 1~5 정답률 → 시력 단계)
     //   Level 1~5 = 시력 0.1 / 0.2 / 0.32 / 0.5 / 0.8
     //   각 단계 정답률 80% 이상 = 통과 → 그 단계까지 시력 OK
-    var levelStats = {1:{c:0,t:0}, 2:{c:0,t:0}, 3:{c:0,t:0}, 4:{c:0,t:0}, 5:{c:0,t:0}};
+    var levelStats = {1:{c:0,t:0},2:{c:0,t:0},3:{c:0,t:0},4:{c:0,t:0},5:{c:0,t:0},6:{c:0,t:0},7:{c:0,t:0},8:{c:0,t:0},9:{c:0,t:0},10:{c:0,t:0}};
     var catStats = {shape:{c:0,t:0,rt:[]}, color:{c:0,t:0,rt:[]}, symbol:{c:0,t:0,rt:[]},
                     direction:{c:0,t:0,rt:[]}, contrast:{c:0,t:0,rt:[]}, fixation:{c:0,t:0,rt:[]}};
     eyeState.answers.forEach(function(a){
@@ -859,7 +810,7 @@
       // 활성도 레벨 통계 (level 1~5만)
       /* ★ 시력 판정에는 시력 문항만 센다 — 색 구분·시선 고정은 시력이 아니다.
          도형·숫자·글자·방향만 크기가 줄어드는 문항이다. */
-      if(a.level && a.level >= 1 && a.level <= 5
+      if(a.level && a.level >= 1 && a.level <= 10
          && a.cat !== 'color' && a.cat !== 'fixation'){
         levelStats[a.level].t++;
         if(a.correct) levelStats[a.level].c++;
@@ -878,7 +829,7 @@
     var estLabel = '측정 부족';
     var estDesc = '';
     var estColor = '#888';
-    for(var lv = 5; lv >= 1; lv--){
+    for(var lv = 10; lv >= 1; lv--){
       var ls = levelStats[lv];
       if(ls.t > 0 && (ls.c / ls.t) >= 0.7){  // 70% 이상 정답 = 통과
         var vi = visionLevels[lv-1];
@@ -908,6 +859,8 @@
     /* ★ 어떻게 재었는지 밝힌다 — 자로 잰 거리가 있으면 그 값을, 없으면 옛 방식임을 알린다 */
     var _rc = null; try{ _rc = window.eyeRulerCm ? eyeRulerCm() : null; }catch(_){}
     eyeState._rulerCm = _rc;
+    eyeState._lux = window._eyeLux;
+    eyeState._ppi = (window.eyeScreenPpi ? eyeScreenPpi() : null);
     resultHtml += '<div style="font-size:16px;font-weight:900;color:' + sideColor119 + ';letter-spacing:.05em;">' + sideKor119 + ' 측정 결과</div>';
     resultHtml += '<div style="font-size:10px;color:#666;margin-top:4px;">반대쪽 눈을 가린 상태에서 측정됨</div>';
     resultHtml += '</div>';
@@ -1085,7 +1038,12 @@
       + '<div>· ' + (window.K?K(10391):'') + ' '
       + (eyeState._rulerCm ? eyeState._rulerCm + 'cm' : (window.K?K(10392):'')) + '</div>'
       + '<div>· ' + (window.K?K(10393):'') + '</div>'
-      + '<div>· ' + (window.K?K(10394):'') + '</div></div>';
+      + '<div>· ' + (window.K?K(10394):'') + '</div>'
+      + (eyeState._ppi ? '<div>· ' + (window.K?K(10395):'') + ' ' + eyeState._ppi + 'ppi</div>' : '')
+      + (eyeState._lux != null ? '<div style="color:' + (eyeState._lux < 25 ? '#be123c' : '#0f766e') + ';">· '
+          + (window.K?K(10396):'') + ' ' + eyeState._lux + ' lux'
+          + (eyeState._lux < 25 ? ' — ' + (window.K?K(10397):'') : '') + '</div>' : '')
+      + '</div>';
     document.getElementById('eye-result-content').innerHTML = resultHtml;
     document.getElementById('eye-result-area').style.display = 'block';
 
@@ -1478,3 +1436,103 @@ window.eyeRulerCm = function(){
 
 /* 화면 실제 크기 — 1인치 = 96 CSS화소 (기기 독립 단위) */
 window.eyeMmToPx = function(mm){ return mm * (96 / 25.4); };
+
+
+/* ══ ① 폰 기종으로 화면 실제 크기를 안다 ══
+   안드로이드는 모델 코드를 브라우저가 알려준다. 아이폰은 화면 조합으로 특정된다.
+   표에 있으면 실제 mm 를 쓰고, 없으면 96dpi 로 물러난다. */
+window.EYE_PPI = {
+  /* 갤럭시 — 모델 코드 앞자리 */
+  'SM-S93':505,'SM-S92':505,'SM-S91':425,'SM-S90':425,'SM-S928':505,'SM-S918':500,'SM-S911':425,
+  'SM-S908':500,'SM-S906':393,'SM-S901':425,'SM-G998':515,'SM-G996':394,'SM-G991':421,
+  'SM-A54':403,'SM-A53':405,'SM-A52':405,'SM-A34':390,'SM-A33':411,'SM-A24':395,'SM-A15':396,
+  'SM-F94':426,'SM-F93':374,'SM-F73':426,'SM-F72':426,'SM-N98':386,'SM-N97':498,
+  /* 픽셀 */
+  'Pixel 8 Pro':489,'Pixel 8':428,'Pixel 7 Pro':512,'Pixel 7':416,'Pixel 6':411,
+  /* 샤오미·기타 */
+  'M2101':395,'2201':526,'2211':522,'23013':446,'23127':446
+};
+/* 아이폰 — CSS 화면 크기 + 배율 조합 → 실제 ppi */
+window.EYE_IOS = {
+  '320x568@2':326,'375x667@2':326,'414x736@3':401,
+  '375x812@3':458,'414x896@2':326,'414x896@3':458,
+  '390x844@3':460,'428x926@3':458,'375x812@2':326,
+  '393x852@3':460,'430x932@3':460,'402x874@3':460,'440x956@3':460
+};
+window.eyeScreenPpi = function(){
+  try{
+    var ua = navigator.userAgent || '';
+    /* 아이폰 — 화면 조합으로 특정 */
+    if(/iPhone|iPad/.test(ua)){
+      var w = Math.min(screen.width, screen.height), h = Math.max(screen.width, screen.height);
+      var k = w + 'x' + h + '@' + Math.round(window.devicePixelRatio || 2);
+      if(window.EYE_IOS[k]) return window.EYE_IOS[k];
+      return null;
+    }
+    /* 안드로이드 — 모델 코드로 찾기 */
+    var m = ua.match(/;\s*([A-Za-z0-9 \-_+]+?)\s*(?:Build|\))/);
+    var model = m ? m[1].trim() : '';
+    if(model){
+      for(var key in window.EYE_PPI){
+        if(model.indexOf(key) === 0 || model.indexOf(key) > -1) return window.EYE_PPI[key];
+      }
+    }
+    return null;
+  }catch(_){ return null; }
+};
+/* 밀리미터 → 화소. 기종을 알면 실제 ppi 로, 모르면 96dpi 로 */
+window.eyeMmPx = function(mm){
+  var ppi = null;
+  try{ ppi = window.eyeScreenPpi(); }catch(_){}
+  var dpr = window.devicePixelRatio || 1;
+  if(ppi) return mm * (ppi / dpr) / 25.4;   /* CSS 화소 기준으로 환산 */
+  return mm * (96 / 25.4);
+};
+
+
+/* ══ ③ 란돌트 고리 — 국제 규격 시표 (ISO 8596) ══
+   바깥지름을 5로 볼 때 선 굵기 1, 틈 1. 8방향 중 틈이 어디인지 고른다.
+   글자·도형과 달리 "아는 능력"이 섞이지 않는다 — 순수하게 보이는가만 묻는다. */
+window.eyeLandolt = function(level, dirIdx){
+  var d = (window._eyePxPublic ? _eyePxPublic(level) : 40);
+  var w = Math.max(2, Math.round(d / 5));      /* 선 굵기 = 지름의 1/5 */
+  var deg = dirIdx * 45;
+  return '<div style="position:relative;width:' + d + 'px;height:' + d + 'px;">'
+    + '<div style="position:absolute;inset:0;border:' + w + 'px solid #0f172a;border-radius:50%;"></div>'
+    /* 틈 — 지름의 1/5 만큼 잘라낸다 */
+    + '<div style="position:absolute;left:50%;top:50%;width:' + w + 'px;height:' + (w*1.4) + 'px;'
+    + 'background:#fff;transform:translate(-50%,-50%) rotate(' + deg + 'deg) translateY(' + (-(d-w)/2) + 'px);"></div>'
+    + '</div>';
+};
+window.EYE_LANDOLT_DIRS = ['↑','↗','→','↘','↓','↙','←','↖'];
+
+
+/* ══ ④ 조도 — 어두우면 대비가 떨어져 시력이 낮게 나온다 ══
+   나의 건강 밸런스와 같은 방식: 카메라 프레임의 밝기(Y)로 어림잡는다. */
+window._eyeLux = null;
+window.eyeLuxStart = function(){
+  if(window._eyeLuxIv) return;
+  var cv = document.createElement('canvas'); cv.width = 32; cv.height = 32;
+  var cx = cv.getContext('2d', { willReadFrequently:true });
+  window._eyeLuxIv = setInterval(function(){
+    var v = document.getElementById('eye-video');
+    if(!v || !v.videoWidth || v.readyState < 2) return;
+    try{
+      cx.drawImage(v, 0, 0, 32, 32);
+      var d = cx.getImageData(0,0,32,32).data, s = 0;
+      for(var i = 0; i < d.length; i += 4){
+        s += 0.299*d[i] + 0.587*d[i+1] + 0.114*d[i+2];
+      }
+      var y = s / (d.length/4);                 /* 0~255 평균 밝기 */
+      window._eyeLux = Math.round(Math.pow(y/255, 2.2) * 600);   /* 어림 lux */
+    }catch(_){}
+  }, 400);
+};
+window.eyeLuxStop = function(){
+  if(window._eyeLuxIv){ clearInterval(window._eyeLuxIv); window._eyeLuxIv = null; }
+};
+/* 25 lux 미만이면 측정을 멈춘다 (rPPG 와 같은 기준) */
+window.eyeLuxOk = function(){
+  if(window._eyeLux == null) return true;      /* 모르면 막지 않는다 */
+  return window._eyeLux >= 25;
+};
