@@ -118,7 +118,7 @@ window.eyeStart = function(){
   try{ if(window.eyeBlinkStart) eyeBlinkStart(); }catch(_){}
   var s = window._eye;
   if(!s.eye){ try{ alert(_ek(9962,'왼쪽·오른쪽 눈을 먼저 골라주세요.')); }catch(e){} return; }
-  s.run = { eye:s.eye, qs: window.eyeBank(), at:0, answers:[], lvStat:{1:{c:0,t:0},2:{c:0,t:0},3:{c:0,t:0},4:{c:0,t:0},5:{c:0,t:0}} };
+  s.run = { eye:s.eye, qs: window.eyeBank(), at:0, answers:[], lvStat:{1:{c:0,t:0},2:{c:0,t:0},3:{c:0,t:0},4:{c:0,t:0},5:{c:0,t:0},6:{c:0,t:0},7:{c:0,t:0},8:{c:0,t:0}} };
   try{ window._eyeCam = window._eyeCam || {}; window._eyeCam.faceFrames = 0; window._eyeCam.sawFace = false; window._eyeCam.lastSeen = 0; }catch(_){}
   var pop = document.getElementById('eyeTestPop');
   if(pop){ pop.style.display='block'; pop.scrollTop=0; }
@@ -294,15 +294,24 @@ window.eyeCancelMeasure = function(){
 /* ★ 구 CGO 원문 그대로 — 25문항 · 5단계 고정 px (35cm 기준 · 5분각 문자)
    레벨마다 크기를 고정하고 5단계만 두어, 폰 화소 격자에 걸리지 않는다.
    사다리로 1.5까지 올리던 방식은 폰에서 시표가 더 작아지지 않아 값이 부풀었다. */
+/* ★ 8단계 — 구 CGO는 5단계라 계단이 0.2였다. 0.9인 사람이 0.8 천장에 걸렸다.
+   0.63·1.0·1.25 를 더해 계단을 0.1 아래로 좁힌다.
+   크기는 화소가 아니라 mm 로 둔다 — 같은 화소도 폰마다 실제 크기가 다르다. */
 window.EYE_LV = {
-  1:{px:80, vision:0.1,  label:'매우 큼'},
-  2:{px:50, vision:0.2,  label:'큼'},
-  3:{px:32, vision:0.32, label:'중간'},
-  4:{px:20, vision:0.5,  label:'작음'},
-  5:{px:14, vision:0.8,  label:'매우 작음'}
+  1:{mm:11.6, vision:0.1,  show:'1.0',  lk:10170},
+  2:{mm:5.80, vision:0.2,  show:'2.0',  lk:10171},
+  3:{mm:3.60, vision:0.32, show:'3.0',  lk:10172},
+  4:{mm:2.30, vision:0.5,  show:'5.0',  lk:10173},
+  5:{mm:1.85, vision:0.63, show:'6.3',  lk:10184},
+  6:{mm:1.45, vision:0.8,  show:'8.0',  lk:10174},
+  7:{mm:1.16, vision:1.0,  show:'10.0', lk:10185},
+  8:{mm:0.93, vision:1.25, show:'12.5', lk:10186}
 };
+/* CSS 화소는 기기 독립 단위다 — 1인치 = 96 CSS화소로 옮기면
+   화소 밀도가 달라도 화면에서의 실제 크기가 같아진다. */
+window.eyeMmToPx = function(mm){ return mm * (96 / 25.4); };
 function _eSz(lv, c, type){
-  var sz = window.EYE_LV[lv].px;
+  var sz = window.eyeMmToPx(window.EYE_LV[lv].mm);
   /* 채움 비율로 보정 — 얼굴이 기준 (메뉴얼) */
   try{ var f = (window.cgoFaceFill && window.cgoFaceFill(window._eyeLms)) || 0;
        if(f > 0.05) sz = Math.round(sz * Math.max(0.7, Math.min(1.6, 0.45 / f))); }catch(_){}
@@ -312,30 +321,32 @@ function _eSz(lv, c, type){
 window.eyeBank = function(){ return [
  {cat:'shape',lv:1,qk:10100,g:['▲','shape'],ok:0,ov:[10105,10106,10107,10108]},
  {cat:'color',lv:1,qk:10101,g:['#e74c3c','color'],ok:0,ov:[10109,10110,10111,10112]},
- {cat:'symbol',lv:1,qk:10102,g:['7','symbol'],ok:1,ov:['1','7','9','4']},
  {cat:'direction',lv:1,qk:10103,g:['↑','direction'],ok:0,ov:[10113,10114,10115,10116]},
- {cat:'shape',lv:1,qk:10100,g:['●','shape'],ok:2,ov:[10105,10106,10107,10117]},
  {cat:'shape',lv:2,qk:10100,g:['■','shape'],ok:1,ov:[10105,10106,10107,10118]},
- {cat:'color',lv:2,qk:10101,g:['#3498db','color'],ok:1,ov:[10109,10110,10111,10112]},
  {cat:'symbol',lv:2,qk:10102,g:['3','symbol'],ok:1,ov:['8','3','5','9']},
  {cat:'direction',lv:2,qk:10103,g:['→','direction'],ok:3,ov:[10113,10114,10115,10116]},
- {cat:'symbol',lv:2,qk:10104,g:['A','symbol'],ok:0,ov:['A','R','P','B']},
  {cat:'shape',lv:3,qk:10100,g:['◆','shape'],ok:1,ov:[10105,10119,10107,10117]},
  {cat:'color',lv:3,qk:10101,g:['#27ae60','color'],ok:2,ov:[10109,10110,10111,10112]},
- {cat:'symbol',lv:3,qk:10102,g:['5','symbol'],ok:1,ov:['2','5','6','8']},
- {cat:'direction',lv:3,qk:10103,g:['←','direction'],ok:2,ov:[10113,10114,10115,10116]},
  {cat:'symbol',lv:3,qk:10104,g:['E','symbol'],ok:0,ov:['E','F','B','P']},
  {cat:'shape',lv:4,qk:10100,g:['★','shape'],ok:2,ov:[10105,10106,10117,10107]},
- {cat:'color',lv:4,qk:10101,g:['#9b59b6','color'],ok:0,ov:[10120,10110,10121,10122]},
  {cat:'symbol',lv:4,qk:10102,g:['8','symbol'],ok:2,ov:['3','6','8','9']},
  {cat:'direction',lv:4,qk:10103,g:['↓','direction'],ok:1,ov:[10113,10114,10115,10116]},
- {cat:'symbol',lv:4,qk:10104,g:['C','symbol'],ok:0,ov:['C','G','O','Q']},
- {cat:'shape',lv:5,qk:10100,g:['▼','shape'],ok:1,ov:[10123,10124,10119,10106]},
- {cat:'symbol',lv:5,qk:10102,g:['4','symbol'],ok:1,ov:['1','4','7','9']},
- {cat:'direction',lv:5,qk:10103,g:['↗','direction'],ok:0,ov:['↗','↘','↖','↙']},
+ {cat:'symbol',lv:5,qk:10104,g:['C','symbol'],ok:0,ov:['C','G','O','Q']},
+ {cat:'shape',lv:5,qk:10100,g:['●','shape'],ok:2,ov:[10105,10106,10107,10117]},
+ {cat:'direction',lv:5,qk:10103,g:['←','direction'],ok:2,ov:[10113,10114,10115,10116]},
+ {cat:'shape',lv:6,qk:10100,g:['▼','shape'],ok:1,ov:[10123,10124,10119,10106]},
+ {cat:'symbol',lv:6,qk:10102,g:['4','symbol'],ok:1,ov:['1','4','7','9']},
+ {cat:'direction',lv:6,qk:10103,g:['↗','direction'],ok:0,ov:['↗','↘','↖','↙']},
+ {cat:'symbol',lv:7,qk:10104,g:['A','symbol'],ok:0,ov:['A','R','P','B']},
+ {cat:'symbol',lv:7,qk:10102,g:['6','symbol'],ok:1,ov:['5','6','8','0']},
+ {cat:'direction',lv:7,qk:10103,g:['↙','direction'],ok:3,ov:['↗','↘','↖','↙']},
+ {cat:'symbol',lv:8,qk:10104,g:['H','symbol'],ok:0,ov:['H','N','M','K']},
+ {cat:'symbol',lv:8,qk:10102,g:['2','symbol'],ok:0,ov:['2','7','1','4']},
+ {cat:'direction',lv:8,qk:10103,g:['↖','direction'],ok:2,ov:['↗','↘','↖','↙']},
  {cat:'fixation',lv:0,qk:10125,g:['●','fix'],ok:0,ov:[],auto:3000},
  {cat:'fixation',lv:0,qk:10126,g:['👁️','fix'],ok:0,ov:[],auto:4000}
 ]; };
+
 
 window.EYE_VIS = [0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.63, 0.8, 1.0, 1.25, 1.5];
 window.EYE_DIRS = ['↑','→','↓','←'];
@@ -401,7 +412,7 @@ window.eyeDraw = function(){
 
   /* ★ 문제와 보기 글자도 단계에 따라 작아진다 — 글자 자체가 시표다.
      도형만 작아지면 "삼각형"이라는 큰 글자를 읽고 맞힐 수 있어 시력이 아니라 짐작이 된다. */
-  var _lvpx = q.lv ? window.EYE_LV[q.lv].px : 40;
+  var _lvpx = q.lv ? window.eyeMmToPx(window.EYE_LV[q.lv].mm) : 40;
   var _fill = 0;
   try{ _fill = (window.cgoFaceFill && window.cgoFaceFill(_eyeGetLms())) || 0; }catch(_){}
   var _adj = (_fill > 0.05) ? Math.max(0.7, Math.min(1.6, 0.45 / _fill)) : 1;
@@ -455,7 +466,15 @@ window.eyeAnswer = function(i){
        window._eyeCam.faceFrames = (window._eyeCam.faceFrames || 0) + (_fr ? 1 : 0); }catch(_){}
   var ok = (q.cat === 'fixation') ? true : (i === q.ok);
   r.answers.push({ lv:q.lv, cat:q.cat, ok:ok, ms:Date.now() - q.t0 });
-  if(q.lv >= 1 && q.lv <= 5){ r.lvStat[q.lv].t++; if(ok) r.lvStat[q.lv].c++; }
+  /* ★ 찍기 걸러내기 — 네 개 중 하나이니 찍어도 25%가 맞는다.
+     진짜 보이면 1.5초 안에 누르고, 짐작하면 3초를 넘긴다.
+     3초 넘겨 맞힌 것은 반만 인정해 한 단계 밀려 올라가는 것을 막는다. */
+  if(q.lv >= 1 && q.lv <= 8){
+    var _ms = Date.now() - q.t0;
+    var _w = ok ? (_ms > 3000 ? 0.5 : 1) : 0;
+    r.lvStat[q.lv].t++;
+    r.lvStat[q.lv].c += _w;
+  }
   r.at++;
   eyeNext();
 };
@@ -495,7 +514,7 @@ window.eyeFinish = function(){
   /* ★ 구 CGO 판정 — 레벨마다 70% 이상 맞히면 통과, 가장 높은 통과 레벨을 취한다.
      사다리로 위로 올리던 방식은 폰에서 시표가 더 작아지지 않아 값이 부풀었다. */
   var vision = 0, passLv = 0;
-  for(var _lv = 5; _lv >= 1; _lv--){
+  for(var _lv = 8; _lv >= 1; _lv--){
     var _s = r.lvStat[_lv];
     if(_s && _s.t > 0 && (_s.c / _s.t) >= 0.7){ passLv = _lv; vision = window.EYE_LV[_lv].vision; break; }
   }
@@ -512,14 +531,43 @@ window.eyeFinish = function(){
   if(head) head.innerHTML = '<div style="font-size:12px;font-weight:900;color:#0f766e;">'
     + (r.eye === 'L' ? _ek(9930,'왼쪽 눈') : _ek(9931,'오른쪽 눈')) + ' · ' + _ek(9720,'검사 결과') + '</div>';
   if(!body) return;
+  var _lvi = window.EYE_LV[passLv] || null;
+  var _show = _lvi ? _lvi.show : '—';
+  var _rows = '';
+  for(var _q = 1; _q <= 8; _q++){
+    var _st = r.lvStat[_q]; if(!_st || !_st.t) continue;
+    var _pc = Math.round(_st.c / _st.t * 100), _ps = (_pc >= 70);
+    _rows += '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #eef4f2;">'
+      + '<span style="font-size:12.5px;font-weight:800;color:#0f172a;">Level ' + window.EYE_LV[_q].show
+      + ' · <span data-k="10175"></span> ' + window.EYE_LV[_q].show + '</span>'
+      + '<span style="font-size:12.5px;font-weight:900;color:' + (_ps ? '#0f766e' : '#be123c') + ';">'
+      + (_ps ? '✓ ' : '· ') + _pc + '% (' + (Math.round(_st.c * 10) / 10) + '/' + _st.t + ')</span></div>';
+  }
+  var _cats = { shape:10176, color:10177, symbol:10178, direction:10179, fixation:10180 }, _cs = {};
+  r.answers.forEach(function(a){ if(!_cs[a.cat]) _cs[a.cat] = { c:0, t:0, ms:0 };
+    _cs[a.cat].t++; if(a.ok) _cs[a.cat].c++; _cs[a.cat].ms += a.ms; });
+  var _crows = '';
+  for(var _k in _cats){ var _s = _cs[_k]; if(!_s) continue;
+    _crows += '<div style="display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid #eef4f2;">'
+      + '<span data-k="' + _cats[_k] + '" style="font-size:12px;font-weight:700;color:#0f172a;"></span>'
+      + '<span style="font-size:12px;font-weight:800;color:#0f766e;">'
+      + Math.round(_s.c / _s.t * 100) + '% · ' + Math.round(_s.ms / _s.t) + 'ms</span></div>'; }
+
   body.innerHTML =
     '<div style="background:#fff;border:1px solid #d7eee8;border-radius:18px;padding:24px 16px;margin-top:12px;text-align:center;">'
-    + '<div style="font-size:11px;color:#64748b;font-weight:700;">' + _ek(9957,'추정 시력') + '</div>'
-    + '<div style="font-size:46px;font-weight:900;color:#0f766e;line-height:1.1;margin-top:4px;">' + vision.toFixed(2) + '</div>'
+    + '<div data-k="10181" style="font-size:11px;color:#64748b;font-weight:700;"></div>'
+    + '<div style="font-size:46px;font-weight:900;color:#0f766e;line-height:1.1;margin-top:4px;">' + _show + '</div>'
+    + (_lvi ? '<div data-k="' + _lvi.lk + '" style="font-size:13px;font-weight:900;color:#0d9488;margin-top:4px;"></div>' : '')
     + '<div style="font-size:11px;color:#475569;margin-top:7px;line-height:1.7;">'
     + _ek(9722,'정답') + ' ' + right + '/' + r.answers.length
     + ' · ' + _ek(9723,'평균 반응') + ' ' + (avg/1000).toFixed(1) + 's'
     + (cm ? '<br>' + _ek(9963,'측정 거리') + ' ' + cm + 'cm' : '') + '</div></div>'
+    + '<div style="background:#fff;border:1px solid #d7eee8;border-radius:16px;padding:15px 16px;margin-top:11px;">'
+    + '<div data-k="10182" style="font-size:12.5px;font-weight:900;color:#0f766e;margin-bottom:4px;"></div>'
+    + _rows + '</div>'
+    + '<div style="background:#fff;border:1px solid #d7eee8;border-radius:16px;padding:15px 16px;margin-top:11px;">'
+    + '<div data-k="10183" style="font-size:12.5px;font-weight:900;color:#0f766e;margin-bottom:4px;"></div>'
+    + _crows + '</div>'
     + (function(){
         var bl = window.eyeBlinkResult ? eyeBlinkResult() : null;
         if(!bl || !bl.sec) return '';
@@ -543,9 +591,11 @@ window.eyeFinish = function(){
     + '<div data-k="9964" style="font-size:11px;color:#0f766e;font-weight:800;line-height:1.7;"></div></div>'
     + '<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:13px 14px;margin-top:10px;">'
     + '<div data-k="9944" style="font-size:10.5px;color:#64748b;line-height:1.75;"></div></div>'
+    + _eyeAiSlot()
     + '<button type="button" onclick="eyeTestClose()" data-k="9725" style="width:100%;margin-top:13px;padding:15px;border:0;'
     + 'border-radius:999px;background:#0f172a;color:#fff;font-size:14px;font-weight:900;cursor:pointer;font-family:inherit;"></button>';
   try{ if(window.CGO_T) CGO_T.paint(body); }catch(e){}
+  try{ if(window.eyeAiAnalyze) eyeAiAnalyze(); }catch(e){}
 };
 
 
@@ -813,7 +863,7 @@ window.eyeBegin = function(m){
   s.mode = m;
   if(m === 'vis'){
     s.run = { eye:s.eye, mode:'vis', qs: window.eyeBank(), at:0, answers:[],
-              lvStat:{1:{c:0,t:0},2:{c:0,t:0},3:{c:0,t:0},4:{c:0,t:0},5:{c:0,t:0}} };
+              lvStat:{1:{c:0,t:0},2:{c:0,t:0},3:{c:0,t:0},4:{c:0,t:0},5:{c:0,t:0},6:{c:0,t:0},7:{c:0,t:0},8:{c:0,t:0}} };
   }else if(m === 'asti'){
     s.run = { eye:s.eye, mode:'asti', at:0, answers:[] };
   }else if(m === 'color'){
@@ -1050,6 +1100,7 @@ function _eyeCard(titleK, big, subHtml, color){
     + '<div style="font-size:38px;font-weight:900;color:' + (color||'#0f766e') + ';line-height:1.15;margin-top:5px;">' + big + '</div>'
     + '<div style="font-size:11.5px;color:#475569;margin-top:8px;line-height:1.7;">' + subHtml + '</div></div>';
 }
+function _eyeAiSlot(){ return '<div id="eye-ai"></div>'; }
 function _eyeAgain(){
   return '<button type="button" onclick="eyeTestClose()" data-k="9725" '
     + 'style="width:100%;margin-top:14px;padding:14px;border:0;border-radius:999px;background:#0f172a;'
@@ -1079,9 +1130,10 @@ window.eyeResultAsti = function(){
   body.innerHTML = _eyeCard(10149, none ? '—' : (r.axis + '°'),
     '<span data-k="' + (none ? 10150 : 10151) + '"></span>', none ? '#0d9488' : '#b45309')
     + '<div data-k="10152" style="font-size:11px;color:#64748b;text-align:center;margin-top:10px;line-height:1.7;"></div>'
-    + _eyeAgain();
+    + _eyeAiSlot() + _eyeAgain();
   eyeTabs();
   try{ if(window.CGO_T) CGO_T.paint(body); }catch(e){}
+  try{ if(window.eyeAiAnalyze) eyeAiAnalyze(); }catch(e){}
 };
 
 window.eyeResultColor = function(){
@@ -1098,9 +1150,10 @@ window.eyeResultColor = function(){
     + ' · <span data-k="' + (score >= 84 ? 10154 : score >= 50 ? 10155 : 10156) + '"></span>',
     score >= 84 ? '#0f766e' : score >= 50 ? '#b45309' : '#be123c')
     + '<div data-k="10157" style="font-size:11px;color:#64748b;text-align:center;margin-top:10px;line-height:1.7;"></div>'
-    + _eyeAgain();
+    + _eyeAiSlot() + _eyeAgain();
   eyeTabs();
   try{ if(window.CGO_T) CGO_T.paint(body); }catch(e){}
+  try{ if(window.eyeAiAnalyze) eyeAiAnalyze(); }catch(e){}
 };
 
 window.eyeResultFocus = function(){
@@ -1118,7 +1171,55 @@ window.eyeResultFocus = function(){
     '<span data-k="10162"></span> ' + n + '/6 · <span data-k="10163"></span> ' + f + '/6',
     tend === 'even' ? '#0f766e' : '#b45309')
     + '<div data-k="10164" style="font-size:11px;color:#64748b;text-align:center;margin-top:10px;line-height:1.7;"></div>'
-    + _eyeAgain();
+    + _eyeAiSlot() + _eyeAgain();
   eyeTabs();
   try{ if(window.CGO_T) CGO_T.paint(body); }catch(e){}
+  try{ if(window.eyeAiAnalyze) eyeAiAnalyze(); }catch(e){}
+};
+
+/* ══ 🤖 AI 눈 상태 분석 — 구 CGO 7가지 갈래 (숫자만 보낸다 · 영상은 나가지 않는다) ══ */
+window.eyeAiAnalyze = function(){
+  var box = document.getElementById('eye-ai');
+  if(!box) return;
+  var d = window._eyeDone || {};
+  var bl = null; try{ bl = window.eyeBlinkResult ? eyeBlinkResult() : null; }catch(_){}
+  var r = window._eye.run || {};
+  var avg = 0;
+  try{ var A = r.answers || []; avg = A.length ? Math.round(A.reduce(function(t,a){return t+(a.ms||0);},0)/A.length) : 0; }catch(_){}
+
+  var facts = {
+    eye: (window._eye.eye === 'L') ? 'left' : 'right',
+    acuityShow: d.vis ? (window.EYE_LV[d.vis.lv] || {}).show : null,
+    level: d.vis ? d.vis.lv : null,
+    astiAxis: d.asti ? (d.asti.none ? null : d.asti.axis) : undefined,
+    colorScore: d.color ? d.color.score : undefined,
+    focusTend: d.focus ? d.focus.tend : undefined,
+    blinkBpm: bl ? bl.bpm : null,
+    jitter: bl ? bl.jitter : null,
+    avgMs: avg
+  };
+
+  box.innerHTML = '<div style="background:#fff;border:1px solid #d7eee8;border-radius:16px;padding:16px;margin-top:11px;">'
+    + '<div data-k="10190" style="font-size:12.5px;font-weight:900;color:#0f766e;"></div>'
+    + '<div id="eye-ai-body" data-k="10191" style="font-size:12px;color:#475569;margin-top:9px;line-height:1.75;"></div></div>';
+  try{ if(window.CGO_T) CGO_T.paint(box); }catch(_){}
+
+  var lang = (window.CGO_T && CGO_T.cur && CGO_T.cur()) || 'ko';
+  fetch('/api/groq', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ feature:'eye', lang: lang, result: facts,
+      env: (window.cgoEnvBrief ? cgoEnvBrief() : ''),
+      message: 'eye wellness reading' })
+  })
+  .then(function(x){ return x.json(); })
+  .then(function(j){
+    var t = (j && (j.reply || j.text || j.message)) || '';
+    var el = document.getElementById('eye-ai-body');
+    if(!el) return;
+    if(t){ el.removeAttribute('data-k'); el.innerHTML = String(t).replace(/\n/g,'<br>'); }
+  })
+  .catch(function(){
+    var el = document.getElementById('eye-ai-body');
+    if(el){ el.setAttribute('data-k','10192'); try{ if(window.CGO_T) CGO_T.paint(el.parentNode); }catch(_){} }
+  });
 };
