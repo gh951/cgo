@@ -67,6 +67,8 @@
     return content;
   }
 
+  var _LDIRS = ['↑','↗','→','↘','↓','↙','←','↖'];
+  window.EYE_LANDOLT_DIRS = _LDIRS;
   var EYE_QUESTIONS = (function(){
     var out = [];
     /* 시력 — 란돌트 고리 10단계 × 3문항 (국제 규격) */
@@ -74,7 +76,7 @@
       for(var k = 0; k < 3; k++){
         var di = Math.floor(Math.random() * 8);
         out.push({ cat:'direction', level:lv, landolt:di,
-          q:'란돌트', emoji:'', opts:window.EYE_LANDOLT_DIRS.slice(), correct:di });
+          q:'란돌트', emoji:'', opts:_LDIRS.slice(), correct:di });
       }
     }
     /* 색 구분 — 시력 판정에는 안 들어가고 따로 보여준다 */
