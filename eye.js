@@ -122,8 +122,9 @@ window.eyeStart = function(){
   try{ window._eyeCam = window._eyeCam || {}; window._eyeCam.faceFrames = 0; window._eyeCam.sawFace = false; window._eyeCam.lastSeen = 0; }catch(_){}
   var pop = document.getElementById('eyeTestPop');
   if(pop){ pop.style.display='block'; pop.scrollTop=0; }
+  window._eyeDone = {};
   eyeCamStart();
-  eyeNext();
+  eyeBegin('vis');
 };
 
 /* ── 카메라 ── */
@@ -499,6 +500,7 @@ window.eyeFinish = function(){
     if(_s && _s.t > 0 && (_s.c / _s.t) >= 0.7){ passLv = _lv; vision = window.EYE_LV[_lv].vision; break; }
   }
   r.passLv = passLv;
+  try{ window._eyeDone.vis = { vision: vision, lv: passLv }; if(window.eyeTabs) eyeTabs(); }catch(_){}
   var right = r.answers.filter(function(a){ return a.ok; }).length;
   var avg = r.answers.length
     ? Math.round(r.answers.reduce(function(t,a){ return t + a.ms; }, 0) / r.answers.length) : 0;
@@ -766,4 +768,357 @@ window.eyeRiskFlags = function(r){
     if(yellow > 0.55) out.push({ k:10014, lv:'watch' });
   }catch(e){}
   return out;
+};
+
+/* ══ 네 갈래 검사 — 카메라는 한 번만 켜고 검사만 갈아탄다 ══ */
+window.EYE_MODES = ['vis','asti','color','focus'];
+window._eyeDone = window._eyeDone || {};
+
+window.eyeTabs = function(){
+  var box = document.getElementById('eye-tabs');
+  if(!box) return;
+  var cur = (window._eye.run && window._eye.run.mode) || window._eye.mode || 'vis';
+  var defs = [
+    {m:'vis',   ic:'🔍', k:10130},
+    {m:'asti',  ic:'✳️', k:10131},
+    {m:'color', ic:'🎨', k:10132},
+    {m:'focus', ic:'↔️', k:10133}
+  ];
+  box.innerHTML = defs.map(function(d){
+    var on = (d.m === cur);
+    var fin = !!window._eyeDone[d.m];
+    return '<button type="button" onclick="eyeSwitch(\'' + d.m + '\')" '
+      + 'style="padding:9px 4px;border-radius:12px;border:1.5px solid ' + (on?'#0d9488':'#d7eee8') + ';'
+      + 'background:' + (on?'#0d9488':'#fff') + ';color:' + (on?'#fff':'#0f766e') + ';'
+      + 'font-family:inherit;font-size:11px;font-weight:800;cursor:pointer;line-height:1.3;">'
+      + '<span style="font-size:15px;display:block;">' + d.ic + '</span>'
+      + '<span data-k="' + d.k + '"></span>'
+      + (fin ? '<span style="display:block;font-size:9px;color:' + (on?'#a7f3d0':'#0d9488') + ';margin-top:2px;">✔</span>' : '')
+      + '</button>';
+  }).join('');
+  try{ if(window.CGO_T) CGO_T.paint(box); }catch(e){}
+};
+
+window.eyeSwitch = function(m){
+  window._eye.mode = m;
+  var r = window._eye.run;
+  if(r) r.mode = m;
+  eyeTabs();
+  eyeBegin(m);
+};
+
+/* 검사 하나를 시작한다 — 카메라는 이미 켜져 있다 */
+window.eyeBegin = function(m){
+  var s = window._eye;
+  s.mode = m;
+  if(m === 'vis'){
+    s.run = { eye:s.eye, mode:'vis', qs: window.eyeBank(), at:0, answers:[],
+              lvStat:{1:{c:0,t:0},2:{c:0,t:0},3:{c:0,t:0},4:{c:0,t:0},5:{c:0,t:0}} };
+  }else if(m === 'asti'){
+    s.run = { eye:s.eye, mode:'asti', at:0, answers:[] };
+  }else if(m === 'color'){
+    s.run = { eye:s.eye, mode:'color', qs: window.eyeColorBank(), at:0, answers:[] };
+  }else{
+    s.run = { eye:s.eye, mode:'focus', at:0, answers:[], phase:'near' };
+  }
+  try{ window._eyeCam = window._eyeCam || {}; window._eyeCam.faceFrames = 0; }catch(_){}
+  eyeTabs();
+  if(m === 'asti') eyeAstiDraw();
+  else if(m === 'color') eyeColorDraw();
+  else if(m === 'focus') eyeFocusDraw();
+  else eyeNext();
+};
+
+/* ══ ✳️ 난시 — 방사선 시표 (안과 방식: 어느 방향 선이 더 진한가) ══ */
+window.eyeAstiDraw = function(){
+  var head = document.getElementById('eyeTestHead');
+  var body = document.getElementById('eyeTestBody');
+  if(!head || !body) return;
+  var r = window._eye.run;
+
+  head.innerHTML = '<div style="display:flex;align-items:center;justify-content:space-between;">'
+    + '<span style="font-size:12px;font-weight:900;color:#0f766e;">'
+    + (r.eye === 'L' ? _ek(9930,'왼쪽 눈') : _ek(9931,'오른쪽 눈')) + '</span>'
+    + '<span data-k="10131" style="font-size:11px;color:#64748b;"></span></div>';
+
+  /* 12방향 부챗살 */
+  var lines = '';
+  for(var a = 0; a < 12; a++){
+    var deg = a * 15;
+    lines += '<div style="position:absolute;left:50%;top:50%;width:2px;height:44%;'
+      + 'background:#0f172a;transform-origin:50% 0;transform:translate(-50%,0) rotate(' + (deg + 180) + 'deg);"></div>'
+      + '<div style="position:absolute;left:50%;top:50%;width:2px;height:44%;'
+      + 'background:#0f172a;transform-origin:50% 0;transform:translate(-50%,0) rotate(' + deg + 'deg);"></div>';
+  }
+
+  var opts = '';
+  for(var i = 0; i < 12; i++){
+    var d = i * 15;
+    opts += '<button type="button" onclick="eyeAstiPick(' + d + ')" '
+      + 'style="padding:9px 0;border-radius:11px;border:1.5px solid #d7eee8;background:#fff;'
+      + 'font-family:inherit;font-size:12px;font-weight:800;color:#0f766e;cursor:pointer;">'
+      + d + '°</button>';
+  }
+
+  body.innerHTML =
+    '<div data-k="10140" style="font-size:13px;font-weight:800;color:#0f172a;text-align:center;line-height:1.5;"></div>'
+    + '<div style="background:#fff;border:1px solid #d7eee8;border-radius:16px;padding:14px;margin-top:9px;">'
+    + '<div style="position:relative;width:100%;max-width:230px;aspect-ratio:1/1;margin:0 auto;">'
+    + lines
+    + '<div style="position:absolute;left:50%;top:50%;width:12px;height:12px;border-radius:50%;'
+    + 'background:#fff;border:2px solid #0f172a;transform:translate(-50%,-50%);"></div></div></div>'
+    + '<div data-k="10141" style="font-size:11px;color:#64748b;text-align:center;margin-top:9px;line-height:1.6;"></div>'
+    + '<div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:9px;">' + opts + '</div>'
+    + '<button type="button" onclick="eyeAstiPick(-1)" data-k="10142" '
+    + 'style="width:100%;margin-top:8px;padding:13px;border:1px solid #cbd5e1;border-radius:12px;'
+    + 'background:#f8fafc;color:#64748b;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;"></button>';
+
+  try{ if(window.CGO_T) CGO_T.paint(body); }catch(e){}
+  try{ if(window.eyeDistGuard) eyeDistGuard(); }catch(e){}
+};
+
+window.eyeAstiPick = function(deg){
+  var r = window._eye.run; if(!r) return;
+  /* 얼굴이 보였는지 센다 */
+  try{ var _lm = _eyeGetLms();
+       if(_lm && _lm.length > 100) window._eyeCam.faceFrames = (window._eyeCam.faceFrames||0) + 1; }catch(_){}
+  r.axis = deg;
+  window._eyeDone.asti = { axis: deg };
+  eyeResultAsti();
+};
+
+/* ══ 🎨 색채 인지 — 이시하라식 점무늬 ══ */
+window.eyeColorBank = function(){ return [
+  {n:'12', bg:['#9aa06b','#b5b26e','#8a9159'], fg:['#c86f4a','#d98a52','#b85f3e'], ov:['12','17','21','74']},
+  {n:'8',  bg:['#a8a86a','#b9b878','#96975c'], fg:['#c9714b','#dd8f55','#bb6240'], ov:['3','8','6','9']},
+  {n:'29', bg:['#9fa46d','#b2b174','#8d945a'], fg:['#cf7a4e','#e09257','#c06843'], ov:['29','70','79','20']},
+  {n:'5',  bg:['#aab06f','#bcbb79','#98995e'], fg:['#7fa05c','#93b168','#6d8f50'], ov:['5','2','3','6']},
+  {n:'3',  bg:['#a5a96c','#b7b676','#93985b'], fg:['#c8734c','#da8b54','#b6603f'], ov:['3','5','8','6']},
+  {n:'15', bg:['#9ea36c','#b0af73','#8c9359'], fg:['#7ea05b','#92b067','#6c8e4f'], ov:['15','17','75','13']}
+]; };
+
+function _eyeDots(q, size){
+  var n = 240, out = '';
+  var g = _eyeGlyphMask(q.n);
+  for(var i = 0; i < n; i++){
+    var x = Math.random(), y = Math.random();
+    var inFg = _eyeInMask(g, x, y);
+    var pal = inFg ? q.fg : q.bg;
+    var c = pal[(Math.random() * pal.length) | 0];
+    var d = 4 + Math.random() * 7;
+    out += '<span style="position:absolute;left:' + (x * 100).toFixed(1) + '%;top:' + (y * 100).toFixed(1) + '%;'
+      + 'width:' + d.toFixed(1) + 'px;height:' + d.toFixed(1) + 'px;border-radius:50%;background:' + c + ';'
+      + 'transform:translate(-50%,-50%);"></span>';
+  }
+  return out;
+}
+/* 숫자 모양을 격자로 — 점을 그 안에 넣는다 */
+var _EYE_FONT = {
+ '0':['01110','10001','10001','10001','10001','10001','01110'],
+ '1':['00100','01100','00100','00100','00100','00100','01110'],
+ '2':['01110','10001','00001','00010','00100','01000','11111'],
+ '3':['11110','00001','00001','01110','00001','00001','11110'],
+ '5':['11111','10000','11110','00001','00001','10001','01110'],
+ '6':['00110','01000','10000','11110','10001','10001','01110'],
+ '7':['11111','00001','00010','00100','01000','01000','01000'],
+ '8':['01110','10001','10001','01110','10001','10001','01110'],
+ '9':['01110','10001','10001','01111','00001','00010','01100']
+};
+function _eyeGlyphMask(txt){
+  var cols = [], rows = 7;
+  for(var i = 0; i < txt.length; i++){
+    var g = _EYE_FONT[txt[i]] || _EYE_FONT['0'];
+    cols.push(g);
+  }
+  return { glyphs: cols, rows: rows, cw: 5 };
+}
+function _eyeInMask(m, x, y){
+  var pad = 0.12;
+  if(x < pad || x > 1 - pad || y < pad || y > 1 - pad) return false;
+  var nx = (x - pad) / (1 - pad * 2), ny = (y - pad) / (1 - pad * 2);
+  var gi = Math.min(m.glyphs.length - 1, (nx * m.glyphs.length) | 0);
+  var lx = nx * m.glyphs.length - gi;
+  var cx = Math.min(m.cw - 1, (lx * m.cw) | 0);
+  var cy = Math.min(m.rows - 1, (ny * m.rows) | 0);
+  return m.glyphs[gi][cy][cx] === '1';
+}
+
+window.eyeColorDraw = function(){
+  var head = document.getElementById('eyeTestHead');
+  var body = document.getElementById('eyeTestBody');
+  if(!head || !body) return;
+  var r = window._eye.run;
+  if(r.at >= r.qs.length){ eyeResultColor(); return; }
+  var q = r.qs[r.at];
+
+  head.innerHTML = '<div style="display:flex;align-items:center;justify-content:space-between;">'
+    + '<span data-k="10132" style="font-size:12px;font-weight:900;color:#0f766e;"></span>'
+    + '<span style="font-size:11px;color:#64748b;">' + (r.at + 1) + ' / ' + r.qs.length + '</span></div>'
+    + '<div style="height:6px;border-radius:999px;background:#e2e8f0;margin-top:7px;overflow:hidden;">'
+    + '<div style="height:100%;width:' + Math.round((r.at + 1) / r.qs.length * 100) + '%;'
+    + 'background:linear-gradient(90deg,#0d9488,#14b8a6);transition:width .25s;"></div></div>';
+
+  body.innerHTML =
+    '<div data-k="10143" style="font-size:13px;font-weight:800;color:#0f172a;text-align:center;margin-top:10px;"></div>'
+    + '<div style="background:#f6f5ee;border:1px solid #d7eee8;border-radius:16px;padding:14px;margin-top:9px;">'
+    + '<div style="position:relative;width:100%;max-width:220px;aspect-ratio:1/1;margin:0 auto;'
+    + 'border-radius:50%;overflow:hidden;background:#eceadf;">' + _eyeDots(q) + '</div></div>'
+    + '<div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin-top:10px;">'
+    + q.ov.map(function(o, i){
+        return '<button type="button" onclick="eyeColorPick(' + i + ')" '
+          + 'style="padding:13px 0;border-radius:12px;border:1.5px solid #d7eee8;background:#fff;'
+          + 'font-family:inherit;font-size:17px;font-weight:900;color:#0f766e;cursor:pointer;">' + o + '</button>';
+      }).join('')
+    + '</div>'
+    + '<button type="button" onclick="eyeColorPick(-1)" data-k="10144" '
+    + 'style="width:100%;margin-top:8px;padding:13px;border:1px solid #cbd5e1;border-radius:12px;'
+    + 'background:#f8fafc;color:#64748b;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;"></button>';
+
+  try{ if(window.CGO_T) CGO_T.paint(body); }catch(e){}
+  try{ if(window.eyeDistGuard) eyeDistGuard(); }catch(e){}
+};
+
+window.eyeColorPick = function(i){
+  var r = window._eye.run; if(!r) return;
+  try{ var _lm = _eyeGetLms();
+       if(_lm && _lm.length > 100) window._eyeCam.faceFrames = (window._eyeCam.faceFrames||0) + 1; }catch(_){}
+  var q = r.qs[r.at];
+  var ok = (i >= 0 && q.ov[i] === q.n);
+  r.answers.push({ ok: ok });
+  r.at++;
+  eyeColorDraw();
+};
+
+/* ══ ↔️ 원·근 경향 — 같은 시표를 두 거리에서 재고 견준다 ══ */
+window.eyeFocusDraw = function(){
+  var head = document.getElementById('eyeTestHead');
+  var body = document.getElementById('eyeTestBody');
+  if(!head || !body) return;
+  var r = window._eye.run;
+  var near = (r.phase === 'near');
+  var set = ['E','3','m','6','C','8'];
+  if(r.at >= set.length){
+    if(near){ r.phase = 'far'; r.at = 0; r.nearOk = r.answers.filter(function(a){return a.ok;}).length; r.answers = []; }
+    else { r.farOk = r.answers.filter(function(a){return a.ok;}).length; eyeResultFocus(); return; }
+  }
+  var ch = set[r.at];
+  var pool = ['E','F','3','8','m','n','6','C','G','2','5','B'];
+  var opts = [ch];
+  while(opts.length < 4){ var c = pool[(Math.random()*pool.length)|0]; if(opts.indexOf(c) < 0) opts.push(c); }
+  for(var i = opts.length - 1; i > 0; i--){ var j = (Math.random()*(i+1))|0; var t = opts[i]; opts[i] = opts[j]; opts[j] = t; }
+  r.cur = { ch: ch, opts: opts };
+
+  head.innerHTML = '<div style="display:flex;align-items:center;justify-content:space-between;">'
+    + '<span data-k="' + (near ? 10145 : 10146) + '" style="font-size:12px;font-weight:900;color:#0f766e;"></span>'
+    + '<span style="font-size:11px;color:#64748b;">' + (r.at + 1) + ' / ' + set.length + '</span></div>'
+    + '<div style="height:6px;border-radius:999px;background:#e2e8f0;margin-top:7px;overflow:hidden;">'
+    + '<div style="height:100%;width:' + Math.round((r.at+1)/set.length*100) + '%;'
+    + 'background:linear-gradient(90deg,' + (near ? '#f59e0b,#fbbf24' : '#0d9488,#14b8a6') + ');"></div></div>';
+
+  body.innerHTML =
+    '<div data-k="' + (near ? 10147 : 10148) + '" style="font-size:13px;font-weight:800;color:'
+    + (near ? '#b45309' : '#0f766e') + ';text-align:center;margin-top:10px;line-height:1.5;"></div>'
+    + '<div style="background:#fff;border:1px solid #d7eee8;border-radius:16px;'
+    + 'height:20vh;min-height:104px;display:flex;align-items:center;justify-content:center;margin-top:9px;">'
+    + '<span style="font-size:22px;font-weight:900;color:#0f172a;line-height:1;">' + ch + '</span></div>'
+    + '<div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin-top:10px;">'
+    + opts.map(function(o, i){
+        return '<button type="button" onclick="eyeFocusPick(' + i + ')" '
+          + 'style="padding:14px 0;border-radius:12px;border:1.5px solid #d7eee8;background:#fff;'
+          + 'font-family:inherit;font-size:18px;font-weight:900;color:#0f766e;cursor:pointer;">' + o + '</button>';
+      }).join('')
+    + '</div>';
+
+  try{ if(window.CGO_T) CGO_T.paint(body); }catch(e){}
+  /* 이 검사는 거리를 일부러 달리 잡는다 — 거리 커버를 쓰지 않는다 */
+  var v = document.getElementById('eye-veil'); if(v) v.remove();
+};
+
+window.eyeFocusPick = function(i){
+  var r = window._eye.run; if(!r || !r.cur) return;
+  try{ var _lm = _eyeGetLms();
+       if(_lm && _lm.length > 100) window._eyeCam.faceFrames = (window._eyeCam.faceFrames||0) + 1; }catch(_){}
+  r.answers.push({ ok: (r.cur.opts[i] === r.cur.ch) });
+  r.at++;
+  eyeFocusDraw();
+};
+
+/* ══ 결과 — 검사마다 그 자리에 남는다 ══ */
+function _eyeCard(titleK, big, subHtml, color){
+  return '<div style="background:#fff;border:1px solid #d7eee8;border-radius:18px;padding:22px 16px;margin-top:12px;text-align:center;">'
+    + '<div data-k="' + titleK + '" style="font-size:11px;color:#64748b;font-weight:700;"></div>'
+    + '<div style="font-size:38px;font-weight:900;color:' + (color||'#0f766e') + ';line-height:1.15;margin-top:5px;">' + big + '</div>'
+    + '<div style="font-size:11.5px;color:#475569;margin-top:8px;line-height:1.7;">' + subHtml + '</div></div>';
+}
+function _eyeAgain(){
+  return '<button type="button" onclick="eyeTestClose()" data-k="9725" '
+    + 'style="width:100%;margin-top:14px;padding:14px;border:0;border-radius:999px;background:#0f172a;'
+    + 'color:#fff;font-size:13.5px;font-weight:900;cursor:pointer;font-family:inherit;"></button>';
+}
+function _eyeFaceOk(){
+  try{ return (window._eyeCam && window._eyeCam.faceFrames || 0) >= 1; }catch(_){ return false; }
+}
+function _eyeNoFace(body){
+  body.innerHTML = '<div style="background:#fff1f2;border:1px solid #fecdd3;border-radius:16px;padding:22px 18px;margin-top:13px;text-align:center;">'
+    + '<div style="font-size:30px;line-height:1;">📷</div>'
+    + '<div data-k="9998" style="font-size:14px;font-weight:900;color:#be123c;margin-top:10px;line-height:1.5;"></div>'
+    + '<div data-k="9999" style="font-size:11.5px;color:#475569;margin-top:8px;line-height:1.75;"></div>'
+    + _eyeAgain() + '</div>';
+  try{ if(window.CGO_T) CGO_T.paint(body); }catch(e){}
+}
+
+window.eyeResultAsti = function(){
+  var r = window._eye.run;
+  var body = document.getElementById('eyeTestBody');
+  var head = document.getElementById('eyeTestHead');
+  if(!body) return;
+  if(head) head.innerHTML = '';
+  if(!_eyeFaceOk()){ _eyeNoFace(body); return; }
+  var none = (r.axis < 0);
+  window._eyeDone.asti = { axis: r.axis, none: none };
+  body.innerHTML = _eyeCard(10149, none ? '—' : (r.axis + '°'),
+    '<span data-k="' + (none ? 10150 : 10151) + '"></span>', none ? '#0d9488' : '#b45309')
+    + '<div data-k="10152" style="font-size:11px;color:#64748b;text-align:center;margin-top:10px;line-height:1.7;"></div>'
+    + _eyeAgain();
+  eyeTabs();
+  try{ if(window.CGO_T) CGO_T.paint(body); }catch(e){}
+};
+
+window.eyeResultColor = function(){
+  var r = window._eye.run;
+  var body = document.getElementById('eyeTestBody');
+  var head = document.getElementById('eyeTestHead');
+  if(!body) return;
+  if(head) head.innerHTML = '';
+  if(!_eyeFaceOk()){ _eyeNoFace(body); return; }
+  var ok = r.answers.filter(function(a){ return a.ok; }).length;
+  var score = Math.round(ok / r.qs.length * 100);
+  window._eyeDone.color = { score: score, ok: ok, n: r.qs.length };
+  body.innerHTML = _eyeCard(10153, score, ok + '/' + r.qs.length
+    + ' · <span data-k="' + (score >= 84 ? 10154 : score >= 50 ? 10155 : 10156) + '"></span>',
+    score >= 84 ? '#0f766e' : score >= 50 ? '#b45309' : '#be123c')
+    + '<div data-k="10157" style="font-size:11px;color:#64748b;text-align:center;margin-top:10px;line-height:1.7;"></div>'
+    + _eyeAgain();
+  eyeTabs();
+  try{ if(window.CGO_T) CGO_T.paint(body); }catch(e){}
+};
+
+window.eyeResultFocus = function(){
+  var r = window._eye.run;
+  var body = document.getElementById('eyeTestBody');
+  var head = document.getElementById('eyeTestHead');
+  if(!body) return;
+  if(head) head.innerHTML = '';
+  if(!_eyeFaceOk()){ _eyeNoFace(body); return; }
+  var n = r.nearOk || 0, f = r.farOk || 0;
+  var tend = (f < n - 1) ? 'near' : (n < f - 1) ? 'far' : 'even';
+  window._eyeDone.focus = { near: n, far: f, tend: tend };
+  var K = { near: 10158, far: 10159, even: 10160 };
+  body.innerHTML = _eyeCard(10161, '<span data-k="' + K[tend] + '" style="font-size:22px;"></span>',
+    '<span data-k="10162"></span> ' + n + '/6 · <span data-k="10163"></span> ' + f + '/6',
+    tend === 'even' ? '#0f766e' : '#b45309')
+    + '<div data-k="10164" style="font-size:11px;color:#64748b;text-align:center;margin-top:10px;line-height:1.7;"></div>'
+    + _eyeAgain();
+  eyeTabs();
+  try{ if(window.CGO_T) CGO_T.paint(body); }catch(e){}
 };
