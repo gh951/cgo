@@ -35,6 +35,11 @@
   // 시력 영역만 크기 가변 (도형/색상/숫자/방향). 시선 고정 등은 고정.
   function _eyeSized(level, content, type){
     var sz = EYE_SIZE_BY_LEVEL[level].px;
+    /* ★ 자가 있으면 그 거리에 맞춰 크기를 바꾼다 — 35cm 기준, 멀면 크게 가까우면 작게 */
+    try{
+      var _cm = window.eyeRulerCm ? eyeRulerCm() : null;
+      if(_cm) sz = Math.round(sz * Math.max(0.55, Math.min(2.2, _cm / 35)));
+    }catch(_){}
     if(type === 'shape' || type === 'symbol' || type === 'direction'){
       return '<span style="font-size:' + sz + 'px;font-weight:900;color:#134e4a;line-height:1;display:inline-block;">' + content + '</span>';
     } else if(type === 'color'){
@@ -319,6 +324,28 @@
   }
 
   // ── 문항 표시 ────────────────────────────────────────────
+  /* ★ 그 순간의 거리로 시표 크기를 다시 쓴다 — 보이는 각도를 늘 같게 만든다.
+     문항은 만들 때 한 번 굳으므로 그릴 때마다 여기서 고친다. */
+  function _eyeScale(html){
+    var cm = null;
+    try{ cm = window.eyeRulerCm ? eyeRulerCm() : null; }catch(_){}
+    if(!cm) return html;
+    var r = Math.max(0.55, Math.min(2.2, cm / 35));
+    return String(html)
+      .replace(/font-size:(\d+(?:\.\d+)?)px/g, function(m,n){ return 'font-size:' + Math.round(n*r) + 'px'; })
+      .replace(/width:(\d+(?:\.\d+)?)px/g, function(m,n){ return 'width:' + Math.round(n*r) + 'px'; })
+      .replace(/height:(\d+(?:\.\d+)?)px/g, function(m,n){ return 'height:' + Math.round(n*r) + 'px'; });
+  }
+  /* 문제·보기 글자도 단계에 따라 작아진다 — 도형만 작아지면 큰 글자를 읽고 짐작할 수 있다 */
+  function _eyeTxtPx(level, base){
+    var px = base;
+    if(level >= 1 && level <= 5) px = Math.round(base * [1.35,1.15,1.0,0.86,0.74][level-1]);
+    var cm = null;
+    try{ cm = window.eyeRulerCm ? eyeRulerCm() : null; }catch(_){}
+    if(cm) px = Math.round(px * Math.max(0.7, Math.min(1.8, cm / 35)));
+    return Math.max(11, px);
+  }
+
   function eyeShowQuestion(idx){
     if(idx >= EYE_QUESTIONS.length){
       eyeFinishMeasure();
@@ -336,7 +363,7 @@
 
     var qText = document.getElementById('eye-question-text');
     qText.innerHTML = '<div style="font-size:10px;color:#0f766e;font-weight:800;letter-spacing:.15em;margin-bottom:14px;">' + catLabel.toUpperCase() + ' 식별</div>' +
-                      '<div style="display:flex;align-items:center;justify-content:center;min-height:110px;line-height:1;">' + q.emoji + '</div>' +
+                      '<div style="display:flex;align-items:center;justify-content:center;min-height:110px;line-height:1;">' + _eyeScale(q.emoji) + '</div>' +
                       (q.hint ? '<div style="font-size:10px;color:#0f766e;margin-top:8px;background:rgba(20,184,166,.1);padding:6px 10px;border-radius:6px;display:inline-block;">💡 ' + q.hint + '</div>' : '');
 
     var grid = document.getElementById('eye-options-grid');
@@ -374,7 +401,10 @@
       q.opts.forEach(function(opt, oi){
         var btn = document.createElement('button');
         btn.textContent = opt;
-        btn.style.cssText = 'padding:18px 12px;background:#f0fdfb;border:2px solid #ccfbf1;border-radius:12px;font-size:18px;font-weight:800;color:#134e4a;cursor:pointer;font-family:inherit;transition:all .15s;';
+        var _op = _eyeTxtPx(q.level || 0, 18);
+        btn.style.cssText = 'padding:' + Math.max(12, Math.round(_op*0.8)) + 'px 12px;background:#f0fdfb;'
+          + 'border:2px solid #ccfbf1;border-radius:12px;font-size:' + _op + 'px;font-weight:800;'
+          + 'color:#134e4a;cursor:pointer;font-family:inherit;transition:all .15s;line-height:1.25;';
         btn.onmouseover = function(){ this.style.background = '#ccfbf1'; };
         btn.onmouseout = function(){ this.style.background = '#f0fdfb'; };
         btn.onclick = function(){ eyeAnswer(idx, oi); };
@@ -827,7 +857,10 @@
         s.rt.push(a.rt);
       }
       // 활성도 레벨 통계 (level 1~5만)
-      if(a.level && a.level >= 1 && a.level <= 5){
+      /* ★ 시력 판정에는 시력 문항만 센다 — 색 구분·시선 고정은 시력이 아니다.
+         도형·숫자·글자·방향만 크기가 줄어드는 문항이다. */
+      if(a.level && a.level >= 1 && a.level <= 5
+         && a.cat !== 'color' && a.cat !== 'fixation'){
         levelStats[a.level].t++;
         if(a.correct) levelStats[a.level].c++;
       }
@@ -872,6 +905,9 @@
 
     resultHtml += '<div style="text-align:center;padding:14px;background:' + sideBg119 + ';border:2px solid ' + sideColor119 + ';border-radius:12px;margin-bottom:14px;">';
     resultHtml += '<div style="font-size:24px;margin-bottom:4px;">' + sideIcon119 + '</div>';
+    /* ★ 어떻게 재었는지 밝힌다 — 자로 잰 거리가 있으면 그 값을, 없으면 옛 방식임을 알린다 */
+    var _rc = null; try{ _rc = window.eyeRulerCm ? eyeRulerCm() : null; }catch(_){}
+    eyeState._rulerCm = _rc;
     resultHtml += '<div style="font-size:16px;font-weight:900;color:' + sideColor119 + ';letter-spacing:.05em;">' + sideKor119 + ' 측정 결과</div>';
     resultHtml += '<div style="font-size:10px;color:#666;margin-top:4px;">반대쪽 눈을 가린 상태에서 측정됨</div>';
     resultHtml += '</div>';
@@ -1042,6 +1078,14 @@
     // 다시 측정 버튼
     resultHtml += '<button onclick="window.eyeRetry()" style="margin-top:14px;width:100%;padding:14px;background:linear-gradient(135deg,#14b8a6,#0d9488);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:800;cursor:pointer;">🔄 다시 측정</button>';
 
+    /* 측정 조건 — 신뢰의 근거를 밝힌다 */
+    resultHtml += '<div style="margin-top:12px;padding:12px 13px;background:#f0fdf9;border:1px solid #99f6e4;'
+      + 'border-radius:12px;font-size:10.5px;color:#0f766e;line-height:1.9;">'
+      + '<div style="font-weight:900;margin-bottom:5px;">📏 ' + (window.K?K(10390):'') + '</div>'
+      + '<div>· ' + (window.K?K(10391):'') + ' '
+      + (eyeState._rulerCm ? eyeState._rulerCm + 'cm' : (window.K?K(10392):'')) + '</div>'
+      + '<div>· ' + (window.K?K(10393):'') + '</div>'
+      + '<div>· ' + (window.K?K(10394):'') + '</div></div>';
     document.getElementById('eye-result-content').innerHTML = resultHtml;
     document.getElementById('eye-result-area').style.display = 'block';
 
@@ -1409,3 +1453,28 @@
   };
   window.eyeSubResults = function(){ return S; };
 })();
+
+/* ══ 자(尺) — 눈 사이 실제 거리로 화면 크기와 거리를 잰다 ══
+   오행 의류가 키를 자로 써서 어깨너비를 재듯, 여기서는 눈 사이를 자로 쓴다.
+   살색 비율은 벽 색에 흔들려 못 믿는다 (노란 벽에서 15cm 로 잘못 읽혔다). */
+window.eyeRulerCm = function(){
+  var mm = null;
+  try{ mm = window.cgoIpdMm ? cgoIpdMm() : null; }catch(_){}
+  if(!mm) return null;
+  var lms = null;
+  try{ lms = (window._c24 && window._c24._faceLms) || window._eyeLms || null; }catch(_){}
+  if(!lms || lms.length < 400) return null;
+  var L = lms[468] || lms[33], R = lms[473] || lms[263];
+  if(!L || !R) return null;
+  var v = document.getElementById('eye-video');
+  var vw = (v && v.videoWidth) || 640;
+  var dx = Math.abs(L.x - R.x) * vw;
+  if(dx < 8) return null;
+  var f = (vw / 2) / Math.tan(68 * Math.PI / 360);   /* 폰 앞 카메라 화각 ~68° */
+  var cm = (mm * f) / dx / 10;
+  if(!isFinite(cm) || cm < 8 || cm > 120) return null;
+  return Math.round(cm * 10) / 10;
+};
+
+/* 화면 실제 크기 — 1인치 = 96 CSS화소 (기기 독립 단위) */
+window.eyeMmToPx = function(mm){ return mm * (96 / 25.4); };
