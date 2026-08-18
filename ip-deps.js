@@ -13909,7 +13909,7 @@ function _cgoSaveInfoRobust(){
   var nm=(g('ipName')||(document.getElementById('prof-name')||{}).value||_si.name||'').trim();
   var by=(g('ipBirthY')||(document.getElementById('prof-birth-y')||{}).value||_si.birthY||'');
   if(!nm||!by) return {ok:false, reason:'noinfo'};
-  var info={name:nm,birthY:by,birthM:g('ipBirthM')||_si.birthM||'',birthD:g('ipBirthD')||_si.birthD||'',gender:g('ipGender')||_si.gender||'M',time:g('ipTime')||_si.time||'',birthPlace:g('ipBirthPlace')||_si.birthPlace||'',curPlace:g('ipCurPlace')||_si.curPlace||'',calType:g('ipCalType')||_si.calType||'solar'};
+  var info={name:nm,birthY:by,birthM:g('ipBirthM')||_si.birthM||'',birthD:g('ipBirthD')||_si.birthD||'',gender:g('ipGender')||_si.gender||'M',time:g('ipTime')||_si.time||'',birthPlace:g('ipBirthPlace')||_si.birthPlace||'',curPlace:g('ipCurPlace')||_si.curPlace||'',calType:g('ipCalType')||_si.calType||'solar',height:g('ipHeight')||_si.height||'',weight:g('ipWeight')||_si.weight||''};
   var raw=JSON.stringify(info);
   function trySave(){ try{ localStorage.setItem('cgo_saved_info', raw); var v=localStorage.getItem('cgo_saved_info'); return v? true : new Error('readback-null'); }catch(e){ return e||new Error('unknown'); } }
   var r=trySave();
@@ -14008,7 +14008,14 @@ function _cgoAutoFillAll() {
     // ──────────────────────────────────────
     // 🎰 행운 번호 페이지
     // ──────────────────────────────────────
-    fillIfEmpty('ltBirthY', birthY);
+    /* ★ 키·몸무게 되돌리기 — 눈 검사의 자, 오행 의류의 치수로 쓰인다 */
+  try{
+    var _si2 = JSON.parse(localStorage.getItem('cgo_saved_info')||'{}');
+    if(_si2.height) fillIfEmpty('ipHeight', _si2.height);
+    if(_si2.weight) fillIfEmpty('ipWeight', _si2.weight);
+  }catch(_e){}
+
+  fillIfEmpty('ltBirthY', birthY);
     fillIfEmpty('ltBirthM', birthM);
     fillIfEmpty('ltBirthD', birthD);
     fillIfEmpty('ltBirth',  birthH);
@@ -22199,3 +22206,23 @@ try{
   if(typeof nextFamilyId==='undefined'||!nextFamilyId) nextFamilyId=1;
   window.nextFamilyId=nextFamilyId;
 }catch(_e){ try{ window.familyData=window.familyData||[]; }catch(__e){} }
+
+
+/* ══ 눈 사이 실제 거리(IPD) — 키·성별에서 낸다 ══
+   눈 검사가 화면 실제 크기를 알아내는 자로 쓴다.
+   모든 사람을 63mm 로 뭉개던 것과 다르다 — 그 사람의 몸에서 나온 값이다.
+   근거: 성인 남 평균 64mm · 여 61mm, 키에 비례해 자란다. */
+window.cgoIpdMm = function(){
+  var h = 0, g = 'M';
+  try{
+    h = parseFloat((document.getElementById('ipHeight')||{}).value || 0);
+    g = (document.getElementById('ipGender')||{}).value || 'M';
+    if(!h){ var s = JSON.parse(localStorage.getItem('cgo_saved_info')||'{}');
+            h = parseFloat(s.height || 0); g = s.gender || g; }
+  }catch(_e){}
+  if(!h || h < 80 || h > 230) return null;      /* 모르면 없다고 답한다 */
+  var base = (g === 'F') ? 61.0 : 64.0;         /* 그 성별의 평균 키에서의 눈 사이 */
+  var refH = (g === 'F') ? 162 : 174;
+  var mm = base * (1 + (h - refH) * 0.0030);    /* 키 10cm 마다 약 3% */
+  return Math.round(Math.max(48, Math.min(74, mm)) * 10) / 10;
+};

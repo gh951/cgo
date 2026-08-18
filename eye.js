@@ -204,7 +204,10 @@ function eyeFitLoop(){
     window._eye.cm = cm;
 
     var st;
-    window._eyeFit = { skin: skinRatio, cm: cm, face: hasFace, at: Date.now() };
+    /* ★ 눈 사이 자가 있으면 그것을 쓴다 — 살색 비율보다 훨씬 정확하다 */
+    var _rl = null; try{ _rl = window.eyeRuler ? eyeRuler() : null; }catch(_){}
+    if(_rl){ cm = _rl.cm; hasFace = true; }
+    window._eyeFit = { skin: skinRatio, cm: cm, face: hasFace, ruler: !!_rl, at: Date.now() };
     if(!hasFace) st = 'none';
     else if(cm > 50) st = 'far';       /* 멀다 → 가까이 오세요 */
     else if(cm < 22) st = 'near';      /* 가깝다 → 멀리 가세요 */
@@ -1224,4 +1227,33 @@ window.eyeAiAnalyze = function(){
     var el = document.getElementById('eye-ai-body');
     if(el){ el.setAttribute('data-k','10192'); try{ if(window.CGO_T) CGO_T.paint(el.parentNode); }catch(_){} }
   });
+};
+
+
+/* ══ 자(尺) — 눈 사이 실제 거리로 화면 크기와 거리를 잰다 ══
+   오행 의류가 키(cm)를 자로 써서 어깨너비를 재듯,
+   여기서는 눈 사이(mm)를 자로 써서 화면 화소와 거리를 잰다.
+   키를 안 넣었으면 옛 방식(살색 비율)으로 물러난다. */
+window.eyeRuler = function(){
+  var mm = null;
+  try{ mm = window.cgoIpdMm ? cgoIpdMm() : null; }catch(_){}
+  if(!mm) return null;
+  var lms = null;
+  try{ lms = (window._c24 && window._c24._faceLms) || window._eyeLms || null; }catch(_){}
+  if(!lms || lms.length < 400) return null;
+  var L = lms[468] || lms[33], R = lms[473] || lms[263];
+  if(!L || !R) return null;
+  var v = document.getElementById('eye-video');
+  var vw = (v && v.videoWidth) || 640;
+  var dxPx = Math.abs(L.x - R.x) * vw;
+  if(dxPx < 8) return null;
+  /* 카메라 화각을 알면 거리가 나온다. 모르면 폰 앞 카메라 평균값(약 68°)을 쓴다. */
+  var fov = 68;
+  try{ var s = window._eye.stream, t = s && s.getVideoTracks && s.getVideoTracks()[0];
+       var c = t && t.getSettings && t.getSettings();
+       if(c && c.width && window._eyeFovCache) fov = window._eyeFovCache; }catch(_){}
+  var f = (vw / 2) / Math.tan(fov * Math.PI / 360);   /* 초점거리(화소) */
+  var cm = (mm * f) / dxPx / 10;                       /* 거리 cm */
+  if(!isFinite(cm) || cm < 8 || cm > 120) return null;
+  return { cm: Math.round(cm * 10) / 10, ipd: mm, dxPx: Math.round(dxPx) };
 };
