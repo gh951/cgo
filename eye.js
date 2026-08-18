@@ -47,7 +47,7 @@
     try{ cm = window.eyeRulerCm ? eyeRulerCm() : null; }catch(_){}
     if(cm) mm = mm * (cm / 35);          /* 거리에 비례 — 보이는 각도를 늘 같게 */
     var px = (window.eyeMmPx ? eyeMmPx(mm) : mm * (96/25.4));
-    return Math.max(6, Math.round(px));
+    return Math.max(6, Math.min(180, Math.round(px)));
   }
 
 
@@ -316,7 +316,7 @@
 
     var qText = document.getElementById('eye-question-text');
     qText.innerHTML = '<div style="font-size:10px;color:#0f766e;font-weight:800;letter-spacing:.15em;margin-bottom:14px;">' + catLabel.toUpperCase() + ' 식별</div>' +
-                      '<div style="display:flex;align-items:center;justify-content:center;min-height:110px;line-height:1;">' + (q.landolt !== undefined ? window.eyeLandolt(q.level, q.landolt) : _eyeScale(q.emoji)) + '</div>' +
+                      '<div style="display:flex;align-items:center;justify-content:center;height:19vh;min-height:96px;max-height:200px;line-height:1;overflow:hidden;">' + (q.landolt !== undefined ? window.eyeLandolt(q.level, q.landolt) : _eyeScale(q.emoji)) + '</div>' +
                       (q.hint ? '<div style="font-size:10px;color:#0f766e;margin-top:8px;background:rgba(20,184,166,.1);padding:6px 10px;border-radius:6px;display:inline-block;">💡 ' + q.hint + '</div>' : '');
 
     var grid = document.getElementById('eye-options-grid');
@@ -821,11 +821,16 @@
 
     // 눈 활성도 추정 — 가장 높은 통과 레벨
     var visionLevels = [
-      {lv:1, vision:'1.0', label:'매우 낮음', desc:'낮은 단계 — 안과 또는 안경원 상담 권장'},
-      {lv:2, vision:'2.0', label:'낮음', desc:'낮은 단계 — 안과 또는 안경원 상담 권장'},
-      {lv:3, vision:'3.0', label:'보통', desc:'중간 단계'},
-      {lv:4, vision:'5.0', label:'양호', desc:'양호한 단계'},
-      {lv:5, vision:'8.0', label:'최적', desc:'가장 맑은 단계'}
+      {lv:1,  vision:'1.0',  label:'매우 낮음', desc:'낮은 단계 — 안과 또는 안경원 상담 권장'},
+      {lv:2,  vision:'2.0',  label:'낮음',     desc:'낮은 단계 — 안과 또는 안경원 상담 권장'},
+      {lv:3,  vision:'3.0',  label:'보통',     desc:'중간 단계'},
+      {lv:4,  vision:'5.0',  label:'양호',     desc:'양호한 단계'},
+      {lv:5,  vision:'6.3',  label:'양호',     desc:'양호한 단계'},
+      {lv:6,  vision:'8.0',  label:'최적',     desc:'맑은 단계'},
+      {lv:7,  vision:'10.0', label:'매우 좋음', desc:'아주 맑은 단계'},
+      {lv:8,  vision:'12.5', label:'매우 좋음', desc:'아주 맑은 단계'},
+      {lv:9,  vision:'16.0', label:'최상',     desc:'가장 맑은 단계'},
+      {lv:10, vision:'20.0', label:'최상',     desc:'가장 맑은 단계 — 이 이상은 화면으로 못 잽니다'}
     ];
     var estVision = '1.0';
     var estLabel = '측정 부족';
@@ -838,7 +843,7 @@
         estVision = vi.vision;
         estLabel = vi.label;
         estDesc = vi.desc;
-        estColor = lv >= 4 ? '#10b981' : lv >= 3 ? '#0f766e' : lv >= 2 ? '#f97316' : '#ef4444';
+        estColor = lv >= 6 ? '#10b981' : lv >= 4 ? '#0f766e' : lv >= 2 ? '#f97316' : '#ef4444';
         break;
       }
     }
