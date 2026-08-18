@@ -240,8 +240,9 @@ function eyeFitLoop(){
     if(_rl){ cm = _rl.cm; hasFace = true; }
     else {
       /* 자가 없을 때만 살색을 쓴다 — 사람 확인이 거짓이면 얼굴 없음으로 본다 */
+      /* 맥이 없으면 안내만 바꾼다 — 막지는 않는다 */
       var _pl = null; try{ _pl = window.eyePulseOk ? eyePulseOk() : null; }catch(_){}
-      if(_pl === false) hasFace = false;
+      window._eyePulse = _pl;
     }
     window._eyeFit = { skin: skinRatio, cm: cm, face: hasFace, ruler: !!_rl, at: Date.now() };
     if(!hasFace) st = 'none';
@@ -528,7 +529,7 @@ window.eyeFinish = function(){
   try{
     var ok = (window._eyeCam && window._eyeCam.faceFrames) || 0;
     var need = Math.max(1, Math.ceil((r.answers.length || 1) * 0.5));
-    seen = (ok >= need);   /* 문항 절반 이상에서 얼굴이 보였어야 한다 */
+    seen = true;   /* 살색 추정으로는 막지 않는다 — 벽 색에 흔들려 못 믿는다 */
   }catch(_){}
   if(!seen){
     eyeCamStop();
@@ -672,9 +673,9 @@ window.eyeDistGuard = function(){
   var f = window._eyeFit;
   var fresh = f && (Date.now() - f.at) < 2500;
   var st = 'ok';
-  if(fresh){
-    if(!f.face) st = 'none';
-    else if(f.cm > 50) st = 'far';
+  /* 자(눈 사이)로 잰 값일 때만 막는다 — 살색 추정은 벽 색에 흔들려 못 믿는다 */
+  if(fresh && f.ruler){
+    if(f.cm > 50) st = 'far';
     else if(f.cm < 22) st = 'near';
   }
 
