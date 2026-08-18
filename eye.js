@@ -146,7 +146,8 @@ window.eyeCamStart = function(){
       window._eye.stream = s;
       if(v){ v.srcObject = s; v.play().catch(function(){}); }
       if(idle) idle.style.display = 'none';
-        try{ if(window.eyeFMStart) eyeFMStart(); }catch(_){}
+        try{ if(window.eyeFMEnsure) eyeFMEnsure().then(function(){ if(window.eyeFMStart) eyeFMStart(); });
+     else if(window.eyeFMStart) eyeFMStart(); }catch(_){}
       eyeFitLoop();
     })
     .catch(function(){
@@ -189,6 +190,36 @@ function eyeFitLoop(){
         }
       }
       skinRatio = tot ? skin / tot : 0;
+      /* ★ 벽을 걸러낸다 — 살색이면서 움직이는 칸만 센다.
+         노란 벽·나무 액자가 살색 조건을 통과해 거리가 15cm 로 잘못 읽혔다. */
+      if(!window._eyePrev || window._eyePrev.length !== dt.length){
+        window._eyePrev = new Uint8ClampedArray(dt);
+      }else{
+        var pv = window._eyePrev, live = 0, liveTot = 0;
+        for(var y2 = 8; y2 < 56; y2++){
+          for(var x2 = 8; x2 < 56; x2++){
+            var q = (y2*64 + x2) * 4;
+            var R2 = dt[q], G2 = dt[q+1], B2 = dt[q+2];
+            var isSkin = (R2 > 80 && G2 > 40 && B2 > 20 && R2 > G2 && R2 > B2 && (R2 - G2) > 10);
+            if(!isSkin) continue;
+            liveTot++;
+            var dif = Math.abs(R2 - pv[q]) + Math.abs(G2 - pv[q+1]) + Math.abs(B2 - pv[q+2]);
+            if(dif >= 4) live++;          /* 살아 있는 것은 늘 미세하게 변한다 */
+          }
+        }
+        /* 움직이는 살색이 3분의 1도 안 되면 벽으로 본다 */
+        var liveRate = liveTot ? live / liveTot : 0;
+        window._eyeLive = liveRate;
+        if(liveRate < 0.33) skinRatio = skinRatio * liveRate * 2;
+        /* 혈류 확인 도장 — 초록 채널 평균을 모아 심장 주기가 있는지 본다 */
+        var gsum = 0, gn = 0;
+        for(var y3 = 20; y3 < 44; y3++){ for(var x3 = 20; x3 < 44; x3++){
+          var q3 = (y3*64 + x3) * 4; gsum += dt[q3+1]; gn++; } }
+        if(!window._eyeGbuf) window._eyeGbuf = [];
+        window._eyeGbuf.push(gsum / Math.max(1, gn));
+        if(window._eyeGbuf.length > 60) window._eyeGbuf.shift();
+        window._eyePrev = new Uint8ClampedArray(dt);
+      }
     }catch(e){ return; }
 
     var hasFace = skinRatio > 0.12;
@@ -207,6 +238,11 @@ function eyeFitLoop(){
     /* ★ 눈 사이 자가 있으면 그것을 쓴다 — 살색 비율보다 훨씬 정확하다 */
     var _rl = null; try{ _rl = window.eyeRuler ? eyeRuler() : null; }catch(_){}
     if(_rl){ cm = _rl.cm; hasFace = true; }
+    else {
+      /* 자가 없을 때만 살색을 쓴다 — 사람 확인이 거짓이면 얼굴 없음으로 본다 */
+      var _pl = null; try{ _pl = window.eyePulseOk ? eyePulseOk() : null; }catch(_){}
+      if(_pl === false) hasFace = false;
+    }
     window._eyeFit = { skin: skinRatio, cm: cm, face: hasFace, ruler: !!_rl, at: Date.now() };
     if(!hasFace) st = 'none';
     else if(cm > 50) st = 'far';       /* 멀다 → 가까이 오세요 */
@@ -1256,4 +1292,44 @@ window.eyeRuler = function(){
   var cm = (mm * f) / dxPx / 10;                       /* 거리 cm */
   if(!isFinite(cm) || cm < 8 || cm > 120) return null;
   return { cm: Math.round(cm * 10) / 10, ipd: mm, dxPx: Math.round(dxPx) };
+};
+
+
+/* ══ 사람 확인 — 초록 채널에 심장 주기(0.8~2Hz)가 있는가 ══
+   벽·사진은 맥이 없다. 사람만 있다. */
+window.eyePulseOk = function(){
+  var b = window._eyeGbuf;
+  if(!b || b.length < 30) return null;          /* 아직 모른다 */
+  var n = b.length, mean = 0;
+  for(var i = 0; i < n; i++) mean += b[i];
+  mean /= n;
+  var v = 0;
+  for(var j = 0; j < n; j++) v += (b[j]-mean)*(b[j]-mean);
+  v = Math.sqrt(v / n);
+  if(v < 0.15) return false;                    /* 아예 안 변한다 → 벽 */
+  /* 오르내림 횟수로 대략의 주기를 본다 (0.1초마다 한 칸) */
+  var cross = 0;
+  for(var k = 1; k < n; k++){
+    if((b[k-1] - mean) * (b[k] - mean) < 0) cross++;
+  }
+  var hz = (cross / 2) / (n * 0.1);
+  return (hz >= 0.6 && hz <= 2.6);
+};
+
+
+/* ══ 얼굴 좌표 프로그램을 눈 검사에서도 받아 온다 ══
+   c24.js 안에서만 불러오던 탓에, 나의 건강 밸런스를 열지 않으면 없었다.
+   없으면 자가 조용히 물러나 살색 방식으로 떨어졌다 — 그것이 벽에 속은 원인이다. */
+window.eyeFMEnsure = function(){
+  if(typeof FaceMesh !== 'undefined') return Promise.resolve(true);
+  if(window._eyeFMLoading) return window._eyeFMLoading;
+  window._eyeFMLoading = new Promise(function(done){
+    var s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js';
+    s.async = true;
+    s.onload = function(){ done(typeof FaceMesh !== 'undefined'); };
+    s.onerror = function(){ done(false); };
+    document.head.appendChild(s);
+  });
+  return window._eyeFMLoading;
 };
