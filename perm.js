@@ -8,7 +8,7 @@
    결과를 만드는 종료 함수는 부르지 않는다 — 반쪽 데이터로 결과가 만들어지기 때문. */
 window.cgoResetFeatures = function(){
   /* 1) 카메라 — 취소 함수만 부른다 */
-  ['_c24Cancel','c39Stop','scStop','iqCamStop','eyeCancelMeasure','cgoAccCamClose'].forEach(function(fn){
+  ['_c24Cancel','c39Stop','scStop','iqCamStop','eyeCancelMeasure','eyeStopMeasure','cgoAccCamClose'].forEach(function(fn){
     try{ if(typeof window[fn] === 'function') window[fn](); }catch(e){}
   });
   try{ if(window._cgoStopAllCams) window._cgoStopAllCams(); }catch(e){}
@@ -101,7 +101,7 @@ window.cgoResetFeatures = function(){
       });
     }catch(e){}
     /* 기능별 '취소' 함수만 부른다 — 결과를 계산해 저장하는 종료 함수는 부르지 않는다 */
-    ['eyeCancelMeasure','_c24Cancel','c39Stop','scStop','iqCamStop','cgoAccCamClose'].forEach(function(fn){
+    ['eyeCancelMeasure','eyeCamStop','_c24Cancel','c39Stop','scStop','iqCamStop','cgoAccCamClose'].forEach(function(fn){
       try{ if(typeof window[fn] === 'function') window[fn](); }catch(e){}
     });
     return n;
@@ -133,6 +133,12 @@ window.cgoResetFeatures = function(){
             x.style.containIntrinsicSize = '';
           });
           try{ if(window.cgoResetFeatures) cgoResetFeatures(); }catch(e){}
+          /* ★ 스크롤은 .content 가 쥐고 있다. 페이지만 0으로 돌려선 소용이 없어
+             앞 화면에서 내려둔 만큼 제목이 헤더 뒤로 숨은 것처럼 보였다. */
+          try{
+            var sc = document.querySelector('.content');
+            if(sc){ sc.scrollTop = 0; [0,60,240].forEach(function(d){ setTimeout(function(){ sc.scrollTop = 0; }, d); }); }
+          }catch(e){}
           [0, 60, 240].forEach(function(d){
             setTimeout(function(){
               try{ if(window.cgoCullScan) cgoCullScan(el); }catch(e){}
