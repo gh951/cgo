@@ -5366,3 +5366,16 @@ function sviShowResult(oh){
     CGO_T.__armkWrap = true; done = true;
   }, 5000);
 })();
+
+/* ★ 언어 전환 → 색 패널이 그려져 있으면 다시 칠한다 */
+var _ACN_REPAINT = 1;
+(function(){
+  function rp(){
+    try{
+      var p = document.getElementById('rmai-ar-color-picker');
+      if(p && p.innerHTML && typeof _rmaiArInitColorPicker === 'function') _rmaiArInitColorPicker();
+    }catch(e){}
+  }
+  if(typeof window.cgoRepaintOn === 'function') window.cgoRepaintOn(rp);
+  else { var t = setInterval(function(){ if(typeof window.cgoRepaintOn === 'function'){ clearInterval(t); window.cgoRepaintOn(rp); } }, 500); setTimeout(function(){ clearInterval(t); }, 15000); }
+})();
