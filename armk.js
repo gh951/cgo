@@ -1,3 +1,9 @@
+/* ══ AR 화면 글자 — 번호 사전에서 가져온다 ══ */
+window._aK = function(n, f){
+  try{ var v = window.K ? window.K(n) : null; return (v && v !== String(n)) ? v : (f || ''); }
+  catch(e){ return f || ''; }
+};
+
 /* ════════════════════════════════════════════════════════════
    💄 AR 메이크업 — 구 CGO 원본 엔진 그대로
    ① 소개 팝업 ② 스캔·색 라이브러리·AR 렌더 ③ AI 상담
@@ -1044,7 +1050,7 @@ window.rmaiCaptureBeforePhoto = function(){
 
       var captureBtn = document.createElement('button');
       captureBtn.style.cssText = 'flex:1;padding:14px;background:linear-gradient(135deg,#f472b6,#a855f7);border:none;border-radius:12px;color:#fff;font-size:14px;font-weight:800;cursor:pointer;';
-      captureBtn.textContent = _cgoT('📸 촬영');
+      captureBtn.textContent = _cgoT(_aK(12302));
       captureBtn.onclick = function(){
         var canvas = document.createElement('canvas');
         canvas.width = 320; canvas.height = 240;
@@ -1068,12 +1074,12 @@ window.rmaiCaptureBeforePhoto = function(){
         if(step2){ step2.style.background='linear-gradient(135deg,rgba(168,85,247,.3),rgba(244,114,182,.2))'; step2.style.borderColor='#a855f7'; step2.style.color='#a855f7'; }
 
         var captureBtn2 = document.getElementById('rmai-capture-btn');
-        if(captureBtn2){ captureBtn2.textContent = _cgoT('📸 다시 촬영하기');
+        if(captureBtn2){ captureBtn2.textContent = _cgoT(_aK(12303));
           /* ★ C-63: textContent 대입 후 즉시 번역 */
           try{ if(window._LANG && window._LANG!=='ko' && typeof _cgoTranslateNode==='function') _cgoTranslateNode(captureBtn2); }catch(e){} }
 
         var status = document.getElementById('rmai-face-status');
-        if(status){ status.textContent = _cgoT('✅ 화장 전 촬영 완료! 이제 메이크업 후 분석을 시작하세요');
+        if(status){ status.textContent = _cgoT(_aK(12304));
           /* ★ C-63: textContent 대입 후 즉시 번역 */
           try{ if(window._LANG && window._LANG!=='ko' && typeof _cgoTranslateNode==='function') _cgoTranslateNode(status); }catch(e){} }
 
@@ -1083,7 +1089,7 @@ window.rmaiCaptureBeforePhoto = function(){
 
       var cancelBtn = document.createElement('button');
       cancelBtn.style.cssText = 'flex:1;padding:14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);border-radius:12px;color:rgba(255,255,255,.6);font-size:14px;font-weight:700;cursor:pointer;';
-      cancelBtn.textContent = _cgoT('✕ 닫기');
+      cancelBtn.textContent = _cgoT(_aK(12305));
       /* ★ C-63: 문구 통일 + 즉시 번역 */
       try{ if(window._LANG && window._LANG!=='ko' && typeof _cgoTranslateNode==='function') _cgoTranslateNode(cancelBtn); }catch(e){}
       cancelBtn.onclick = function(){
@@ -1096,7 +1102,7 @@ window.rmaiCaptureBeforePhoto = function(){
       popup.appendChild(btnRow);
       document.body.appendChild(popup);
     })
-    .catch(function(){ _cgoCameraAlert('카메라를 열 수 없습니다.'); });
+    .catch(function(){ _cgoCameraAlert(_aK(12306)); });
   }, {constraints:{video:{facingMode:'user',width:320,height:240}}});
 };
 
@@ -1150,8 +1156,8 @@ function _rmaiStartScanCore(){
       var remain=30-_rmai.sec;
       if(prg) prg.style.width=(_rmai.sec/30*100)+'%';
       if(tmr){ /* ★ C-63: '3초 남음'은 숫자 조립 → 단위를 언어별로 */
-        var _su='초 남음'; try{ if(window._LANG&&window._LANG!=='ko'){ var _dd=LANG_DICTIONARY[window._LANG]; if(_dd&&_dd['초 남음']) _su=_dd['초 남음']; } }catch(e){}
-        tmr.textContent=canCount?(remain>0?remain+_su:'분석 완료!'):'⏸ 얼굴 전체를 화면에 맞춰주세요';
+        var _su=_aK(12307); try{ if(window._LANG&&window._LANG!=='ko'){ var _dd=LANG_DICTIONARY[window._LANG]; if(_dd&&_dd[_aK(12307)]) _su=_dd[_aK(12307)]; } }catch(e){}
+        tmr.textContent=canCount?(remain>0?remain+_su:_aK(12308)):_aK(12309);
         try{ if(window._LANG && window._LANG!=='ko' && typeof _cgoTranslateNode==='function') _cgoTranslateNode(tmr); }catch(e){} }
 
       var v2=document.getElementById('rmai-video');
@@ -1202,12 +1208,12 @@ function _rmaiStartScanCore(){
             var maiNow=Math.round((_rmai.uni+_rmai.glow+_rmai.cover+_rmai.moist)/4);
             if(live) live.textContent='MAI '+maiNow+'점';
             var fs=document.getElementById('rmai-face-status');
-            if(fs){ fs.textContent=_cgoT('✅ 얼굴 감지 중 · 분석 진행'); fs.style.color='rgba(244,114,182,.9)'; }
+            if(fs){ fs.textContent=_cgoT(_aK(12310)); fs.style.color='rgba(244,114,182,.9)'; }
           } else {
             _rmai.lostCount++;
             if(_rmai.lostCount>0){
               var fs=document.getElementById('rmai-face-status');
-              if(fs){ fs.textContent=_cgoT('⚠️ 얼굴 전체를 화면에 맞춰주세요'); fs.style.color='rgba(251,191,36,.8)';
+              if(fs){ fs.textContent=_cgoT(_aK(12311)); fs.style.color='rgba(251,191,36,.8)';
                 try{ if(window._LANG && window._LANG!=='ko' && typeof _cgoTranslateNode==='function') _cgoTranslateNode(fs); }catch(e){} }
             }
           }
@@ -1215,7 +1221,7 @@ function _rmaiStartScanCore(){
       }
       if(_rmai.lostCount>=5 && _rmai._samples===0){
         var fs=document.getElementById('rmai-face-status');
-        if(fs){ fs.textContent=_cgoT('⛔ 얼굴이 감지되지 않습니다. 카메라에 얼굴을 가까이 대주세요'); fs.style.color='rgba(248,113,113,.9)'; }
+        if(fs){ fs.textContent=_cgoT(_aK(12312)); fs.style.color='rgba(248,113,113,.9)'; }
         _rmai.sec=2; _rmai.lostCount=0;
         return;
       }
@@ -1223,7 +1229,7 @@ function _rmaiStartScanCore(){
         clearInterval(_rmai.timer); _rmai.running=false;
         if(_rmai._samples<5){
           var fs2=document.getElementById('rmai-face-status');
-          if(fs2){ fs2.textContent=_cgoT('⚠️ 얼굴 감지 부족 — 다시 시도해 주세요'); fs2.style.color='rgba(251,191,36,.9)'; }
+          if(fs2){ fs2.textContent=_cgoT(_aK(12313)); fs2.style.color='rgba(251,191,36,.9)'; }
           if(_rmai.stream){_rmai.stream.getTracks().forEach(function(t){t.stop();});}
           var v3=document.getElementById('rmai-video'); if(v3) v3.style.display='none';
           var ph3=document.getElementById('rmai-placeholder'); if(ph3) ph3.style.display='flex';
@@ -1559,7 +1565,7 @@ function _rmaiArStartCore(){
   var stopBtn = document.getElementById('rmai-ar-stop-btn');
 
   if(!video || !canvas){
-    alert('AR 카메라 영역을 찾을 수 없습니다.');
+    alert(_aK(12314));
     return;
   }
 
@@ -1580,7 +1586,7 @@ function _rmaiArStartCore(){
       if(placeholder) placeholder.style.display = 'none';
       if(status){
         status.style.display = 'block';
-        status.textContent = _cgoT('⏳ FaceMesh 로딩 중...');
+        status.textContent = _cgoT(_aK(12315));
         status.style.background = 'rgba(0,0,0,.65)';
       }
       if(stopBtn) stopBtn.style.display = 'block';
@@ -1604,7 +1610,7 @@ function _rmaiArInitFaceMesh(retryCount){
   if(typeof FaceMesh === 'undefined'){
     // 첫 시도에 CDN script를 *동적으로 추가* (페이지 로드 시 안 된 경우 대비)
     if(retryCount === 0 && !document.querySelector('script[data-rmai-facemesh]')){
-      if(status){ status.textContent = _cgoT('⏳ AR 라이브러리 로드 중...'); status.style.background = 'rgba(251,191,36,.85)'; }
+      if(status){ status.textContent = _cgoT(_aK(12316)); status.style.background = 'rgba(251,191,36,.85)'; }
       var s = document.createElement('script');
       s.src = 'https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js';
       s.setAttribute('data-rmai-facemesh', '1');
@@ -1615,7 +1621,7 @@ function _rmaiArInitFaceMesh(retryCount){
     if(retryCount < 60){ // 6초 (100ms × 60) 까지 재시도
       if(status && retryCount % 5 === 0){
         var dots = '.'.repeat((retryCount/5) % 4 + 1);
-        status.textContent = _cgoT('⏳ AR 준비 중')+dots;
+        status.textContent = _cgoT(_aK(12317))+dots;
       }
       setTimeout(function(){ _rmaiArInitFaceMesh(retryCount + 1); }, 100);
       return;
@@ -1623,7 +1629,7 @@ function _rmaiArInitFaceMesh(retryCount){
 
     // 6초 후에도 미로드 → 명시적 에러
     if(status){
-      status.textContent = _cgoT('⚠️ 라이브러리 로드 실패 — 인터넷 확인');
+      status.textContent = _cgoT(_aK(12318));
       status.style.background = 'rgba(239,68,68,.85)';
     }
     console.error('[rmaiAr] FaceMesh CDN load timeout (6s)');
@@ -1648,7 +1654,7 @@ function _rmaiArInitFaceMesh(retryCount){
     _rmaiAr.faceMesh.onResults(_rmaiArOnResults);
 
     if(status){
-      status.textContent = _cgoT('✓ FaceMesh 초기화 완료');
+      status.textContent = _cgoT(_aK(12319));
       status.style.background = 'rgba(34,197,94,.85)';
     }
 
@@ -1660,7 +1666,7 @@ function _rmaiArInitFaceMesh(retryCount){
     if(typeof rmaiChatSay === 'function') rmaiChatSay('ar-started');
   } catch(e){
     if(status){
-      status.textContent = _cgoT('⚠️ 초기화 실패');
+      status.textContent = _cgoT(_aK(12320));
       status.style.background = 'rgba(239,68,68,.85)';
     }
     console.error('[rmaiAr] FaceMesh init error:', e);
@@ -2507,7 +2513,7 @@ function _rmaiArOnResults(results){
         if(ac.cheek) applied.push('볼');
         if(ac.eye) applied.push('아이');
         if(ac.base) applied.push('베이스');
-        status.textContent = _cgoT('✓ 추적 중 · ') + (applied.length ? applied.join('·')+' 적용' : '색 선택 대기');
+        status.textContent = _cgoT(_aK(12321)) + (applied.length ? applied.join('·')+' 적용' : _aK(12322));
         status.style.background = 'rgba(34,197,94,.85)';
       }
     }
@@ -2515,7 +2521,7 @@ function _rmaiArOnResults(results){
     ctx.drawImage(results.image, 0, 0, canvas.width, canvas.height);
     var status = document.getElementById('rmai-ar-status');
     if(status){
-      status.textContent = _cgoT('⏳ 얼굴 감지 중...');
+      status.textContent = _cgoT(_aK(12323));
       /* ★ C-63: textContent 대입 후 즉시 번역 */
       try{ if(window._LANG && window._LANG!=='ko' && typeof _cgoTranslateNode==='function') _cgoTranslateNode(status); }catch(e){}
       status.style.background = 'rgba(251,191,36,.85)';
@@ -2899,8 +2905,8 @@ function _rmaiArInitColorPicker(){
   var cats = [
     {key:'lip',   icon:'💋', name:'립',     pal: currentCardLib.lip,   subtitle:'립스틱'},
     {key:'cheek', icon:'🌸', name:'볼',     pal: currentCardLib.cheek, subtitle:'블러셔'},
-    {key:'eye',   icon:'👁️', name:'아이',   pal: currentCardLib.eye,   subtitle:'아이쉐도우'},
-    {key:'base',  icon:'🫧', name:'베이스', pal: currentCardLib.base,  subtitle:'베이스 톤'}
+    {key:'eye',   icon:'👁️', name:'아이',   pal: currentCardLib.eye,   subtitle:_aK(12324)},
+    {key:'base',  icon:'🫧', name:'베이스', pal: currentCardLib.base,  subtitle:_aK(12325)}
   ];
 
   // 카테고리 탭 — 5개 한 줄 (헤어 포함)
@@ -2918,9 +2924,9 @@ function _rmaiArInitColorPicker(){
 
   // ★ 600색 3카드 시스템 (오행 / 일반 / 명품)
   var cardModes = [
-    {key:'daily', icon:'🌿', name:'일반 데일리', desc:'200색 데일리 트렌드'},
-    {key:'luxury', icon:'💎', name:'명품 럭셔리', desc:'300색 글로벌 19개 브랜드'},
-    {key:'oheng', icon:'📜', name:'오행 보너스', desc:'100색 정통 오행'}
+    {key:'daily', icon:'🌿', name:_aK(12326), desc:_aK(12327)},
+    {key:'luxury', icon:'💎', name:_aK(12328), desc:_aK(12329)},
+    {key:'oheng', icon:'📜', name:_aK(12330), desc:_aK(12331)}
   ];
   var cardModeUI = '<div style="margin-bottom:14px;">';
   cardModeUI += '<div style="font-size:10px;color:#888;margin-bottom:6px;font-weight:700;">🎨 컬러 라이브러리 (총 600색 · 세계 최대)</div>';
@@ -2951,7 +2957,7 @@ function _rmaiArInitColorPicker(){
   // 현재 카테고리 + 현재 팔레트에 따른 색 배열 (4 카테고리만)
   var currentColors = (_rmaiAr.currentPalette === 'rainbow') ? _rmaiArRainbowSet : (currentCat.pal || []);
   var appliedHex = _rmaiAr.appliedColors[currentCat.key];
-  var paletteLabel = (_rmaiAr.currentPalette === 'rainbow') ? '🌈 무지개 7색' : (currentCat.icon + ' ' + currentCat.subtitle + ' — 사주 ' + (ohNames[oh]||oh) + ' · 7색');
+  var paletteLabel = (_rmaiAr.currentPalette === 'rainbow') ? _aK(12332) : (currentCat.icon + ' ' + currentCat.subtitle + ' — 사주 ' + (ohNames[oh]||oh) + ' · 7색');
 
   var swatchHtml = '<div style="font-size:11px;font-weight:800;color:#1a1408;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;">'
     + '<span>'+paletteLabel+'</span>'
@@ -3517,7 +3523,7 @@ function maiCaptureBeforePhoto(){
 
       var captureBtn = document.createElement('button');
       captureBtn.style.cssText = 'flex:1;padding:14px;background:linear-gradient(135deg,#f472b6,#a855f7);border:none;border-radius:12px;color:#fff;font-size:14px;font-weight:800;cursor:pointer;';
-      captureBtn.textContent = _cgoT('📸 촬영');
+      captureBtn.textContent = _cgoT(_aK(12302));
       captureBtn.onclick = function(){
         var canvas = document.createElement('canvas');
         canvas.width = 320; canvas.height = 240;
@@ -3544,20 +3550,20 @@ function maiCaptureBeforePhoto(){
 
         // 버튼 텍스트 변경
         var captureBtn2 = document.getElementById('mai-capture-btn');
-        if(captureBtn2){ captureBtn2.textContent = _cgoT('📸 다시 촬영하기');
+        if(captureBtn2){ captureBtn2.textContent = _cgoT(_aK(12303));
           /* ★ C-63: textContent 대입 후 즉시 번역 */
           try{ if(window._LANG && window._LANG!=='ko' && typeof _cgoTranslateNode==='function') _cgoTranslateNode(captureBtn2); }catch(e){} }
 
         // 상태 메시지
         var status = document.getElementById('mai-face-status');
-        if(status){ status.textContent = _cgoT('✅ 화장 전 촬영 완료! 이제 메이크업 후 분석을 시작하세요');
+        if(status){ status.textContent = _cgoT(_aK(12304));
           /* ★ C-63: textContent 대입 후 즉시 번역 */
           try{ if(window._LANG && window._LANG!=='ko' && typeof _cgoTranslateNode==='function') _cgoTranslateNode(status); }catch(e){} }
       };
 
       var cancelBtn = document.createElement('button');
       cancelBtn.style.cssText = 'flex:1;padding:14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);border-radius:12px;color:rgba(255,255,255,.6);font-size:14px;font-weight:700;cursor:pointer;';
-      cancelBtn.textContent = _cgoT('✕ 닫기');
+      cancelBtn.textContent = _cgoT(_aK(12305));
       /* ★ C-63: 문구 통일 + 즉시 번역 */
       try{ if(window._LANG && window._LANG!=='ko' && typeof _cgoTranslateNode==='function') _cgoTranslateNode(cancelBtn); }catch(e){}
       cancelBtn.onclick = function(){
@@ -3570,7 +3576,7 @@ function maiCaptureBeforePhoto(){
       popup.appendChild(btnRow);
       document.body.appendChild(popup);
     })
-    .catch(function(){ _cgoCameraAlert('카메라를 열 수 없습니다.'); });
+    .catch(function(){ _cgoCameraAlert(_aK(12306)); });
   });
 }
 
@@ -3645,7 +3651,7 @@ function _maiStartScanCore(){
       if(_maiCanCount) _mai.sec++;
       var remain=30-_mai.sec;
       if(prg) prg.style.width=(_mai.sec/30*100)+'%';
-      if(tmr) tmr.textContent=_maiCanCount?(remain>0?remain+'초 남음':'분석 완료!'):'⏸ 얼굴 전체를 화면에 맞춰주세요';
+      if(tmr) tmr.textContent=_maiCanCount?(remain>0?remain+_aK(12307):_aK(12308)):_aK(12309);
 
       // 픽셀 분석
       var v2=document.getElementById('mai-video');
@@ -3688,12 +3694,12 @@ function _maiStartScanCore(){
             document.getElementById('mai-moist').textContent=_mai.moist;
             var maiNow=Math.round((_mai.uni+_mai.glow+_mai.cover+_mai.moist)/4);
             if(live) live.textContent='MAI '+maiNow+'점';
-            document.getElementById('mai-face-status').textContent=_cgoT('✅ 얼굴 감지 중 · 분석 진행');
+            document.getElementById('mai-face-status').textContent=_cgoT(_aK(12310));
             document.getElementById('mai-face-status').style.color='rgba(244,114,182,.9)';
           } else {
             _mai.lostCount++;
             if(_mai.lostCount>0){
-              document.getElementById('mai-face-status').textContent=_cgoT('⚠️ 얼굴 전체를 화면에 맞춰주세요');
+              document.getElementById('mai-face-status').textContent=_cgoT(_aK(12311));
               document.getElementById('mai-face-status').style.color='rgba(251,191,36,.8)';
             }
           }
@@ -3702,7 +3708,7 @@ function _maiStartScanCore(){
       // 얼굴 미감지 버퍼: 5초 연속 미감지 시에만 정지
       if(_mai.lostCount>=5 && _mai._samples===0){
         var fs=document.getElementById('mai-face-status');
-        if(fs){fs.textContent=_cgoT('⛔ 얼굴이 감지되지 않습니다. 카메라에 얼굴을 가까이 대주세요');fs.style.color='rgba(248,113,113,.9)';}
+        if(fs){fs.textContent=_cgoT(_aK(12312));fs.style.color='rgba(248,113,113,.9)';}
         _mai.sec=2; _mai.lostCount=0;
         return;
       }
@@ -3711,7 +3717,7 @@ function _maiStartScanCore(){
         if(_mai._samples<5){
           // 샘플 너무 적으면 재시작 유도
           var fs2=document.getElementById('mai-face-status');
-          if(fs2){fs2.textContent=_cgoT('⚠️ 얼굴 감지 부족 — 다시 시도해 주세요');fs2.style.color='rgba(251,191,36,.9)';}
+          if(fs2){fs2.textContent=_cgoT(_aK(12313));fs2.style.color='rgba(251,191,36,.9)';}
           if(_mai.stream){_mai.stream.getTracks().forEach(function(t){t.stop();});}
           document.getElementById('mai-video').style.display='none';
           document.getElementById('mai-placeholder').style.display='flex';
@@ -5120,7 +5126,7 @@ function _sviStartScanCore(){
       if(_sviCanCount) _svi.sec++;
       var remain=30-_svi.sec;
       if(prg) prg.style.width=(_svi.sec/30*100)+'%';
-      if(tmr) tmr.textContent=_sviCanCount?(remain>0?remain+_cgoT('초 남음'):_cgoT('분석 완료!')):_cgoT('⏸ 얼굴 전체를 화면에 맞춰주세요');
+      if(tmr) tmr.textContent=_sviCanCount?(remain>0?remain+_cgoT(_aK(12307)):_cgoT(_aK(12308))):_cgoT(_aK(12309));
 
       var v2=document.getElementById('svi-video');
       if(v2&&v2.videoWidth&&_svi.offCtx){
@@ -5161,12 +5167,12 @@ function _sviStartScanCore(){
             document.getElementById('svi-vitality').textContent=_svi.vitality;
             var sviNow=Math.round((_svi.luster+_svi.elastic+_svi.texture+_svi.vitality)/4);
             if(live) live.textContent='SVI '+sviNow+'점';
-            document.getElementById('svi-face-status').textContent=_cgoT('✅ 얼굴 감지 중 · 분석 진행');
+            document.getElementById('svi-face-status').textContent=_cgoT(_aK(12310));
             document.getElementById('svi-face-status').style.color='rgba(56,189,248,.9)';
           } else {
             _svi.lostCount++;
             if(_svi.lostCount>0){
-              document.getElementById('svi-face-status').textContent=_cgoT('⚠️ 얼굴 전체를 화면에 맞춰주세요');
+              document.getElementById('svi-face-status').textContent=_cgoT(_aK(12311));
               document.getElementById('svi-face-status').style.color='rgba(251,191,36,.8)';
             }
           }
@@ -5175,7 +5181,7 @@ function _sviStartScanCore(){
       // 얼굴 미감지 버퍼: 5초 연속 미감지 시에만 정지
       if(_svi.lostCount>=5 && _svi._samples===0){
         var fs=document.getElementById('svi-face-status');
-        if(fs){fs.textContent=_cgoT('⛔ 얼굴이 감지되지 않습니다. 카메라에 얼굴을 가까이 대주세요');fs.style.color='rgba(56,189,248,.9)';}
+        if(fs){fs.textContent=_cgoT(_aK(12312));fs.style.color='rgba(56,189,248,.9)';}
         _svi.sec=2; _svi.lostCount=0;
         return;
       }
@@ -5183,7 +5189,7 @@ function _sviStartScanCore(){
         clearInterval(_svi.timer); _svi.running=false;
         if(_svi._samples<5){
           var fs2=document.getElementById('svi-face-status');
-          if(fs2){fs2.textContent=_cgoT('⚠️ 얼굴 감지 부족 — 다시 시도해 주세요');fs2.style.color='rgba(251,191,36,.9)';}
+          if(fs2){fs2.textContent=_cgoT(_aK(12313));fs2.style.color='rgba(251,191,36,.9)';}
           if(_svi.stream){_svi.stream.getTracks().forEach(function(t){t.stop();});}
           document.getElementById('svi-video').style.display='none';
           document.getElementById('svi-placeholder').style.display='flex';
