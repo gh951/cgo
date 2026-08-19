@@ -2209,8 +2209,8 @@ function _rmaiArOnResults(results){
           /* ★ 위로 0.65배는 벽까지 덮어 네모 자국을 만들었다 — 0.42배로 좁힌다 */
               var hairY = Math.max(0, Math.floor(ovalMinY - faceH * 0.42));
           var hairH = Math.floor(faceH * 0.95);
-          var hairX = Math.max(0, Math.floor(ovalMinX - faceW * 0.45));
-          var hairW = Math.floor(faceW * 1.9);
+          var hairX = Math.max(0, Math.floor(ovalMinX - faceW * 0.26));
+          var hairW = Math.floor(faceW * 1.52);
           hairW = Math.min(canvas.width - hairX, hairW);
           hairH = Math.min(canvas.height - hairY, hairH);
 
@@ -2273,6 +2273,15 @@ function _rmaiArOnResults(results){
                 if(xx > faceR[yy]) faceR[yy] = xx;
               }
             }
+
+            /* ★ 앞 프레임 확률을 기억해 섞는다 — 조명이 흔들려도 경계가 눌어붙는다.
+               구글이 말한 '프레임 사이 일관성' 을 우리 방식으로 넣는다. */
+            var pkey = hairW + 'x' + hairH;
+            if(!window._rmaiHairPrev || window._rmaiHairPrevKey !== pkey){
+              window._rmaiHairPrev = new Float32Array(hairW * hairH);
+              window._rmaiHairPrevKey = pkey;
+            }
+            var prevP = window._rmaiHairPrev;
 
             var colTop = new Int16Array(hairW);
             var faceCx0 = (ovalMinX + ovalMaxX) / 2 - hairX;
@@ -2381,9 +2390,9 @@ function _rmaiArOnResults(results){
                 }
                 /* 그 줄의 머리 꼭대기보다 위는 벽이다 */
                 if(py < colTop[px]) continue;
-                if(py < colTop[px]) continue;   /* 그 줄의 머리 꼭대기보다 위는 벽 */
+                if(py < colTop[px]){ prevP[pixelIdx] *= 0.5; continue; }   /* 꼭대기 위는 벽 */
                 /* ★ 얼굴 윤곽 안이면 머리가 아니다 — 안쪽으로 3화소 여유 */
-                if(faceR[py] >= 0 && px > faceL[py] + 3 && px < faceR[py] - 3) continue;
+                if(faceR[py] >= 0 && px > faceL[py] + 3 && px < faceR[py] - 3){ prevP[pixelIdx] = 0; continue; }
                 /* ★ 외톨이 점 제거 — 머리카락은 뭉쳐 있다. 혼자 떨어진 점은 벽·피부다.
                    이웃 넷 중 둘 이상이 어두워야 인정한다. */
                 if(px >= 2 && py >= 2 && px < hairW - 2 && py < hairH - 2){
@@ -2403,6 +2412,10 @@ function _rmaiArOnResults(results){
                   var sk = window.rmaiNanoSkin ? rmaiNanoSkin(px, py) : -1;
                   if(sk >= 0) hairProb *= Math.max(0, 1 - sk * 1.15);
                 }catch(_e){}
+                /* ★ 앞 프레임과 섞는다 — 70:30. 경계가 떨리지 않고 눌어붙는다 */
+                var pi0 = pixelIdx;
+                hairProb = prevP[pi0] * 0.62 + hairProb * 0.38;
+                prevP[pi0] = hairProb;
                 if(hairProb <= 0.04) continue;
 
                 // ★ 박입 68 — 슬라이더 dynamic 시스템 (C-44 죽이게 진짜 100% 동작)
@@ -2419,16 +2432,23 @@ function _rmaiArOnResults(results){
                 var workR = hr, workG = hg, workB = hb;
                 if(hlum < 110){
                   var darkness = (110 - hlum) / 110;
-                  var lift = 1 + darkness * (190/Math.max(hlum,1) - 1) * DYN_LIFT_K;
+                  var lift = 1 + darkness * (190/Math.max(hlum,1) - 1) * DYN_LIFT_K * 0.45;
                   workR = Math.min(255, hr * lift);
                   workG = Math.min(255, hg * lift);
                   workB = Math.min(255, hb * lift);
                 }
 
                 // multiplicative blend (텍스처 보존)
-                var multR = (workR * tintR) / 255;
-                var multG = (workG * tintG) / 255;
-                var multB = (workB * tintB) / 255;
+                /* ★ 밝기·결 보존 — 원래 밝기를 그대로 두고 색조만 갈아끼운다.
+                   억지로 밝히고 색을 덮으니 결이 뭉개져 헬멧처럼 보였다.
+                   물감의 밝기를 그 화소의 밝기에 맞춰 옮긴다. */
+                var tLum = 0.2126*tintR + 0.7152*tintG + 0.0722*tintB;
+                var wLum = 0.2126*workR + 0.7152*workG + 0.0722*workB;
+                var kRatio = wLum / Math.max(1, tLum);
+                kRatio = Math.max(0.35, Math.min(2.4, kRatio));
+                var multR = Math.min(255, tintR * kRatio);
+                var multG = Math.min(255, tintG * kRatio);
+                var multB = Math.min(255, tintB * kRatio);
 
                 // Additive (흑발에 색 더 진하게)
                 if(hlum < 80){
@@ -2446,7 +2466,10 @@ function _rmaiArOnResults(results){
                 /* ★ 인공 그림자(가우스) 제거 — 네모를 감추려던 것인데
                    돔·결·확률 셋이 경계를 잡으므로 얼룩만 남겼다.
                    경계 바깥 가장자리에만 살짝 남겨 부드럽게 끝나게 한다. */
-                var edgeFade = 1;     /* ★ 가장자리 감쇄도 제거 */
+                /* ★ 테두리 12화소만 서서히 — 안쪽은 100% 그대로.
+                   네모 선이 드러나던 것을 없애되, 얼룩은 만들지 않는다. */
+                var edgeD = Math.min(px, py, hairW - 1 - px, hairH - 1 - py);
+                var edgeFade = Math.min(1, edgeD / 12);
                 var alpha = Math.min(DYN_ALPHA_CAP, hairInt * Math.pow(hairWeight, 0.5) * edgeFade * hairProb);
 
                 hairData[hi]   = Math.round(hr * (1 - alpha) + multR * alpha);
