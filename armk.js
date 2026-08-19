@@ -2292,20 +2292,33 @@ function _rmaiArOnResults(results){
                 var isWhiteHair = (hlum > 175 && Math.abs(hr-hg) < 12 && Math.abs(hg-hb) < 12);
                 var isDarkHair = hlum < 110;
 
-                /* ★ 확률 경계 — 0/1 로 자르면 가닥 사이가 톱니가 된다.
-                   밝기 90~145 를 부드럽게 넘겨 반투명 가닥을 살린다. */
-                var hairProb;
-                if(isBlondOrGinger || isWhiteHair) hairProb = 1;
-                else if(hlum <= 90) hairProb = 1;
-                else if(hlum >= 145) hairProb = 0;
-                else hairProb = (145 - hlum) / 55;
-                /* ★ 벽 차단 — 얼굴 폭 밖으로 나갈수록 급히 죽인다 */
+                /* ★ 머리 영토(돔) 안인지 먼저 본다 — 안이면 흰머리도 머리로 본다.
+                   벽 거르개를 돔 안에까지 걸었더니 새치·흰머리가 함께 걸러졌다. */
                 var faceCxL = (ovalMinX + ovalMaxX) / 2 - hairX;
-                var outXR = Math.abs(px - faceCxL) / (faceW * 0.62);
-                if(outXR > 1) hairProb *= Math.max(0, 1 - (outXR - 1) * 2.2);
-                /* ★ 채도 낮은 회벽 거르기 — 머리카락은 색이 실린다 */
+                var outXR = Math.abs(px - faceCxL) / (faceW * 0.60);
+                var hairlineY = foreheadInRegion - faceH * 0.06;   /* 이마선 조금 위 */
+                var inDome = (outXR <= 1.0) && (py <= hairlineY);
+
                 var mxC = Math.max(hr, hg, hb), mnC = Math.min(hr, hg, hb);
-                if(hlum > 95 && (mxC - mnC) < 10) hairProb *= 0.25;
+                var satC = mxC - mnC;
+
+                /* ★ 확률 경계 — 0/1 로 자르면 가닥 사이가 톱니가 된다 */
+                var hairProb;
+                if(isBlondOrGinger) hairProb = 1;
+                else if(hlum <= 90) hairProb = 1;
+                else if(hlum < 145) hairProb = 0.35 + (145 - hlum) / 55 * 0.65;
+                else if(inDome && satC < 42 && hlum < 235) hairProb = 0.85;  /* 흰머리·새치 */
+                else hairProb = 0;
+
+                /* ★ 벽 차단 — 돔 밖으로 나갈수록 급히 죽인다 */
+                if(outXR > 1) hairProb *= Math.max(0, 1 - (outXR - 1) * 2.6);
+                /* 돔 밖의 밋밋한 회색은 벽으로 본다 */
+                if(!inDome && hlum > 95 && satC < 12) hairProb *= 0.15;
+                /* ★ 이마 아래는 좌표로 잘라낸다 — 색과 무관하게 막는다 */
+                if(py > hairlineY){
+                  var below = (py - hairlineY) / Math.max(6, faceH * 0.05);
+                  hairProb *= Math.max(0, 1 - below);
+                }
                 if(hairProb <= 0.04) continue;
 
                 // ★ 박입 68 — 슬라이더 dynamic 시스템 (C-44 죽이게 진짜 100% 동작)
@@ -2342,7 +2355,9 @@ function _rmaiArOnResults(results){
                 }
 
                 // alpha (dynamic cap — slider 100 = 진짜 1.0)
-                var hairWeight = (180 - hlum) / 180;
+                /* ★ 밝은 머리(흰머리·새치)도 색이 실리게 한다.
+                   (180-hlum)/180 만 쓰면 흰머리는 무게가 0 이 되어 물들지 않았다. */
+                var hairWeight = Math.max(0.55, (180 - hlum) / 180);
                 /* ★ 확률을 그대로 투명도에 곱한다 — 가닥 사이 반투명이 살아난다 */
                 var alpha = Math.min(DYN_ALPHA_CAP, hairInt * Math.pow(hairWeight, 0.5) * gaussAttenuation * hairProb);
 
