@@ -1,3 +1,4 @@
+function _ek(n, f){ try{ var v = window.K && window.K(n); return (v && v !== String(n)) ? v : f; }catch(e){ return f; } }
 /* 나의 눈 건강 — 구 CGO 원본 엔진 그대로 */
 /* 나의 눈 건강 엔진 (메신저 C-44 이식 · 자체완결 IIFE) */
 
@@ -28,16 +29,16 @@
      크기를 화소가 아니라 mm 로 둔다 — 폰마다 실제 크기가 다르기 때문이다.
      35cm 기준 5분각: 시력 v 의 문자 높이 = 5.09 / v (mm) */
   var EYE_SIZE_BY_LEVEL = {
-    1:  {mm:50.9,  vision:0.1,  show:'1.0',  label:'매우 큼'},
+    1:  {mm:50.9,  vision:0.1,  show:'1.0',  label:_ek(10400,'매우 큼')},
     2:  {mm:25.5,  vision:0.2,  show:'2.0',  label:'큼'},
-    3:  {mm:15.9,  vision:0.32, show:'3.0',  label:'중간'},
-    4:  {mm:10.2,  vision:0.5,  show:'5.0',  label:'작음'},
-    5:  {mm:8.08,  vision:0.63, show:'6.3',  label:'조금 더 작음'},
-    6:  {mm:6.36,  vision:0.8,  show:'8.0',  label:'매우 작음'},
-    7:  {mm:5.09,  vision:1.0,  show:'10.0', label:'아주 작음'},
-    8:  {mm:4.07,  vision:1.25, show:'12.5', label:'극히 작음'},
-    9:  {mm:3.18,  vision:1.6,  show:'16.0', label:'최상'},
-    10: {mm:2.55,  vision:2.0,  show:'20.0', label:'최상 (초원의 눈)'}
+    3:  {mm:15.9,  vision:0.32, show:'3.0',  label:_ek(10401,'중간')},
+    4:  {mm:10.2,  vision:0.5,  show:'5.0',  label:_ek(10402,'작음')},
+    5:  {mm:8.08,  vision:0.63, show:'6.3',  label:_ek(10403,'조금 더 작음')},
+    6:  {mm:6.36,  vision:0.8,  show:'8.0',  label:_ek(10404,'매우 작음')},
+    7:  {mm:5.09,  vision:1.0,  show:'10.0', label:_ek(10405,'아주 작음')},
+    8:  {mm:4.07,  vision:1.25, show:'12.5', label:_ek(10406,'극히 작음')},
+    9:  {mm:3.18,  vision:1.6,  show:'16.0', label:_ek(10407,'최상')},
+    10: {mm:2.55,  vision:2.0,  show:'20.0', label:_ek(10408,'최상 (초원의 눈)')}
   };
   /* mm 를 그 폰의 실제 화소로 옮기고, 그 순간의 거리에 맞춰 키운다 */
   window._eyePxPublic = function(level){ return _eyePx(level); };
@@ -80,16 +81,16 @@
       }
     }
     /* 색 구분 — 시력 판정에는 안 들어가고 따로 보여준다 */
-    out.push({cat:'color', level:0, emoji:_eyeSized(3,'#e74c3c','color'), opts:['빨강','파랑','초록','노랑'], correct:0});
-    out.push({cat:'color', level:0, emoji:_eyeSized(3,'#3498db','color'), opts:['빨강','파랑','초록','노랑'], correct:1});
-    out.push({cat:'color', level:0, emoji:_eyeSized(3,'#27ae60','color'), opts:['빨강','파랑','초록','노랑'], correct:2});
+    out.push({cat:'color', level:0, emoji:_eyeSized(3,'#e74c3c','color'), opts:[_ek(10409,'빨강'),_ek(10410,'파랑'),_ek(10411,'초록'),_ek(10412,'노랑')], correct:0});
+    out.push({cat:'color', level:0, emoji:_eyeSized(3,'#3498db','color'), opts:[_ek(10409,'빨강'),_ek(10410,'파랑'),_ek(10411,'초록'),_ek(10412,'노랑')], correct:1});
+    out.push({cat:'color', level:0, emoji:_eyeSized(3,'#27ae60','color'), opts:[_ek(10409,'빨강'),_ek(10410,'파랑'),_ek(10411,'초록'),_ek(10412,'노랑')], correct:2});
     /* 카메라 측정 — 시선 고정·깜빡임 */
-    out.push({cat:'fixation', level:0, q:'화면 중앙의 점을 3초간 응시하세요',
+    out.push({cat:'fixation', level:0, q:_ek(10413,'화면 중앙의 점을 3초간 응시하세요'),
       emoji:'<span style="font-size:60px;color:#0f766e;display:inline-block;">●</span>',
-      opts:[], correct:0, autoTimer:3000, hint:'카메라가 눈동자 안정성을 측정합니다'});
-    out.push({cat:'fixation', level:0, q:'천천히 3회 깜빡이세요',
+      opts:[], correct:0, autoTimer:3000, hint:_ek(10414,'카메라가 눈동자 안정성을 측정합니다')});
+    out.push({cat:'fixation', level:0, q:_ek(10415,'천천히 3회 깜빡이세요'),
       emoji:'<span style="font-size:60px;">👁️</span>',
-      opts:[], correct:0, autoTimer:4000, hint:'카메라가 깜빡임 횟수를 측정합니다'});
+      opts:[], correct:0, autoTimer:4000, hint:_ek(10416,'카메라가 깜빡임 횟수를 측정합니다')});
     return out;
   })();
 
@@ -189,7 +190,7 @@
 
   // ── 시작 ─────────────────────────────────────────────────
   /* ★ C-63: 측정 중 언제든 카메라 닫기 — 스트림·타이머·루프 정리 후 측정 전 상태로 원상복구
-     (페이지는 그대로 유지. 다시 '측정 시작'을 누르면 처음부터 진행) */
+     (페이지는 그대로 유지. 다시 _ek(10417,'측정 시작')을 누르면 처음부터 진행) */
   window.eyeCancelMeasure = function(){
     try{
       // 1) 카메라 스트림 완전 정지
@@ -220,12 +221,12 @@
 
   window.eyeStartMeasure = function(){
     if(eyeState.started){
-      eyeDebug('이미 측정 중...');
+      eyeDebug(_ek(10418,'이미 측정 중...'));
       return;
     }
     // ★ 박입 119 — 눈 선택 검증
     if(!eyeState.selectedSide){
-      alert(_cgoT('먼저 측정할 눈 (왼쪽/오른쪽) 을 선택해 주세요.'));
+      alert(_cgoT(_ek(10419,'먼저 측정할 눈 (왼쪽/오른쪽) 을 선택해 주세요.')));
       eyeDebug('⚠️ 눈 선택 X — 왼쪽 또는 오른쪽 눈 선택 후 시작 가능');
       return;
     }
@@ -237,7 +238,7 @@
     eyeState.pupilJitter = [];
     eyeState.blinkCount = 0;
 
-    var sideKor = eyeState.selectedSide === 'left' ? '왼쪽' : '오른쪽';
+    var sideKor = eyeState.selectedSide === 'left' ? _ek(10420,'왼쪽') : _ek(10421,'오른쪽');
     eyeDebug('🎬 ' + sideKor + ' 눈 측정 시작 — 카메라 활성화...');
     document.getElementById('eye-start-btn').style.display = 'none';
     document.getElementById('eye-side-select').style.display = 'none';  // ★ 박입 119 — 선택 박스 숨김
@@ -256,7 +257,7 @@
       }, 500);
     }).catch(function(err){
       eyeDebug('⚠️ 카메라 접근 실패: ' + err.message);
-      alert(_cgoT('카메라 권한이 필요합니다. 다시 시도해 주세요.'));
+      alert(_cgoT(_ek(10422,'카메라 권한이 필요합니다. 다시 시도해 주세요.')));
       eyeState.started = false;
       document.getElementById('eye-start-btn').style.display = 'block';
       document.getElementById('eye-camera-area').style.display = 'none';
@@ -310,8 +311,8 @@
     document.getElementById('eye-q-timer').textContent = '0.0';
 
     // ★ 박입 78 — 카테고리 한글 라벨
-    var catLabels = {shape:'도형', color:'색상', symbol:'숫자/문자', direction:'방향',
-                     contrast:'명암', fixation:'시선 고정'};
+    var catLabels = {shape:_ek(10423,'도형'), color:_ek(10424,'색상'), symbol:_ek(10425,'숫자/문자'), direction:_ek(10426,'방향'),
+                     contrast:_ek(10427,'명암'), fixation:_ek(10428,'시선 고정')};
     var catLabel = catLabels[q.cat] || '';
 
     var qText = document.getElementById('eye-question-text');
@@ -635,8 +636,8 @@
           ov.style.display = 'flex';
           var m = document.getElementById('eye-block-msg');
           var s = document.getElementById('eye-block-sub');
-          if(m) m.textContent = msg || '거리를 맞춰주세요';
-          if(s) s.textContent = sub || '30~40cm 표준 거리에서만 측정됩니다';
+          if(m) m.textContent = msg || _ek(10429,'거리를 맞춰주세요');
+          if(s) s.textContent = sub || _ek(10430,'30~40cm 표준 거리에서만 측정됩니다');
           /* ★ C-63: textContent 직접 대입은 옵저버가 놓칠 수 있어 즉시 번역 */
           try{ if(window._LANG && window._LANG!=='ko' && typeof _cgoTranslateNode==='function'){ if(m) _cgoTranslateNode(m); if(s) _cgoTranslateNode(s); } }catch(e){}
         } else {
@@ -651,18 +652,18 @@
         var statusMsg, statusSub;
         if(s108.faceLostTime === 0){
           s108.faceLostTime = now;
-          statusMsg = '거리 측정 중...';
-          statusSub = '얼굴이 카메라 정면에 보이게 해주세요';
-          _eye111UpdateDot('#fbbf24', '측정 중');
+          statusMsg = _ek(10431,'거리 측정 중...');
+          statusSub = _ek(10432,'얼굴이 카메라 정면에 보이게 해주세요');
+          _eye111UpdateDot('#fbbf24', _ek(10433,'측정 중'));
         } else {
           var waitSec = Math.floor((now - s108.faceLostTime) / 1000);
           if(waitSec < 2){
-            statusMsg = '거리 측정 중...';
-            statusSub = '잠시만 기다려 주세요';
-            _eye111UpdateDot('#fbbf24', '측정 중');
+            statusMsg = _ek(10431,'거리 측정 중...');
+            statusSub = _ek(10434,'잠시만 기다려 주세요');
+            _eye111UpdateDot('#fbbf24', _ek(10433,'측정 중'));
           } else {
-            statusMsg = '얼굴이 안 보입니다';
-            statusSub = '카메라 정면을 바라봐 주세요 (조명 밝게)';
+            statusMsg = _ek(10435,'얼굴이 안 보입니다');
+            statusSub = _ek(10436,'카메라 정면을 바라봐 주세요 (조명 밝게)');
             _eye111UpdateDot('#ef4444', '얼굴 X');
           }
         }
@@ -702,10 +703,10 @@
         _eye111BlockQuestion(false);
       } else if(nowState === 'tooClose'){
         _eye111UpdateDot('#ef4444', '너무 가까움 · ' + dist + 'cm');  // 빨간 점
-        _eye111BlockQuestion(true, '너무 가깝습니다', '30~40cm 로 떨어져 주세요');
+        _eye111BlockQuestion(true, _ek(10437,'너무 가깝습니다'), _ek(10438,'30~40cm 로 떨어져 주세요'));
       } else if(nowState === 'tooFar'){
         _eye111UpdateDot('#ef4444', '너무 멈 · ' + dist + 'cm');  // 빨간 점
-        _eye111BlockQuestion(true, '너무 멉니다', '30~40cm 로 가까이 와 주세요');
+        _eye111BlockQuestion(true, _ek(10439,'너무 멉니다'), _ek(10440,'30~40cm 로 가까이 와 주세요'));
       } else {
         _eye111UpdateDot('#666', '측정 중...');
         _eye111BlockQuestion(false);
@@ -719,7 +720,7 @@
           s108.lastBeepTime = now;
         } else {
           eyeBeepDistWarn();
-          var msg = nowState === 'tooClose' ? '너무 가깝습니다' : '너무 멉니다';
+          var msg = nowState === 'tooClose' ? _ek(10437,'너무 가깝습니다') : _ek(10439,'너무 멉니다');
           eyeDebug('⚠️ ' + msg + ' — 현재 ' + dist + 'cm');
           s108.lastBeepTime = now;
         }
@@ -728,7 +729,7 @@
         // 이탈 지속 → 3초마다 삐 반복
         if(now - s108.lastBeepTime > 3000){
           eyeBeepDistWarn();
-          var msg2 = nowState === 'tooClose' ? '너무 가깝습니다' : '너무 멉니다';
+          var msg2 = nowState === 'tooClose' ? _ek(10437,'너무 가깝습니다') : _ek(10439,'너무 멉니다');
           eyeDebug('⚠️ ' + msg2 + ' — 현재 ' + dist + 'cm (반복)');
           s108.lastBeepTime = now;
         }
@@ -821,19 +822,19 @@
 
     // 눈 활성도 추정 — 가장 높은 통과 레벨
     var visionLevels = [
-      {lv:1,  vision:'1.0',  label:'매우 낮음', desc:'낮은 단계 — 안과 또는 안경원 상담 권장'},
-      {lv:2,  vision:'2.0',  label:'낮음',     desc:'낮은 단계 — 안과 또는 안경원 상담 권장'},
-      {lv:3,  vision:'3.0',  label:'보통',     desc:'중간 단계'},
-      {lv:4,  vision:'5.0',  label:'양호',     desc:'양호한 단계'},
-      {lv:5,  vision:'6.3',  label:'양호',     desc:'양호한 단계'},
-      {lv:6,  vision:'8.0',  label:'최적',     desc:'맑은 단계'},
-      {lv:7,  vision:'10.0', label:'매우 좋음', desc:'아주 맑은 단계'},
-      {lv:8,  vision:'12.5', label:'매우 좋음', desc:'아주 맑은 단계'},
-      {lv:9,  vision:'16.0', label:'최상',     desc:'가장 맑은 단계'},
-      {lv:10, vision:'20.0', label:'최상',     desc:'가장 맑은 단계 — 이 이상은 화면으로 못 잽니다'}
+      {lv:1,  vision:'1.0',  label:_ek(10441,'매우 낮음'), desc:_ek(10442,'낮은 단계 — 안과 또는 안경원 상담 권장')},
+      {lv:2,  vision:'2.0',  label:_ek(10443,'낮음'),     desc:_ek(10442,'낮은 단계 — 안과 또는 안경원 상담 권장')},
+      {lv:3,  vision:'3.0',  label:_ek(10444,'보통'),     desc:_ek(10445,'중간 단계')},
+      {lv:4,  vision:'5.0',  label:_ek(10446,'양호'),     desc:_ek(10447,'양호한 단계')},
+      {lv:5,  vision:'6.3',  label:_ek(10446,'양호'),     desc:_ek(10447,'양호한 단계')},
+      {lv:6,  vision:'8.0',  label:_ek(10448,'최적'),     desc:_ek(10449,'맑은 단계')},
+      {lv:7,  vision:'10.0', label:_ek(10450,'매우 좋음'), desc:_ek(10451,'아주 맑은 단계')},
+      {lv:8,  vision:'12.5', label:_ek(10450,'매우 좋음'), desc:_ek(10451,'아주 맑은 단계')},
+      {lv:9,  vision:'16.0', label:_ek(10407,'최상'),     desc:_ek(10452,'가장 맑은 단계')},
+      {lv:10, vision:'20.0', label:_ek(10407,'최상'),     desc:_ek(10453,'가장 맑은 단계 — 이 이상은 화면으로 못 잽니다')}
     ];
     var estVision = '1.0';
-    var estLabel = '측정 부족';
+    var estLabel = _ek(10454,'측정 부족');
     var estDesc = '';
     var estColor = '#888';
     for(var lv = 10; lv >= 1; lv--){
@@ -856,7 +857,7 @@
     var resultHtml = '';
 
     // ★ 박입 119 — 측정 눈 표시 (안과 표준)
-    var sideKor119 = eyeState.selectedSide === 'left' ? '왼쪽 눈' : '오른쪽 눈';
+    var sideKor119 = eyeState.selectedSide === 'left' ? _ek(10455,'왼쪽 눈') : _ek(10456,'오른쪽 눈');
     var sideColor119 = eyeState.selectedSide === 'left' ? '#ef4444' : '#3b82f6';
     var sideIcon119 = eyeState.selectedSide === 'left' ? '🔴' : '🔵';
     var sideBg119 = eyeState.selectedSide === 'left' ? 'linear-gradient(135deg,#fef2f2,#fecaca)' : 'linear-gradient(135deg,#eff6ff,#dbeafe)';
@@ -905,8 +906,8 @@
     // ③ 카테고리별 결과
     resultHtml += '<div style="background:#fff;border:1px solid #ccfbf1;border-radius:12px;padding:14px;margin-bottom:14px;">';
     resultHtml += '<div style="font-size:12px;font-weight:800;color:#134e4a;margin-bottom:10px;">📊 카테고리별 정답률</div>';
-    var catNames = {shape:'도형 인지', color:'색상 구분', symbol:'숫자/문자 인지',
-                    direction:'방향 인지', contrast:'명암 대비', fixation:'시선 고정'};
+    var catNames = {shape:_ek(10457,'도형 인지'), color:_ek(10458,'색상 구분'), symbol:_ek(10459,'숫자/문자 인지'),
+                    direction:_ek(10460,'방향 인지'), contrast:_ek(10461,'명암 대비'), fixation:_ek(10428,'시선 고정')};
     Object.keys(catStats).forEach(function(k){
       var s = catStats[k];
       if(s.t === 0) return;
@@ -956,7 +957,7 @@
       if(contrastWeak){
         resultHtml += '<span style="color:#666;">명암 대비 인지 약함 (' + (catStats.contrast.c / catStats.contrast.t * 100).toFixed(0) + '%). <b style="color:#f97316;">눈 건조·피로 기색</b> 보임. 권장: 인공 눈물 사용 + 가습기 + 화면 응시 시간 단축.</span>';
       } else {
-        resultHtml += '<span style="color:#666;">명암 대비 인지 ' + (catStats.contrast.t > 0 ? (catStats.contrast.c / catStats.contrast.t * 100).toFixed(0) + '%' : '양호') + '. 흰자 영역 정상 추정. <b style="color:#10b981;">흰자 맑은 편</b> — 눈 피로 기색 낮음. 단, 장시간 화면 사용 시 피로 기색 늘 수 있음.</span>';
+        resultHtml += '<span style="color:#666;">명암 대비 인지 ' + (catStats.contrast.t > 0 ? (catStats.contrast.c / catStats.contrast.t * 100).toFixed(0) + '%' : _ek(10446,'양호')) + '. 흰자 영역 정상 추정. <b style="color:#10b981;">흰자 맑은 편</b> — 눈 피로 기색 낮음. 단, 장시간 화면 사용 시 피로 기색 늘 수 있음.</span>';
       }
       resultHtml += '</div>';
 
@@ -967,7 +968,7 @@
       if(colorWeak){
         resultHtml += '<span style="color:#666;">색 구분 약함 (' + (catStats.color.c / catStats.color.t * 100).toFixed(0) + '%). <b style="color:#f97316;">색 구분이 어려운 편</b>으로 관찰됩니다. 정확한 확인은 안과나 안경원에서 받아 보세요.</span>';
       } else {
-        resultHtml += '<span style="color:#666;">색 구분 ' + (catStats.color.t > 0 ? (catStats.color.c / catStats.color.t * 100).toFixed(0) + '%' : '양호') + '. <b style="color:#10b981;">색상 인지 양호</b> — 색 구분이 무난한 편이에요.</span>';
+        resultHtml += '<span style="color:#666;">색 구분 ' + (catStats.color.t > 0 ? (catStats.color.c / catStats.color.t * 100).toFixed(0) + '%' : _ek(10446,'양호')) + '. <b style="color:#10b981;">색상 인지 양호</b> — 색 구분이 무난한 편이에요.</span>';
       }
       resultHtml += '</div>';
 
