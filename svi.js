@@ -1,7 +1,32 @@
 /* ══════════════════════════════════════════════════════════
-   ✨ 피부 탄력 분석 (SVI) — 구 CGO 원본 그대로
-   ① 입구 팝업 ② 30초 스캔·6부위·rPPG·눌렀다 뗌 회복 ③ AI 상담
+   ✨ 피부 탄력 분석 (SVI)   파일: svi.js   출처: 구 CGO 원문 그대로
+   ──────────────────────────────────────────────────────────
+   ▣ 이 기능이 쓰는 것
+     · 페이지  index.html  <div id="page-svi">      (문 = cgoGoPage('svi'))
+     · 구성란 피부 나이 칸  svi-cfg-real-age / svi-cfg-skin-age / svi-cfg-age-delta
+     · 팝업    svi-intro-pop  (입구 안내)  ·  svi-cam-alert (카메라 안내)
+     · 카드    전체기능 "피부 탄력 분석"  data-k 1443~1445
+   ▣ 등록 다섯 자리 (새 기능은 반드시 다섯 곳에 넣는다)
+     ① perm.js  CAM_PAGES 에 'svi'                                 ✔ 넣음
+     ② perm.js  카메라 취소 목록에 'sviCancel'                       ✔ 넣음
+     ③ index.html cgoHome() 팝업 목록에 'svi-intro-pop'             ✔ 넣음
+     ④ 언어 전환 다시 칠하기 cgoRepaintOn(...)  — 이 파일 맨 아래     ✔ 넣음
+     ⑤ 검사 시작 때 앞 기능 카메라 놓아주기 _cgoStopAllCams()          ✔ cgoCameraCheck 안
+   ▣ 번역 번호 자리
+     · 입구 팝업 12800~12837 · 카메라 안내 12840~12844
+     · 페이지 본문 data-k 12850~12951  ·  엔진 글자 13000~13115   (_sK(번호,'한국어') 로 감쌈)
+     · 페이지 본문 — 아직 번호 없음 (다음 차례에 data-k 를 박는다)
+   ▣ 밖에서 부르는 함수
+     · sviStartScan()  검사 시작        · sviCancel()  검사 접기(결과 안 만듦)
+     · sviShowIntroPopup()  입구 팝업   · sviChatToggle() / sviChatSend()  AI 상담
+   ▣ 손대면 안 되는 것
+     · 측정 알고리즘(_svi*)은 구 CGO 원문이다. 숫자·수식을 바꾸지 않는다.
    ══════════════════════════════════════════════════════════ */
+
+/* ★ AI 답변 언어 — 고른 언어로 답하게 한다 */
+var _SVI_LN = {"ko":"한국어","en":"English","ja":"日本語","zh":"简体中文","zh_HK":"繁體中文","ru":"русский","es":"español","fr":"français","de":"Deutsch","pt":"português","it":"italiano","nl":"Nederlands","vi":"Tiếng Việt","th":"ไทย","id":"Bahasa Indonesia","ms":"Bahasa Melayu","tl":"Filipino","tr":"Türkçe","hi":"हिन्दी","ar":"العربية"};
+function _sviLangName(){ try{ return _SVI_LN[window._LANG || 'ko'] || 'English'; }catch(e){ return 'English'; } }
+
 function _sK(n, f){ try{ var v = window.K ? window.K(n) : null; return (v && v !== String(n)) ? v : (f || ''); }catch(e){ return f || ''; } }
 
 /* 카메라 — 앞 기능 카메라를 먼저 놓아준 뒤 시작한다 */
@@ -166,8 +191,8 @@ function _sviProcess6Zones(landmarks, vw, vh){
 // 6부위 UI 업데이트
 function _sviRender6Zones(){
   var labels = {
-    forehead: '이마', brow: '미간', eye: '눈가',
-    cheek: '볼', jaw: '턱', mouth: '입가'
+    forehead: _sK(13000,'이마'), brow: _sK(13001,'미간'), eye: _sK(13002,'눈가'),
+    cheek: _sK(13003,'볼'), jaw: _sK(13004,'턱'), mouth: _sK(13005,'입가')
   };
   Object.keys(labels).forEach(function(zone){
     var el = document.getElementById('svi-zone-' + zone);
@@ -280,23 +305,23 @@ function _sviStopFaceMesh(){
 // AI 컨설턴트 시스템 프롬프트 (역학 0%, 의학·한방·영양 100%)
 function _sviGetSystemPrompt(){
   var ctx = '';
-  if(_svi.luster) ctx += '윤기:' + _svi.luster + ', ';
-  if(_svi.elastic) ctx += '탄력:' + _svi.elastic + ', ';
-  if(_svi.texture) ctx += '결:' + _svi.texture + ', ';
-  if(_svi.vitality) ctx += '혈색:' + _svi.vitality + ', ';
-  if(_svi.collagenScore) ctx += '복원 탄력:' + _svi.collagenScore + ', ';
+  if(_svi.luster) ctx += _sK(13006,'윤기:') + _svi.luster + ', ';
+  if(_svi.elastic) ctx += _sK(13007,'탄력:') + _svi.elastic + ', ';
+  if(_svi.texture) ctx += _sK(13008,'결:') + _svi.texture + ', ';
+  if(_svi.vitality) ctx += _sK(13009,'혈색:') + _svi.vitality + ', ';
+  if(_svi.collagenScore) ctx += _sK(13010,'복원 탄력:') + _svi.collagenScore + ', ';
   if(_svi.rppg.bpm) ctx += 'BPM:' + _svi.rppg.bpm + ', ';
   if(_svi.rppg.hrv) ctx += 'HRV:' + _svi.rppg.hrv + ', ';
-  if(_svi.rppg.stressScore) ctx += '스트레스:' + _svi.rppg.stressScore + ', ';
-  if(_svi.skinAge) ctx += '피부나이:' + _svi.skinAge + '세, ';
-  if(_svi.realAge) ctx += '실제나이:' + _svi.realAge + '세';
+  if(_svi.rppg.stressScore) ctx += _sK(13011,'스트레스:') + _svi.rppg.stressScore + ', ';
+  if(_svi.skinAge) ctx += _sK(13012,'피부나이:') + _svi.skinAge + _sK(13013,'세, ');
+  if(_svi.realAge) ctx += _sK(13014,'실제나이:') + _svi.realAge + _sK(13015,'세');
   
   return '당신은 CGO-FULI SVI(피부 탄력 분석)의 AI 컨설턴트입니다. ' +
     '공개된 뷰티·생활습관 자료를 학습한 AI 정보 도우미입니다. 의료인이 아니며 진단·처방을 하지 않습니다. ' +
     '사용자의 측정 데이터: [' + ctx + ']. ' +
     '광학·생활습관 관점으로 답변하세요. 질병·진단 표현은 절대 사용하지 마세요. ' +
     '오행 기운 패턴은 공개 참고 자료 기반만 사용. ' +
-    '답변은 친근하면서 전문적으로. 한국어. 5~7줄 이내.';
+    ('답변은 친근하면서 전문적으로. 5~7줄 이내. Answer in ' + _sviLangName() + ' only.');
 }
 
 // AI 컨설턴트 메시지 전송
@@ -317,7 +342,7 @@ function sviChatSend(){
   if(typeof cgoCallGemini === 'function'){
     var fullPrompt = _sviGetSystemPrompt() + (window._demLangDirective?window._demLangDirective():'') + '\n\n사용자 질문: ' + msg;
     cgoCallGemini(fullPrompt, function(reply){
-      _svi.chatHistory.push({role:'ai', text:reply || '죄송합니다, 응답을 받지 못했습니다.'});
+      _svi.chatHistory.push({role:'ai', text:reply || _sK(13016,'죄송합니다, 응답을 받지 못했습니다.')});
       _svi.chatBusy = false;
       _sviRenderChat();
     });
@@ -326,10 +351,10 @@ function sviChatSend(){
     setTimeout(function(){
       _svi.chatHistory.push({
         role:'ai',
-        text:'AI 컨설턴트는 본진 Gemini API 연동이 필요합니다. ' +
-             '현재 측정 데이터를 보면 ' +
-             (_svi.collagenScore && _svi.collagenScore >= 70 ? '복원 탄력 양호 ' : '복원 탄력 관리 권장 ') +
-             _cgoT('상태입니다.')
+        text:_sK(13017,'AI 컨설턴트는 본진 Gemini API 연동이 필요합니다. ') +
+             _sK(13018,'현재 측정 데이터를 보면 ') +
+             (_svi.collagenScore && _svi.collagenScore >= 70 ? _sK(13019,'복원 탄력 양호 ') : _sK(13020,'복원 탄력 관리 권장 ')) +
+             _cgoT(_sK(13021,'상태입니다.'))
       });
       _svi.chatBusy = false;
       _sviRenderChat();
@@ -350,7 +375,7 @@ function _sviRenderChat(){
     }
   });
   if(_svi.chatBusy){
-    html += '<div style="text-align:center;padding:8px;color:rgba(245,230,175,.5);font-size:11px;">⏳ AI 분석 중...</div>';
+    html += _sK(13022,'<div style="text-align:center;padding:8px;color:rgba(245,230,175,.5);font-size:11px;">⏳ AI 분석 중...</div>');
   }
   box.innerHTML = html;
   box.scrollTop = box.scrollHeight;
@@ -364,7 +389,7 @@ function sviChatToggle(){
     if(_svi.chatHistory.length === 0){
       _svi.chatHistory.push({
         role:'ai',
-        text:'안녕하세요! CGO-FULI 피부 케어 AI 정보 도우미입니다 🌿 공개된 피부·영양 관련 자료를 바탕으로 참고 정보를 안내해 드려요. 측정 결과에 대해 무엇이든 물어보세요!'
+        text:_sK(13023,'안녕하세요! CGO-FULI 피부 케어 AI 정보 도우미입니다 🌿 공개된 피부·영양 관련 자료를 바탕으로 참고 정보를 안내해 드려요. 측정 결과에 대해 무엇이든 물어보세요!')
       });
       _sviRenderChat();
     }
@@ -510,11 +535,11 @@ function sviRenderHistoryGraph(period){
     var sign = trend > 0 ? '+' : '';
     var color = trend > 0 ? '#34d399' : (trend < 0 ? '#f87171' : '#fbbf24');
     var emoji = trend > 0 ? '📈' : (trend < 0 ? '📉' : '➡️');
-    trendEl.innerHTML = emoji + ' 평균 ' + avgSVI + '점 · 추세 <span style="color:' + color + ';font-weight:900;">' + sign + trend + '점</span>';
+    trendEl.innerHTML = emoji + _sK(13024,' 평균 ') + avgSVI + _sK(13025,'점 · 추세 <span style="color:') + color + ';font-weight:900;">' + sign + trend + _sK(13026,'점</span>');
   }
   
   var countEl = document.getElementById('svi-history-count');
-  if(countEl) countEl.textContent = data.length + '회';
+  if(countEl) countEl.textContent = data.length + _sK(13027,'회');
 }
 window.sviRenderHistoryGraph = sviRenderHistoryGraph;
 
@@ -564,7 +589,7 @@ function _sviAnalyzeAsymmetry(){
         left: leftScore,
         right: rightScore,
         diff: Math.abs(leftScore - rightScore),
-        dominant: leftScore > rightScore ? '왼쪽' : '오른쪽'
+        dominant: leftScore > rightScore ? _sK(13028,'왼쪽') : _sK(13029,'오른쪽')
       };
     }
   });
@@ -580,12 +605,12 @@ function _sviAnalyzeAsymmetry(){
     var leftWin = 0, rightWin = 0;
     Object.keys(result).forEach(function(k){
       if(k === 'avgScore') return;
-      if(result[k] && result[k].dominant === '왼쪽') leftWin++;
-      else if(result[k] && result[k].dominant === '오른쪽') rightWin++;
+      if(result[k] && result[k].dominant === _sK(13028,'왼쪽')) leftWin++;
+      else if(result[k] && result[k].dominant === _sK(13029,'오른쪽')) rightWin++;
     });
-    if(leftWin > rightWin) result.yinyang = '왼쪽 우세 (음)';
-    else if(rightWin > leftWin) result.yinyang = '오른쪽 우세 (양)';
-    else result.yinyang = '균형';
+    if(leftWin > rightWin) result.yinyang = _sK(13030,'왼쪽 우세 (음)');
+    else if(rightWin > leftWin) result.yinyang = _sK(13031,'오른쪽 우세 (양)');
+    else result.yinyang = _sK(13032,'균형');
   }
   
   _svi.asymmetry = result;
@@ -595,12 +620,12 @@ function _sviAnalyzeAsymmetry(){
 // 좌우 비대칭 측정 (수동 트리거)
 function sviAnalyzeAsymmetry(){
   if(_svi._samples < 5){
-    alert('먼저 측정을 진행해 주세요 (현재 ' + _svi._samples + _cgoT('/5 샘플)'));
+    alert(_sK(13033,'먼저 측정을 진행해 주세요 (현재 ') + _svi._samples + _cgoT(_sK(13034,'/5 샘플)')));
     return;
   }
   var result = _sviAnalyzeAsymmetry();
   if(!result || !result.avgScore){
-    alert('얼굴 추적 데이터가 부족합니다. 잠시 후 다시 시도해 주세요.');
+    alert(_sK(13035,'얼굴 추적 데이터가 부족합니다. 잠시 후 다시 시도해 주세요.'));
     return;
   }
   
@@ -621,10 +646,10 @@ function sviAnalyzeAsymmetry(){
     var html = '';
     ['forehead', 'cheek', 'eye'].forEach(function(z){
       if(!result[z]) return;
-      var labels = { forehead:'🧠 이마', cheek:'🌸 볼', eye:'👁️ 눈가' };
+      var labels = { forehead:_sK(13036,'🧠 이마'), cheek:_sK(13037,'🌸 볼'), eye:_sK(13038,'👁️ 눈가') };
       html += '<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 8px;background:rgba(255,255,255,.04);border-radius:6px;margin-bottom:4px;font-size:11px;">' +
               '<span style="color:rgba(245,230,175,.7);">' + labels[z] + '</span>' +
-              '<span style="color:rgba(245,230,175,.9);">왼:<b>' + result[z].left + '</b> · 오:<b>' + result[z].right + '</b> · 차이:<b style="color:' + (result[z].diff > 10 ? '#f87171' : '#34d399') + ';">' + result[z].diff + '</b></span>' +
+              _sK(13039,'<span style="color:rgba(245,230,175,.9);">왼:<b>') + result[z].left + _sK(13040,'</b> · 오:<b>') + result[z].right + _sK(13041,'</b> · 차이:<b style="color:') + (result[z].diff > 10 ? '#f87171' : '#34d399') + ';">' + result[z].diff + '</b></span>' +
               '</div>';
     });
     detailEl.innerHTML = html;
@@ -634,9 +659,9 @@ function sviAnalyzeAsymmetry(){
   var msgEl = document.getElementById('svi-asym-msg');
   if(msgEl){
     var msg = '';
-    if(result.avgScore >= 85) msg = '✨ 좌우 대칭 우수 — 균형 잡힌 피부 상태';
-    else if(result.avgScore >= 70) msg = '👍 보통 — 잠자세나 식습관 점검 권장';
-    else msg = '⚠️ 비대칭 큼 — 한쪽으로 자는 습관, 씹는 습관, 자외선 노출 점검 필요';
+    if(result.avgScore >= 85) msg = _sK(13042,'✨ 좌우 대칭 우수 — 균형 잡힌 피부 상태');
+    else if(result.avgScore >= 70) msg = _sK(13043,'👍 보통 — 잠자세나 식습관 점검 권장');
+    else msg = _sK(13044,'⚠️ 비대칭 큼 — 한쪽으로 자는 습관, 씹는 습관, 자외선 노출 점검 필요');
     msgEl.innerHTML = msg;
   }
   
@@ -726,11 +751,11 @@ function _sviCalcSkinAge(realAge){
   
   // 등급
   var grade;
-  if(ageDelta <= -3) grade = { label:'매우 젊음', color:'#34d399', emoji:'✨' };
-  else if(ageDelta <= -1) grade = { label:'젊어 보임', color:'#38bdf8', emoji:'💎' };
-  else if(ageDelta <= 1) grade = { label:'정상', color:'#fbbf24', emoji:'⚖️' };
-  else if(ageDelta <= 3) grade = { label:'노화 진행', color:'#f97316', emoji:'⏳' };
-  else grade = { label:'노화 가속', color:'#f87171', emoji:'⚠️' };
+  if(ageDelta <= -3) grade = { label:_sK(13045,'매우 젊음'), color:'#34d399', emoji:'✨' };
+  else if(ageDelta <= -1) grade = { label:_sK(13046,'젊어 보임'), color:'#38bdf8', emoji:'💎' };
+  else if(ageDelta <= 1) grade = { label:_sK(13047,'정상'), color:'#fbbf24', emoji:'⚖️' };
+  else if(ageDelta <= 3) grade = { label:_sK(13048,'노화 진행'), color:'#f97316', emoji:'⏳' };
+  else grade = { label:_sK(13049,'노화 가속'), color:'#f87171', emoji:'⚠️' };
   
   _svi.realAge = realAge;
   _svi.skinAge = skinAge;
@@ -759,28 +784,28 @@ function _sviAutoFillAge(){
 function sviCalcSkinAge(silent){
   _sviAutoFillAge();
   var input = document.getElementById('svi-real-age-input');
-  if(!input){ if(!silent) alert('나이 입력 필드를 찾을 수 없습니다'); return; }
+  if(!input){ if(!silent) alert(_sK(13050,'나이 입력 필드를 찾을 수 없습니다')); return; }
   var realAge = parseInt(input.value);
   if(!realAge || realAge < 15 || realAge > 100){
-    if(!silent) alert('15세~100세 사이로 입력해 주세요');
+    if(!silent) alert(_sK(13051,'15세~100세 사이로 입력해 주세요'));
     return;
   }
   if(_svi._samples < 5){
-    if(!silent) alert('먼저 30초간 측정을 완료해 주세요 (현재 ' + _svi._samples + _cgoT('/5 샘플)'));
+    if(!silent) alert(_sK(13052,'먼저 30초간 측정을 완료해 주세요 (현재 ') + _svi._samples + _cgoT(_sK(13034,'/5 샘플)')));
     return;
   }
   
   var result = _sviCalcSkinAge(realAge);
-  if(!result){ if(!silent) alert('측정 데이터가 부족합니다'); return; }
+  if(!result){ if(!silent) alert(_sK(13053,'측정 데이터가 부족합니다')); return; }
   
   // UI 렌더
-  document.getElementById('svi-real-age-val').textContent = result.realAge + '세';
-  document.getElementById('svi-skin-age-val').textContent = result.skinAge + '세';
+  document.getElementById('svi-real-age-val').textContent = result.realAge + _sK(13015,'세');
+  document.getElementById('svi-skin-age-val').textContent = result.skinAge + _sK(13015,'세');
   
   var deltaEl = document.getElementById('svi-age-delta');
   if(deltaEl){
     var sign = result.ageDelta > 0 ? '+' : '';
-    deltaEl.textContent = sign + result.ageDelta + '세';
+    deltaEl.textContent = sign + result.ageDelta + _sK(13015,'세');
     deltaEl.style.color = result.grade.color;
   }
   
@@ -794,13 +819,13 @@ function sviCalcSkinAge(silent){
   var detailEl = document.getElementById('svi-age-detail');
   if(detailEl){
     var msg = '';
-    if(result.opticalDelta > 0.5) msg += _cgoT('• 광학 지표 양호 (') + (-result.opticalDelta).toFixed(1) + '세 젊어 보임)<br/>';
-    else if(result.opticalDelta < -0.5) msg += _cgoT('• 광학 지표 노화 (') + (-result.opticalDelta).toFixed(1) + '세 가속)<br/>';
-    if(result.collagenDelta < -0.5) msg += _cgoT('• 복원 탄력 우수 (') + (-result.collagenDelta).toFixed(1) + '세 보정)<br/>';
-    else if(result.collagenDelta > 0.5) msg += _cgoT('• 복원 탄력 낮은 편 (') + (result.collagenDelta).toFixed(1) + '세 가속)<br/>';
-    if(result.stressDelta > 0.5) msg += '• 스트레스로 ' + result.stressDelta.toFixed(1) + '세 노화 가속<br/>';
-    else if(result.stressDelta < -0.5) msg += _cgoT('• 내면 탄력 안정 (') + (-result.stressDelta).toFixed(1) + '세 보정)<br/>';
-    detailEl.innerHTML = msg || '• 종합적으로 일반 참고 범위입니다';
+    if(result.opticalDelta > 0.5) msg += _cgoT(_sK(13054,'• 광학 지표 양호 (')) + (-result.opticalDelta).toFixed(1) + _sK(13055,'세 젊어 보임)<br/>');
+    else if(result.opticalDelta < -0.5) msg += _cgoT(_sK(13056,'• 광학 지표 노화 (')) + (-result.opticalDelta).toFixed(1) + _sK(13057,'세 가속)<br/>');
+    if(result.collagenDelta < -0.5) msg += _cgoT(_sK(13058,'• 복원 탄력 우수 (')) + (-result.collagenDelta).toFixed(1) + _sK(13059,'세 보정)<br/>');
+    else if(result.collagenDelta > 0.5) msg += _cgoT(_sK(13060,'• 복원 탄력 낮은 편 (')) + (result.collagenDelta).toFixed(1) + _sK(13057,'세 가속)<br/>');
+    if(result.stressDelta > 0.5) msg += _sK(13061,'• 스트레스로 ') + result.stressDelta.toFixed(1) + _sK(13062,'세 노화 가속<br/>');
+    else if(result.stressDelta < -0.5) msg += _cgoT(_sK(13063,'• 내면 탄력 안정 (')) + (-result.stressDelta).toFixed(1) + _sK(13059,'세 보정)<br/>');
+    detailEl.innerHTML = msg || _sK(13064,'• 종합적으로 일반 참고 범위입니다');
   }
   
   // 결과 패널 표시
@@ -1128,7 +1153,7 @@ function _sviOnPressStart(ev){
   // UI 피드백 — 회복 측정 시작 안내
   var hint = document.getElementById('svi-press-hint');
   if(hint){
-    hint.textContent = _cgoT('👇 손가락으로 화면을 꾹 누르고 있어요... 2초 후 떼세요');
+    hint.textContent = _cgoT(_sK(13065,'👇 손가락으로 화면을 꾹 누르고 있어요... 2초 후 떼세요'));
     hint.style.color = 'rgba(56,189,248,1)';
   }
 }
@@ -1146,7 +1171,7 @@ function _sviOnPressEnd(ev){
   if(pressDuration < 300){
     var hint = document.getElementById('svi-press-hint');
     if(hint){
-      hint.textContent = _cgoT('⚠️ 1초 이상 꾹 눌러주세요');
+      hint.textContent = _cgoT(_sK(13066,'⚠️ 1초 이상 꾹 눌러주세요'));
       hint.style.color = 'rgba(251,191,36,.9)';
     }
     return;
@@ -1169,7 +1194,7 @@ function _sviOnPressEnd(ev){
   
   var hint = document.getElementById('svi-press-hint');
   if(hint){
-    hint.textContent = _cgoT('⏱️ 회복 속도 측정 중... 가만히 계세요');
+    hint.textContent = _cgoT(_sK(13067,'⏱️ 회복 속도 측정 중... 가만히 계세요'));
     hint.style.color = 'rgba(56,189,248,1)';
   }
   
@@ -1223,13 +1248,13 @@ function _sviAnalyzeRecovery(){
   var collagenEl = document.getElementById('svi-collagen');
   if(hint){
     if(recoveryRate >= 0.9){
-      hint.innerHTML = _cgoT('✨ 빠른 회복! 복원 탄력 우수 (') + collagen + _cgoT('점)');
+      hint.innerHTML = _cgoT(_sK(13068,'✨ 빠른 회복! 복원 탄력 우수 (')) + collagen + _cgoT(_sK(13069,'점)'));
       hint.style.color = 'rgba(52,211,153,1)';
     } else if(recoveryRate >= 0.7){
-      hint.innerHTML = _cgoT('👍 보통 회복 — 복원 탄력 양호 (') + collagen + _cgoT('점)');
+      hint.innerHTML = _cgoT(_sK(13070,'👍 보통 회복 — 복원 탄력 양호 (')) + collagen + _cgoT(_sK(13069,'점)'));
       hint.style.color = 'rgba(56,189,248,1)';
     } else {
-      hint.innerHTML = _cgoT('💧 회복 느림 — 보습·재생 케어 필요 (') + collagen + _cgoT('점)');
+      hint.innerHTML = _cgoT(_sK(13071,'💧 회복 느림 — 보습·재생 케어 필요 (')) + collagen + _cgoT(_sK(13069,'점)'));
       hint.style.color = 'rgba(251,191,36,1)';
     }
   }
@@ -1240,10 +1265,10 @@ function _sviAnalyzeRecovery(){
     if(!_svi.running) return;
     var hint2 = document.getElementById('svi-press-hint');
     if(hint2 && _svi.recoveryRecords.length < 3){
-      hint2.textContent = _cgoT('🔄 다시 한 번 눌러주세요 (정확도 향상, ') + _svi.recoveryRecords.length + '/3)';
+      hint2.textContent = _cgoT(_sK(13072,'🔄 다시 한 번 눌러주세요 (정확도 향상, ')) + _svi.recoveryRecords.length + '/3)';
       hint2.style.color = 'rgba(245,230,175,.8)';
     } else if(hint2){
-      hint2.textContent = _cgoT('✅ 충분히 측정됨 — 결과는 분석 종료 후 표시');
+      hint2.textContent = _cgoT(_sK(13073,'✅ 충분히 측정됨 — 결과는 분석 종료 후 표시'));
       hint2.style.color = 'rgba(52,211,153,1)';
     }
   }, 2000);
@@ -1295,11 +1320,12 @@ function sviStartScan(){
 }
 function _sviStartScanCore(){
   var r=window.calcResult||{};
-  var oh=r.domOh||'토';
+  var oh=r.domOh||_sK(13074,'토');
   var weight=parseFloat(document.getElementById('ipName')&&window._userWeight)||65;
   document.getElementById('svi-result').style.display='none';
   document.getElementById('svi-btn').style.display='none';
-  _svi.sec=0;
+  _svi.sec=0; _svi._fitHold=0; _svi._lux=null;
+  try{ if(window.cgoFitBeepReset) cgoFitBeepReset('svi'); else if(window._cgoBeeped) delete window._cgoBeeped['svi']; }catch(e){}
   _svi.luster=0;_svi.elastic=0;_svi.texture=0;_svi.vitality=0;_svi._samples=0;
   // ★ C-64 — 패널 즉시 표시 (카메라 연결 전에도 보이게 · 피부나이 포함)
   ['svi-press-area','svi-zone-panel','svi-rppg-panel','svi-age-panel','svi-asym-panel'].forEach(function(_id){ var _el=document.getElementById(_id); if(_el) _el.style.display='block'; });
@@ -1327,6 +1353,53 @@ function _sviStartScanCore(){
     _svi.timer=setInterval(function(){
       // ★ 2단계 — MediaPipe 6부위 분석을 위한 프레임 전송
       _sviSendFrame();
+      /* ══ ④ 화면이 뒤로 물러나면 건너뛴다 (폰이 뜨거워지지 않게) ══ */
+      if(document.hidden) return;
+      /* ══ ② 조도 — 어두우면 멈추고 안내한다 ══ */
+      try{
+        var _v0 = document.getElementById('svi-video');
+        if(_v0 && _v0.videoWidth && _svi.offCtx){
+          _svi.offCanvas.width = 32; _svi.offCanvas.height = 24;
+          _svi.offCtx.drawImage(_v0, 0, 0, 32, 24);
+          var _p0 = _svi.offCtx.getImageData(0, 0, 32, 24).data, _s0 = 0;
+          for(var _i0 = 0; _i0 < _p0.length; _i0 += 4) _s0 += 0.2126*_p0[_i0] + 0.7152*_p0[_i0+1] + 0.0722*_p0[_i0+2];
+          _svi._lux = Math.round(_s0 / (_p0.length / 4));
+        }
+      }catch(e){}
+      var _fs0 = document.getElementById('svi-face-status');
+      if(_svi._lux != null && _svi._lux < 12){
+        if(_fs0){ _fs0.textContent = _sK(12840,'⛔ 너무 어둡습니다 — 밝은 곳에서 다시 재세요'); _fs0.style.color = '#b45309'; }
+        _svi._fitHold = 0;
+        return;
+      }
+      /* ══ ① 거리 — 공용 잣대(피부 기준 8cm) 채움 비율로만 본다 ══ */
+      var _fit = 'none';
+      try{
+        if(window.cgoFaceFill && window.cgoFitState && _svi.faceLandmarks){
+          _fit = cgoFitState(cgoFaceFill(_svi.faceLandmarks), 'skin');
+        }
+      }catch(e){}
+      if(_fit === 'far' || _fit === 'near'){
+        if(_fs0){
+          _fs0.textContent = (_fit === 'far') ? _sK(12841,'⚠️ 더 가까이 — 살갗이 화면을 덮게 (약 8cm)')
+                                             : _sK(12842,'⚠️ 조금 멀리 — 너무 가깝습니다');
+          _fs0.style.color = '#b45309';
+        }
+        _svi._fitHold = 0;
+        return;
+      }
+      /* ══ ③ 위치 조정 5초 → 딱 맞으면 띵 띵 띵 ══ */
+      if(_fit === 'ok'){
+        _svi._fitHold = (_svi._fitHold || 0) + 1;
+        if(_svi._fitHold === 5){ try{ if(window.cgoFitBeep) cgoFitBeep('svi'); }catch(e){} }
+        if(_svi._fitHold < 5){
+          if(_fs0){
+            _fs0.textContent = _sK(12843,'위치 조정 중') + ' — ' + (5 - _svi._fitHold) + _sK(12844,'초');
+            _fs0.style.color = '#0f766e';
+          }
+          return;
+        }
+      }
       // ★ 3단계 — rPPG 매 프레임 RGB 샘플링 + 2초마다 vitals 계산
       _sviRppgSample();
       if(_svi.sec % 2 === 0 && _svi.rppg.filteredSignal.length >= 60){
@@ -1340,7 +1413,7 @@ function _sviStartScanCore(){
       if(_sviCanCount) _svi.sec++;
       var remain=30-_svi.sec;
       if(prg) prg.style.width=(_svi.sec/30*100)+'%';
-      if(tmr) tmr.textContent=_sviCanCount?(remain>0?remain+_cgoT('초 남음'):_cgoT('분석 완료!')):_cgoT('⏸ 얼굴 전체를 화면에 맞춰주세요');
+      if(tmr) tmr.textContent=_sviCanCount?(remain>0?remain+_cgoT(_sK(13075,'초 남음')):_cgoT(_sK(13076,'분석 완료!'))):_cgoT(_sK(13077,'⏸ 얼굴 전체를 화면에 맞춰주세요'));
 
       var v2=document.getElementById('svi-video');
       if(v2&&v2.videoWidth&&_svi.offCtx){
@@ -1380,13 +1453,13 @@ function _sviStartScanCore(){
             document.getElementById('svi-texture').textContent=_svi.texture;
             document.getElementById('svi-vitality').textContent=_svi.vitality;
             var sviNow=Math.round((_svi.luster+_svi.elastic+_svi.texture+_svi.vitality)/4);
-            if(live) live.textContent='SVI '+sviNow+'점';
-            document.getElementById('svi-face-status').textContent=_cgoT('✅ 얼굴 감지 중 · 분석 진행');
+            if(live) live.textContent='SVI '+sviNow+_sK(13078,'점');
+            document.getElementById('svi-face-status').textContent=_cgoT(_sK(13079,'✅ 얼굴 감지 중 · 분석 진행'));
             document.getElementById('svi-face-status').style.color='rgba(56,189,248,.9)';
           } else {
             _svi.lostCount++;
             if(_svi.lostCount>0){
-              document.getElementById('svi-face-status').textContent=_cgoT('⚠️ 얼굴 전체를 화면에 맞춰주세요');
+              document.getElementById('svi-face-status').textContent=_cgoT(_sK(13080,'⚠️ 얼굴 전체를 화면에 맞춰주세요'));
               document.getElementById('svi-face-status').style.color='rgba(251,191,36,.8)';
             }
           }
@@ -1395,7 +1468,7 @@ function _sviStartScanCore(){
       // 얼굴 미감지 버퍼: 5초 연속 미감지 시에만 정지
       if(_svi.lostCount>=5 && _svi._samples===0){
         var fs=document.getElementById('svi-face-status');
-        if(fs){fs.textContent=_cgoT('⛔ 얼굴이 감지되지 않습니다. 카메라에 얼굴을 가까이 대주세요');fs.style.color='rgba(56,189,248,.9)';}
+        if(fs){fs.textContent=_cgoT(_sK(13081,'⛔ 얼굴이 감지되지 않습니다. 카메라에 얼굴을 가까이 대주세요'));fs.style.color='rgba(56,189,248,.9)';}
         _svi.sec=2; _svi.lostCount=0;
         return;
       }
@@ -1403,7 +1476,7 @@ function _sviStartScanCore(){
         clearInterval(_svi.timer); _svi.running=false;
         if(_svi._samples<5){
           var fs2=document.getElementById('svi-face-status');
-          if(fs2){fs2.textContent=_cgoT('⚠️ 얼굴 감지 부족 — 다시 시도해 주세요');fs2.style.color='rgba(251,191,36,.9)';}
+          if(fs2){fs2.textContent=_cgoT(_sK(13082,'⚠️ 얼굴 감지 부족 — 다시 시도해 주세요'));fs2.style.color='rgba(251,191,36,.9)';}
           if(_svi.stream){_svi.stream.getTracks().forEach(function(t){t.stop();});}
           document.getElementById('svi-video').style.display='none';
           document.getElementById('svi-placeholder').style.display='flex';
@@ -1421,7 +1494,7 @@ function _sviStartScanCore(){
       }
     },1000);
   }).catch(function(){
-    _cgoCameraAlert('카메라가 필요합니다.<br>카메라를 허용해 주세요.');
+    _cgoCameraAlert(_sK(13083,'카메라가 필요합니다.<br>카메라를 허용해 주세요.'));
     document.getElementById('svi-btn').style.display='block';
   });
 }
@@ -1430,43 +1503,43 @@ function sviShowResult(oh){
   var luster=_svi.luster||65, elastic=_svi.elastic||62, texture=_svi.texture||68, vitality=_svi.vitality||70;
   var svi=Math.round((luster+elastic+texture+vitality)/4);
   document.getElementById('svi-total').textContent=svi;
-  var grade=svi>=85?'💎 최상의 탄력! 관리 상태 매우 우수':svi>=70?'✨ 양호한 탄력 · 꾸준한 관리 유지':svi>=55?'🌿 보통 탄력 · 집중 관리 권장':'💧 탄력 개선 필요 · 케어 루틴 시작';
+  var grade=svi>=85?_sK(13084,'💎 최상의 탄력! 관리 상태 매우 우수'):svi>=70?_sK(13085,'✨ 양호한 탄력 · 꾸준한 관리 유지'):svi>=55?_sK(13086,'🌿 보통 탄력 · 집중 관리 권장'):_sK(13087,'💧 탄력 개선 필요 · 케어 루틴 시작');
   document.getElementById('svi-grade').textContent=grade;
 
   // 수분 처방 (탄력지수 기반, 체중 65kg 기준)
   var baseWater=svi>=80?2.0:svi>=65?2.3:svi>=50?2.6:3.0;
   var r=window.calcResult||{};
-  var ohWaterMap={목:'+0.3L (목 기운 — 수분 흡수 활성)',화:'+0.5L (화 기운 — 수분 손실 빠름)',토:'+0.2L (토 기운 — 균형 수분)',금:'+0.2L (금 기운 — 수분 보존)',수:'+0.1L (수 기운 — 수분 풍부)'};
+  var ohWaterMap={목:_sK(13088,'+0.3L (목 기운 — 수분 흡수 활성)'),화:_sK(13089,'+0.5L (화 기운 — 수분 손실 빠름)'),토:_sK(13090,'+0.2L (토 기운 — 균형 수분)'),금:_sK(13091,'+0.2L (금 기운 — 수분 보존)'),수:_sK(13092,'+0.1L (수 기운 — 수분 풍부)')};
   document.getElementById('svi-water').innerHTML=
-    '기본 권장량 <b style="color:#38bdf8;">'+baseWater.toFixed(1)+'L</b> + 오행 보정 <b style="color:#34d399;">'+(ohWaterMap[oh]||'+0.2L')+'</b><br>'
-    +'<span style="font-size:11px;color:rgba(220,240,255,.5);">※ 체중·탄력지수(SVI '+svi+'점) 기반 산출 · 아침 기상 후 500ml 우선 섭취 권장</span>';
+    _sK(13093,'기본 권장량 <b style="color:#38bdf8;">')+baseWater.toFixed(1)+_sK(13094,'L</b> + 오행 보정 <b style="color:#34d399;">')+(ohWaterMap[oh]||'+0.2L')+'</b><br>'
+    +_sK(13095,'<span style="font-size:11px;color:rgba(220,240,255,.5);">※ 체중·탄력지수(SVI ')+svi+_sK(13096,'점) 기반 산출 · 아침 기상 후 500ml 우선 섭취 권장</span>');
 
   // 운동 가이드
   var exMap={
-    목:'🌿 유연성 운동 중심 — 요가·스트레칭 30분 + 걷기 20분<br><span style="font-size:11px;color:rgba(220,240,255,.5);">목 기운: 근막 이완·신체 유연성 극대화</span>',
-    화:'🔥 유산소 중심 — 줄넘기·조깅 25분 + 플랭크 3세트<br><span style="font-size:11px;color:rgba(220,240,255,.5);">화 기운: 혈액순환 촉진·체온 유지</span>',
-    토:'🏃 복합 운동 — 스쿼트 3세트 + 걷기 30분 + 복근운동<br><span style="font-size:11px;color:rgba(220,240,255,.5);">토 기운: 근육 균형·코어 강화</span>',
-    금:'💨 호흡 중심 — 4-7-8 호흡 5회 + 필라테스 30분<br><span style="font-size:11px;color:rgba(220,240,255,.5);">금 기운: 산소 공급·피부 광택 향상</span>',
-    수:'🌊 저강도 지속 — 수영·걷기 40분 + 명상 15분<br><span style="font-size:11px;color:rgba(220,240,255,.5);">수 기운: 신장 활성·수분 순환</span>'
+    목:_sK(13097,'🌿 유연성 운동 중심 — 요가·스트레칭 30분 + 걷기 20분<br><span style="font-size:11px;color:rgba(220,240,255,.5);">목 기운: 근막 이완·신체 유연성 극대화</span>'),
+    화:_sK(13098,'🔥 유산소 중심 — 줄넘기·조깅 25분 + 플랭크 3세트<br><span style="font-size:11px;color:rgba(220,240,255,.5);">화 기운: 혈액순환 촉진·체온 유지</span>'),
+    토:_sK(13099,'🏃 복합 운동 — 스쿼트 3세트 + 걷기 30분 + 복근운동<br><span style="font-size:11px;color:rgba(220,240,255,.5);">토 기운: 근육 균형·코어 강화</span>'),
+    금:_sK(13100,'💨 호흡 중심 — 4-7-8 호흡 5회 + 필라테스 30분<br><span style="font-size:11px;color:rgba(220,240,255,.5);">금 기운: 산소 공급·피부 광택 향상</span>'),
+    수:_sK(13101,'🌊 저강도 지속 — 수영·걷기 40분 + 명상 15분<br><span style="font-size:11px;color:rgba(220,240,255,.5);">수 기운: 신장 활성·수분 순환</span>')
   };
-  document.getElementById('svi-exercise').innerHTML=exMap[oh]||exMap['토'];
+  document.getElementById('svi-exercise').innerHTML=exMap[oh]||exMap[_sK(13074,'토')];
 
   // 식단 처방
   var dietMap={
-    목:'🥦 복원 탄력 식단 — 브로콜리·시금치·아보카도 + 비타민C 풍부 식품<br>녹색 채소 위주, 올리브오일 드레싱 · 신맛 식품(레몬·식초) 병행<br><span style="font-size:11px;color:rgba(220,240,255,.5);">목 기운 오행식: 해독·소화 기능 강화 → 피부 해독·탄력 회복</span>',
-    화:'🍅 항산화 식단 — 토마토·딸기·당근 + 오메가3(연어·고등어)<br>빨간 채소·과일 위주, 고추·마늘 소량 병행<br><span style="font-size:11px;color:rgba(220,240,255,.5);">화 기운 오행식: 열정 에너지 강화 → 혈색 개선·피부 활력</span>',
-    토:'🍠 뿌리채소 식단 — 고구마·단호박·당근 + 두부·콩류<br>단맛 천연 식품 위주, 꿀·메이플 시럽 소량<br><span style="font-size:11px;color:rgba(220,240,255,.5);">토 기운 오행식: 그라운딩 에너지 강화 → 영양 흡수·피부 탄력</span>',
-    금:'🥛 단백질 식단 — 닭가슴살·두부·아몬드 + 배·무·도라지<br>흰색 식품 위주, 매운맛(생강·고추냉이) 소량<br><span style="font-size:11px;color:rgba(220,240,255,.5);">금 기운 오행식: 정돈 에너지 강화 → 피부 수분·윤기 향상</span>',
-    수:'🫐 항노화 식단 — 블루베리·검정콩·미역 + 견과류<br>검은색·보라색 식품 위주, 짠맛(된장·해산물) 적당히<br><span style="font-size:11px;color:rgba(220,240,255,.5);">수 기운 오행식: 신장·방광 강화 → 피부 보습·노화 방지</span>'
+    목:_sK(13102,'🥦 복원 탄력 식단 — 브로콜리·시금치·아보카도 + 비타민C 풍부 식품<br>녹색 채소 위주, 올리브오일 드레싱 · 신맛 식품(레몬·식초) 병행<br><span style="font-size:11px;color:rgba(220,240,255,.5);">목 기운 오행식: 해독·소화 기능 강화 → 피부 해독·탄력 회복</span>'),
+    화:_sK(13103,'🍅 항산화 식단 — 토마토·딸기·당근 + 오메가3(연어·고등어)<br>빨간 채소·과일 위주, 고추·마늘 소량 병행<br><span style="font-size:11px;color:rgba(220,240,255,.5);">화 기운 오행식: 열정 에너지 강화 → 혈색 개선·피부 활력</span>'),
+    토:_sK(13104,'🍠 뿌리채소 식단 — 고구마·단호박·당근 + 두부·콩류<br>단맛 천연 식품 위주, 꿀·메이플 시럽 소량<br><span style="font-size:11px;color:rgba(220,240,255,.5);">토 기운 오행식: 그라운딩 에너지 강화 → 영양 흡수·피부 탄력</span>'),
+    금:_sK(13105,'🥛 단백질 식단 — 닭가슴살·두부·아몬드 + 배·무·도라지<br>흰색 식품 위주, 매운맛(생강·고추냉이) 소량<br><span style="font-size:11px;color:rgba(220,240,255,.5);">금 기운 오행식: 정돈 에너지 강화 → 피부 수분·윤기 향상</span>'),
+    수:_sK(13106,'🫐 항노화 식단 — 블루베리·검정콩·미역 + 견과류<br>검은색·보라색 식품 위주, 짠맛(된장·해산물) 적당히<br><span style="font-size:11px;color:rgba(220,240,255,.5);">수 기운 오행식: 신장·방광 강화 → 피부 보습·노화 방지</span>')
   };
-  document.getElementById('svi-diet').innerHTML=dietMap[oh]||dietMap['토'];
+  document.getElementById('svi-diet').innerHTML=dietMap[oh]||dietMap[_sK(13074,'토')];
 
   // 오행 연동
-  var ohNames={목:'목(木)',화:'화(火)',토:'토(土)',금:'금(金)',수:'수(水)'};
+  var ohNames={목:_sK(12352,'목(木)'),화:_sK(12353,'화(火)'),토:_sK(12354,'토(土)'),금:_sK(12355,'금(金)'),수:_sK(12356,'수(水)')};
   document.getElementById('svi-oh-text').innerHTML=
-    '오늘 <b style="color:#34d399;">'+ohNames[oh]+'</b> 기운 기준 SVI <b>'+svi+'점</b> 분석 결과입니다.<br>'
-    +'윤기 '+luster+'점 · 탄력 '+elastic+'점 · 피부결 '+texture+'점 · 혈색 '+vitality+'점<br>'
-    +'위 케어 루틴을 21일 이상 지속 시 SVI <b style="color:#38bdf8;">+8~15점</b> 향상 예측됩니다.';
+    _sK(13107,'오늘 <b style="color:#34d399;">')+ohNames[oh]+_sK(13108,'</b> 기운 기준 SVI <b>')+svi+_sK(13109,'점</b> 분석 결과입니다.<br>')
+    +_sK(13110,'윤기 ')+luster+_sK(13111,'점 · 탄력 ')+elastic+_sK(13112,'점 · 피부결 ')+texture+_sK(13113,'점 · 혈색 ')+vitality+_sK(13114,'점<br>')
+    +_sK(13115,'위 케어 루틴을 21일 이상 지속 시 SVI <b style="color:#38bdf8;">+8~15점</b> 향상 예측됩니다.');
 
   document.getElementById('svi-result').style.display='block';
   try{ var _rp=document.getElementById('page-svi'), _rr=document.getElementById('svi-result');
@@ -1477,7 +1550,8 @@ function sviShowResult(oh){
 /* ══ 검사를 접는다 — 결과를 만들지 않는다 (기능을 나갈 때) ══ */
 window.sviCancel = function(){
   try{ if(_svi.timer){ clearInterval(_svi.timer); _svi.timer = null; } }catch(e){}
-  try{ _svi.running = false; _svi.sec = 0; _svi._samples = 0; _svi.lostCount = 0; }catch(e){}
+  try{ _svi.running = false; _svi.sec = 0; _svi._samples = 0; _svi.lostCount = 0; _svi._fitHold = 0; _svi._lux = null; }catch(e){}
+  try{ if(window.cgoFitBeepReset) cgoFitBeepReset('svi'); else if(window._cgoBeeped) delete window._cgoBeeped['svi']; }catch(e){}
   try{ if(_svi.stream){ _svi.stream.getTracks().forEach(function(t){ t.stop(); }); _svi.stream = null; } }catch(e){}
   try{ if(window._sviStopFaceMesh) _sviStopFaceMesh(); }catch(e){}
   try{ if(window._sviResetPressEvents) _sviResetPressEvents(); }catch(e){}
@@ -1497,7 +1571,7 @@ window._sviStop = window.sviCancel;
 /* ══ 입구 팝업 ══ */
 window.sviShowIntroPopup = function(){
   try{ if(localStorage.getItem('cgo_svi_intro_skip') === '1') return; }catch(e){}
-  if(document.getElementById('svi-intro-pop')) return;
+  var _old = document.getElementById('svi-intro-pop'); if(_old) _old.remove();
   var K = _sK;
   var steps = [
     ['①', K(12812,'전체기능 → 피부 탄력 분석 진입'), K(12813,'밝은 조명 아래에서 재면 더 정확합니다.')],
@@ -1511,9 +1585,17 @@ window.sviShowIntroPopup = function(){
     ['💓', K(12824,'rPPG 동시 측정'),   K(12825,'같은 30초 동안 얼굴 혈류 파형으로 내면 탄력을 함께 잽니다.')],
     ['🔒', K(12826,'기기 안에서만'),    K(12827,'영상은 기기 밖으로 나가지 않습니다.')]
   ];
+  var first = [
+    ['💪', _sK(12830,'눌렀다 뗀 자리의 복원 파동을 카메라로 잰다'),
+           _sK(12831,'피부과의 고가 탄력 측정기가 하던 물리적 복원력 측정을, 폰 카메라의 광학 신호만으로 0.1초 단위로 따라갑니다. 사진 한 장으로 주름·잡티를 보는 방식과 다릅니다.')],
+    ['💓', _sK(12832,'얼굴 좌표에 혈류 신호를 실시간으로 얹는다'),
+           _sK(12833,'눈·입 AR 좌표를 잣대로 삼아 rPPG 혈류 변화를 화면 위에 바로 겹칩니다. 숫자만 뱉는 rPPG와 다릅니다.')],
+    ['🔬', _sK(12834,'6부위를 따로 재고 좌우 차이까지 본다'),
+           _sK(12835,'이마·눈썹·눈가·볼·턱·입가를 나누어 재고, 같은 30초 안에서 좌우 균형까지 함께 봅니다.')]
+  ];
   var pop = document.createElement('div');
   pop.id = 'svi-intro-pop';
-  pop.style.cssText = 'position:fixed;left:0;right:0;top:0;bottom:0;z-index:31000;background:#f0fdf9;overflow-y:auto;padding:56px 18px 28px;';
+  pop.style.cssText = 'position:fixed;left:0;right:0;top:0;bottom:0;z-index:99000;background:#f0fdf9;overflow-y:auto;padding:56px 18px 28px;';
   var html = '<div style="max-width:820px;margin:0 auto;">'
     + '<div style="display:flex;align-items:center;justify-content:space-between;">'
     +   '<span style="font-size:11px;font-weight:800;color:#0f766e;letter-spacing:.14em;">WORLD FIRST · SVI</span>'
@@ -1523,6 +1605,20 @@ window.sviShowIntroPopup = function(){
     +   '<div style="font-size:32px;line-height:1;">✨</div>'
     +   '<div><div style="font-size:20px;font-weight:900;color:#0f172a;letter-spacing:-.3px;">' + K(12800,'피부 탄력 분석') + '</div>'
     +   '<div style="font-size:11.5px;color:#0f766e;margin-top:3px;">' + K(12802,'Skin Vitality Index · 광학 복원 × 오행 융합 스킨 텐션 지수') + '</div></div>'
+    + '</div>'
+    + '<div style="background:rgba(244,114,168,.25);border:1px solid rgba(244,114,168,.45);border-radius:16px;padding:16px 15px;margin-top:14px;">'
+    +   '<div style="font-size:12px;font-weight:900;color:#b3245f;letter-spacing:.1em;">' + K(12829,'🌍 세계 최초') + '</div>'
+    +   '<div style="font-size:12px;color:#7a1440;line-height:1.75;margin-top:8px;">' + K(12836,'오행을 걷어내고 기술만 보아도 앞선 것이 셋입니다.') + '</div>'
+    +   '<div style="display:flex;flex-direction:column;gap:10px;margin-top:12px;">'
+    +   first.map(function(f){
+          return '<div style="display:flex;gap:10px;align-items:flex-start;background:rgba(255,255,255,.62);border-radius:12px;padding:11px 12px;">'
+            + '<div style="font-size:17px;line-height:1;flex-shrink:0;">' + f[0] + '</div>'
+            + '<div style="flex:1;min-width:0;"><div style="font-size:12px;font-weight:800;color:#8f1a4d;line-height:1.5;">' + f[1] + '</div>'
+            + '<div style="font-size:11px;color:#5c3547;line-height:1.7;margin-top:3px;">' + f[2] + '</div></div>'
+            + '</div>';
+        }).join('')
+    +   '</div>'
+    +   '<div style="font-size:10.5px;color:#8a4d67;line-height:1.7;margin-top:11px;">' + K(12837,'⚖️ SVI는 웰니스·뷰티 참고 지표입니다 — 의학적 진단을 대신하지 않습니다. 조명과 카메라에 따라 값이 달라질 수 있습니다.') + '</div>'
     + '</div>'
     + '<div style="background:#fff;border:1px solid #d7eee8;border-radius:16px;padding:16px 14px;margin-top:14px;">'
     +   '<div style="font-size:13px;font-weight:900;color:#0f172a;">' + K(12810,'📋 이렇게 하세요') + '</div>'
@@ -1555,22 +1651,58 @@ window.sviShowIntroPopup = function(){
   document.body.appendChild(pop);
 };
 
-/* ══ 페이지가 열리면 입구 팝업 · 언어가 바뀌면 다시 칠한다 ══ */
+/* ══ 페이지가 열리면 입구 팝업 한 번 · 언어가 바뀌면 다시 칠한다 ══ */
 (function(){
   var p = document.getElementById('page-svi');
   if(p){
+    var was = p.classList.contains('active') || p.classList.contains('on');
     var ob = new MutationObserver(function(){
-      if(p.classList.contains('active') || p.classList.contains('on')){
-        try{ window.sviShowIntroPopup(); }catch(e){}
-      }
+      var now = p.classList.contains('active') || p.classList.contains('on');
+      if(now === was) return;      /* 같은 상태면 아무것도 하지 않는다 — 팝업이 되풀이되는 원인 */
+      was = now;
+      if(now){ setTimeout(function(){ try{ window.sviShowIntroPopup(); }catch(e){} }, 60); }
+      else { var e = document.getElementById('svi-intro-pop'); if(e) e.remove(); }
     });
     ob.observe(p, {attributes:true, attributeFilter:['class']});
   }
   function rp(){
     var op = document.getElementById('svi-intro-pop');
-    if(op){ op.remove(); try{ window.sviShowIntroPopup(); }catch(e){} }
+    if(op){ try{ window.sviShowIntroPopup(); }catch(e){} }
     try{ if(_svi.chatHistory && _svi.chatHistory.length && window._sviRenderChat) _sviRenderChat(); }catch(e){}
   }
   if(typeof window.cgoRepaintOn === 'function') window.cgoRepaintOn(rp);
   else { var t = setInterval(function(){ if(typeof window.cgoRepaintOn === 'function'){ clearInterval(t); window.cgoRepaintOn(rp); } }, 500); setTimeout(function(){ clearInterval(t); }, 15000); }
+})();
+
+/* ══ 구성란 '피부 나이' 칸 — 측정값을 옮겨 적는다 ══ */
+(function(){
+  function sync(){
+    try{
+      var g = function(id){ var e = document.getElementById(id); return e ? e.textContent : ''; };
+      var inp = document.getElementById('svi-real-age-input');
+      var a = document.getElementById('svi-cfg-real-age');
+      var b = document.getElementById('svi-cfg-skin-age');
+      var d = document.getElementById('svi-cfg-age-delta');
+      if(a) a.textContent = (inp && inp.value) ? inp.value : (g('svi-real-age-val') || '--');
+      if(b) b.textContent = g('svi-skin-age-val') || '--';
+      if(d) d.textContent = g('svi-age-delta') || '--';
+    }catch(e){}
+  }
+  window._sviSyncAgeCard = sync;
+  var orig = window.sviCalcSkinAge;
+  if(typeof orig === 'function'){
+    window.sviCalcSkinAge = function(){
+      var r = orig.apply(this, arguments);
+      setTimeout(sync, 30);
+      return r;
+    };
+  }
+  var origFill = window._sviAutoFillAge;
+  if(typeof origFill === 'function'){
+    window._sviAutoFillAge = function(){
+      var r = origFill.apply(this, arguments);
+      setTimeout(sync, 30);
+      return r;
+    };
+  }
 })();
