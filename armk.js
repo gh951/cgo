@@ -2441,12 +2441,12 @@ function _rmaiArOnResults(results){
                 // alpha (dynamic cap — slider 100 = 진짜 1.0)
                 /* ★ 밝은 머리(흰머리·새치)도 색이 실리게 한다.
                    (180-hlum)/180 만 쓰면 흰머리는 무게가 0 이 되어 물들지 않았다. */
-                var hairWeight = Math.max(0.92, (180 - hlum) / 180);   /* ★ 그림자 최소화 */
+                var hairWeight = 1;   /* ★ 그림자 완전 제거 — 밝기와 무관하게 고르게 */
                 /* ★ 확률을 그대로 투명도에 곱한다 — 가닥 사이 반투명이 살아난다 */
                 /* ★ 인공 그림자(가우스) 제거 — 네모를 감추려던 것인데
                    돔·결·확률 셋이 경계를 잡으므로 얼룩만 남겼다.
                    경계 바깥 가장자리에만 살짝 남겨 부드럽게 끝나게 한다. */
-                var edgeFade = 0.93 + 0.07 * Math.min(1, gaussAttenuation * 2.6);
+                var edgeFade = 1;     /* ★ 가장자리 감쇄도 제거 */
                 var alpha = Math.min(DYN_ALPHA_CAP, hairInt * Math.pow(hairWeight, 0.5) * edgeFade * hairProb);
 
                 hairData[hi]   = Math.round(hr * (1 - alpha) + multR * alpha);
