@@ -2254,6 +2254,26 @@ function _rmaiArOnResults(results){
 
             /* ★ 머리는 이마에서 위로 이어져 있다 — 끊기면 그 위는 벽이다.
                세로줄마다 위로 훑어 머리 꼭대기를 찾는다. 벽 무늬에 속지 않는다. */
+            /* ★ 얼굴 윤곽 안은 절대 머리가 아니다 — 그늘진 뺨·이마가 머리로 칠해졌다.
+               얼굴 타원의 줄별 좌우 끝을 미리 구해 그 안을 통째로 막는다. */
+            var faceL = new Int16Array(hairH), faceR = new Int16Array(hairH);
+            for(var fy = 0; fy < hairH; fy++){ faceL[fy] = 32000; faceR[fy] = -1; }
+            for(var oi2 = 0; oi2 < FACE_OVAL.length; oi2++){
+              var p1 = landmarks[FACE_OVAL[oi2]];
+              var p2 = landmarks[FACE_OVAL[(oi2 + 1) % FACE_OVAL.length]];
+              if(!p1 || !p2) continue;
+              var x1 = p1.x * canvas.width - hairX, y1 = p1.y * canvas.height - hairY;
+              var x2 = p2.x * canvas.width - hairX, y2 = p2.y * canvas.height - hairY;
+              var stepsN = Math.max(1, Math.ceil(Math.abs(y2 - y1)));
+              for(var t = 0; t <= stepsN; t++){
+                var yy = Math.round(y1 + (y2 - y1) * t / stepsN);
+                if(yy < 0 || yy >= hairH) continue;
+                var xx = Math.round(x1 + (x2 - x1) * t / stepsN);
+                if(xx < faceL[yy]) faceL[yy] = xx;
+                if(xx > faceR[yy]) faceR[yy] = xx;
+              }
+            }
+
             var colTop = new Int16Array(hairW);
             var faceCx0 = (ovalMinX + ovalMaxX) / 2 - hairX;
             for(var cx = 0; cx < hairW; cx++){
@@ -2351,7 +2371,7 @@ function _rmaiArOnResults(results){
                 else hairProb = 0;
 
                 /* ★ 벽 차단 — 돔 밖으로 나갈수록 급히 죽인다 */
-                if(outXR > 1) hairProb *= Math.max(0, 1 - (outXR - 1) * 2.6);
+                if(outXR > 1) hairProb *= Math.max(0, 1 - (outXR - 1) * 1.4);
                 /* 돔 밖의 밋밋한 회색은 벽으로 본다 */
                 if(!inDome && hlum > 95 && satC < 12) hairProb *= 0.15;
                 /* ★ 이마 아래는 좌표로 잘라낸다 — 색과 무관하게 막는다 */
@@ -2362,6 +2382,8 @@ function _rmaiArOnResults(results){
                 /* 그 줄의 머리 꼭대기보다 위는 벽이다 */
                 if(py < colTop[px]) continue;
                 if(py < colTop[px]) continue;   /* 그 줄의 머리 꼭대기보다 위는 벽 */
+                /* ★ 얼굴 윤곽 안이면 머리가 아니다 — 안쪽으로 3화소 여유 */
+                if(faceR[py] >= 0 && px > faceL[py] + 3 && px < faceR[py] - 3) continue;
                 /* ★ 외톨이 점 제거 — 머리카락은 뭉쳐 있다. 혼자 떨어진 점은 벽·피부다.
                    이웃 넷 중 둘 이상이 어두워야 인정한다. */
                 if(px >= 2 && py >= 2 && px < hairW - 2 && py < hairH - 2){
