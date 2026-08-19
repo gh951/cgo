@@ -96,9 +96,9 @@
           /* 정보 입력 관문 제거 */
           // ★ 즉시 호출 — setTimeout 제거 (본 페이지 깜빡임 방지, yeogi 패턴)
           rmaiShowIntroPopup();
-          // C-29 챗 인사는 약간 후 (팝업이 떠 있을 때 배경)
+          // CGO 챗 인사는 약간 후 (팝업이 떠 있을 때 배경)
           if(typeof rmaiChatGreet === 'function'){
-            setTimeout(rmaiChatGreet, 500);
+            /* 자동 열림 제거 */
           }
           return true;
         }
@@ -209,7 +209,7 @@ function _cgoCameraAlert(msg){
 var _maiBeforeData = null;
 
 // ═══════════════════════════════════════════════════
-// ★ 핀셋 ㊲㊳ — C-29 rPPG AR 메이크업 진짜 구현
+// ★ 핀셋 ㊲㊳ — CGO rPPG AR 메이크업 진짜 구현
 //   FaceMesh 468 랜드마크 + 입술 영역 색 적용 + 캡처
 //   28명 클로드가 박제한 @mediapipe/face_mesh CDN 활용 (line 63299)
 // ═══════════════════════════════════════════════════
@@ -256,7 +256,7 @@ var _rmaiArRainbowSet = [
   {n:'보라', c:'#9333ea'}
 ];
 
-// ★ CGO-FULI C-29 — 세계 최대 600색 메이크업 라이브러리
+// ★ CGO-FULI CGO — 세계 최대 600색 메이크업 라이브러리
 // 오행 100 (보너스) + 일반 200 + 명품 300 (현실 500)
 var _rmaiArColorLibrary = {
   daily: {
@@ -1077,7 +1077,7 @@ window.rmaiCaptureBeforePhoto = function(){
           /* ★ C-63: textContent 대입 후 즉시 번역 */
           try{ if(window._LANG && window._LANG!=='ko' && typeof _cgoTranslateNode==='function') _cgoTranslateNode(status); }catch(e){} }
 
-        // ★ C-29 hook
+        // ★ CGO hook
         if(typeof rmaiChatSay === 'function') rmaiChatSay('before-captured');
       };
 
@@ -1328,7 +1328,7 @@ function rmaiShowResult(oh){
     _rmaiRenderFuliAgeCard(fuliAgeData);
   }
 
-  // ★ C-29 hook — 분석 결과 알림 (FULI Age 포함)
+  // ★ CGO hook — 분석 결과 알림 (FULI Age 포함)
   if(typeof rmaiChatSay === 'function'){
     rmaiChatSay('analysis-done', {mai:mai, oh:oh, uni:uni, glow:glow, cover:cover, moist:moist});
   }
@@ -1656,7 +1656,7 @@ function _rmaiArInitFaceMesh(retryCount){
     _rmaiAr.frameCount = 0;
     _rmaiArProcessFrame();
 
-    // ★ C-29 hook — AR 시작 알림
+    // ★ CGO hook — AR 시작 알림
     if(typeof rmaiChatSay === 'function') rmaiChatSay('ar-started');
   } catch(e){
     if(status){
@@ -2175,7 +2175,7 @@ function _rmaiArOnResults(results){
     //    구글 AI 진단: 두 페이지 입구 + 41 wrap chain → silently fail
     //    fix: _rmaiArOnResults 본체에 직접 박입 (캔버스 clear 후 즉시 적용)
     //    좌표: 글로벌 표준 — landmark 10 (이마 탑) 기준, 얼굴 높이의 0.6 위로 확장
-    if(ac.hair){
+    if(ac.hair && window._rmaiHairOn){   /* ★ 헤어 잠시 끔 — _rmaiHairOn=true 로 되살림 */
       try {
         window._inj58Stats = window._inj58Stats || {frameCount:0, paintCount:0};
         window._inj58Stats.frameCount++;
@@ -2900,8 +2900,7 @@ function _rmaiArInitColorPicker(){
     {key:'lip',   icon:'💋', name:'립',     pal: currentCardLib.lip,   subtitle:'립스틱'},
     {key:'cheek', icon:'🌸', name:'볼',     pal: currentCardLib.cheek, subtitle:'블러셔'},
     {key:'eye',   icon:'👁️', name:'아이',   pal: currentCardLib.eye,   subtitle:'아이쉐도우'},
-    {key:'base',  icon:'🫧', name:'베이스', pal: currentCardLib.base,  subtitle:'베이스 톤'},
-    {key:'hair',  icon:'💇', name:'헤어', pal: (currentCardLib.hair || currentCardLib.base), subtitle:'헤어 컬러'}
+    {key:'base',  icon:'🫧', name:'베이스', pal: currentCardLib.base,  subtitle:'베이스 톤'}
   ];
 
   // 카테고리 탭 — 5개 한 줄 (헤어 포함)
@@ -3254,7 +3253,7 @@ window.rmaiArCapture = function(){
 };
 
 // ═══════════════════════════════════════════════════
-// ★ C-29 컨설턴트 — 대화형 AI (Groq llama-3.1-8b-instant)
+// ★ AI 상담 — 대화형 AI (Groq llama-3.1-8b-instant)
 //   페이지 진입 시 자동 인사 + 단계별 hook + 색 자동 적용
 // ═══════════════════════════════════════════════════
 
@@ -3262,6 +3261,7 @@ window.rmaiChatHistory = [];
 window._rmaiChatGreeted = false;
 
 window.rmaiChatToggle = function(){
+  window._rmaiChatManual = true;
   var modal = document.getElementById('rmai-chat-modal');
   var bubble = document.getElementById('rmai-chat-bubble');
   if(!modal) return;
@@ -3307,7 +3307,7 @@ window.rmaiChatAddMessage = function(role, content, opts){
   var bubble = document.createElement('div');
   if(role === 'assistant'){
     bubble.style.cssText = 'align-self:flex-start;max-width:88%;background:#fff;border:1px solid #ddd6fe;border-radius:14px 14px 14px 4px;padding:10px 14px;font-size:12px;color:#1a1408;line-height:1.7;box-shadow:0 1px 4px rgba(0,0,0,.04);';
-    bubble.innerHTML = '<div style="font-size:9px;font-weight:800;color:#7c3aed;margin-bottom:4px;letter-spacing:.04em;">🤖 C-29</div><div>'+content+'</div>';
+    bubble.innerHTML = '<div style="font-size:9px;font-weight:800;color:#7c3aed;margin-bottom:4px;letter-spacing:.04em;">🤖 CGO</div><div>'+content+'</div>';
   } else {
     bubble.style.cssText = 'align-self:flex-end;max-width:88%;background:linear-gradient(135deg,#a855f7,#7c3aed);color:#fff;border-radius:14px 14px 4px 14px;padding:10px 14px;font-size:12px;line-height:1.7;';
     bubble.innerHTML = content.replace(/</g,'&lt;').replace(/>/g,'&gt;');
@@ -3339,9 +3339,10 @@ function _rmaiChatShowBubble(content){
 }
 
 window.rmaiChatGreet = function(){
+  if(!window._rmaiChatManual) return;   /* 사용자가 누를 때만 인사 */
   if(_rmaiChatGreeted) return;
   _rmaiChatGreeted = true;
-  var msg = _cgoT('안녕하세요. C-29 컨설턴트입니다.<br>')
+  var msg = _cgoT('안녕하세요. AI 상담입니다.<br>')
     + _cgoT('사주 오행 · 색채심리 · 메이크업 트렌드를 박학다식하게 답변드립니다.<br><br>')
     + _cgoT('먼저 화장 전 사진을 한 장 찍어주시면 분석을 시작하겠습니다.<br>')
     + '<span style="font-size:10px;color:#888;">'+_cgoT('(질문이나 추천이 필요하시면 언제든 물어보세요)')+'</span>';
@@ -3407,7 +3408,7 @@ window.rmaiChatSend = function(){
     colorCatalog += '\n  ['+catName+']: '+ ((pal[cat] || []).map(function(c){return c.n;}).join(', '));
   });
 
-  var systemPrompt = '당신은 C-29 컨설턴트입니다. 사주 오행 + 색채심리 + 메이크업 트렌드 + FULI Age 리듬 참고에 밝은 뷰티 컨설턴트. 의료인이 아니며 진단·처방을 하지 않습니다.\n'
+  var systemPrompt = '당신은 AI 상담입니다. 사주 오행 + 색채심리 + 메이크업 트렌드 + FULI Age 리듬 참고에 밝은 뷰티 컨설턴트. 의료인이 아니며 진단·처방을 하지 않습니다.\n'
     + '톤: 전문가 컨설턴트 (정중한 존댓말, "~을 추천드립니다").\n'
     + '답변 규칙:\n'
     + '1. 짧게 (3-4문장 이내, 줄바꿈 사용).\n'
@@ -5317,4 +5318,30 @@ function sviShowResult(oh){
     var gy = Math.min(H - 1, Math.max(0, Math.floor(py / STEP)));
     return m[gy * W + gx];
   };
+})();
+
+
+/* ══ 언어가 바뀌면 AR 화면을 다시 칠한다 ══
+   입구 팝업은 JS가 글자를 박아 넣으므로 사전만 바뀌면 옛 언어로 남는다. */
+(function(){
+  function repaint(){
+    try{
+      var pop = document.getElementById('rmai-intro-pop');
+      if(pop){ pop.remove(); if(window.rmaiShowIntroPopup) rmaiShowIntroPopup(); }
+    }catch(e){}
+    try{
+      var pg = document.getElementById('page-rppg-ar');
+      if(pg && getComputedStyle(pg).display !== 'none' && window.CGO_T) CGO_T.paint(pg);
+    }catch(e){}
+    try{ if(window.rmaiArRenderPalette) rmaiArRenderPalette(); }catch(e){}
+  }
+  var done = false;
+  function hook(){ if(done) return; if(window.cgoRepaintOn){ cgoRepaintOn(repaint); done = true; } }
+  [0,200,800,2000,4000].forEach(function(d){ setTimeout(hook, d); });
+  setTimeout(function(){
+    if(done || !window.CGO_T || CGO_T.__armkWrap) return;
+    var orig = CGO_T.set;
+    CGO_T.set = function(){ var r = orig.apply(this, arguments); setTimeout(repaint, 70); return r; };
+    CGO_T.__armkWrap = true; done = true;
+  }, 5000);
 })();
