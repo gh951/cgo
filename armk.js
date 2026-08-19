@@ -2206,8 +2206,9 @@ function _rmaiArOnResults(results){
           // ★ 박입 69 — 좌우 영역 확장 (옆머리 잡기)
           //   파트너님 진단: 옆머리 짧아서 안 잡힘
           //   0.30 → 0.45 좌우 확장, 1.6 → 1.9 가로
-          var hairY = Math.max(0, Math.floor(ovalMinY - faceH * 0.65));
-          var hairH = Math.floor(faceH * 0.75);
+          /* ★ 위로 0.65배는 벽까지 덮어 네모 자국을 만들었다 — 0.42배로 좁힌다 */
+              var hairY = Math.max(0, Math.floor(ovalMinY - faceH * 0.42));
+          var hairH = Math.floor(faceH * 0.56);
           var hairX = Math.max(0, Math.floor(ovalMinX - faceW * 0.45));
           var hairW = Math.floor(faceW * 1.9);
           hairW = Math.min(canvas.width - hairX, hairW);
@@ -2307,7 +2308,22 @@ function _rmaiArOnResults(results){
                 if(isBlondOrGinger) hairProb = 1;
                 else if(hlum <= 90) hairProb = 1;
                 else if(hlum < 145) hairProb = 0.35 + (145 - hlum) / 55 * 0.65;
-                else if(inDome && satC < 42 && hlum < 235) hairProb = 0.85;  /* 흰머리·새치 */
+                else if(inDome && satC < 42 && hlum < 235){
+                  /* ★ 흰머리와 벽은 밝기·색이 같다 — 결(무늬)로 가른다.
+                     머리카락은 가닥이 있어 옆 화소와 밝기가 크게 다르고,
+                     벽은 밋밋해 거의 같다. 이것이 사진의 네모 자국을 만든 원인이었다. */
+                  var tx = 0;
+                  if(px + 3 < hairW){
+                    var n1 = (pixelIdx + 3) * 4;
+                    tx = Math.max(tx, Math.abs(hlum - (0.2126*hairData[n1] + 0.7152*hairData[n1+1] + 0.0722*hairData[n1+2])));
+                  }
+                  if(py + 3 < hairH){
+                    var n2 = (pixelIdx + hairW * 3) * 4;
+                    tx = Math.max(tx, Math.abs(hlum - (0.2126*hairData[n2] + 0.7152*hairData[n2+1] + 0.0722*hairData[n2+2])));
+                  }
+                  /* 결이 뚜렷하면 머리, 밋밋하면 벽 */
+                  hairProb = (tx >= 16) ? 0.9 : (tx >= 7 ? (tx - 7) / 9 * 0.9 : 0);
+                }
                 else hairProb = 0;
 
                 /* ★ 벽 차단 — 돔 밖으로 나갈수록 급히 죽인다 */
