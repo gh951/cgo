@@ -2217,6 +2217,7 @@ function _rmaiArOnResults(results){
           if(hairW > 10 && hairH > 10){
             window._inj58Stats.lastRegion = {x:hairX, y:hairY, w:hairW, h:hairH};
 
+            try{ if(window.rmaiNanoFeed) rmaiNanoFeed(ctx, hairX, hairY, hairW, hairH); }catch(_e){}
             var hairImgData = ctx.getImageData(hairX, hairY, hairW, hairH);
             var hairData = hairImgData.data;
 
@@ -2361,6 +2362,25 @@ function _rmaiArOnResults(results){
                 /* 그 줄의 머리 꼭대기보다 위는 벽이다 */
                 if(py < colTop[px]) continue;
                 if(py < colTop[px]) continue;   /* 그 줄의 머리 꼭대기보다 위는 벽 */
+                /* ★ 외톨이 점 제거 — 머리카락은 뭉쳐 있다. 혼자 떨어진 점은 벽·피부다.
+                   이웃 넷 중 둘 이상이 어두워야 인정한다. */
+                if(px >= 2 && py >= 2 && px < hairW - 2 && py < hairH - 2){
+                  var nb = 0;
+                  var o1 = (pixelIdx - 2) * 4, o2 = (pixelIdx + 2) * 4;
+                  var o3 = (pixelIdx - hairW * 2) * 4, o4 = (pixelIdx + hairW * 2) * 4;
+                  if(0.2126*hairData[o1] + 0.7152*hairData[o1+1] + 0.0722*hairData[o1+2] < 178) nb++;
+                  if(0.2126*hairData[o2] + 0.7152*hairData[o2+1] + 0.0722*hairData[o2+2] < 178) nb++;
+                  if(0.2126*hairData[o3] + 0.7152*hairData[o3+1] + 0.0722*hairData[o3+2] < 178) nb++;
+                  if(0.2126*hairData[o4] + 0.7152*hairData[o4+1] + 0.0722*hairData[o4+2] < 178) nb++;
+                  if(nb <= 1) continue;
+                  if(nb === 2) hairProb *= 0.5;
+                }
+                /* ★ 나노점 rPPG — 맥박치면 피부다. 머리로 세지 않는다.
+                   피부를 찾아 그 바깥을 남기는 방식이라 벽 무늬에도 안 속는다. */
+                try{
+                  var sk = window.rmaiNanoSkin ? rmaiNanoSkin(px, py) : -1;
+                  if(sk >= 0) hairProb *= Math.max(0, 1 - sk * 1.15);
+                }catch(_e){}
                 if(hairProb <= 0.04) continue;
 
                 // ★ 박입 68 — 슬라이더 dynamic 시스템 (C-44 죽이게 진짜 100% 동작)
@@ -2399,12 +2419,12 @@ function _rmaiArOnResults(results){
                 // alpha (dynamic cap — slider 100 = 진짜 1.0)
                 /* ★ 밝은 머리(흰머리·새치)도 색이 실리게 한다.
                    (180-hlum)/180 만 쓰면 흰머리는 무게가 0 이 되어 물들지 않았다. */
-                var hairWeight = Math.max(0.80, (180 - hlum) / 180);
+                var hairWeight = Math.max(0.92, (180 - hlum) / 180);   /* ★ 그림자 최소화 */
                 /* ★ 확률을 그대로 투명도에 곱한다 — 가닥 사이 반투명이 살아난다 */
                 /* ★ 인공 그림자(가우스) 제거 — 네모를 감추려던 것인데
                    돔·결·확률 셋이 경계를 잡으므로 얼룩만 남겼다.
                    경계 바깥 가장자리에만 살짝 남겨 부드럽게 끝나게 한다. */
-                var edgeFade = 0.82 + 0.18 * Math.min(1, gaussAttenuation * 2.2);
+                var edgeFade = 0.93 + 0.07 * Math.min(1, gaussAttenuation * 2.6);
                 var alpha = Math.min(DYN_ALPHA_CAP, hairInt * Math.pow(hairWeight, 0.5) * edgeFade * hairProb);
 
                 hairData[hi]   = Math.round(hr * (1 - alpha) + multR * alpha);
@@ -5185,3 +5205,71 @@ function sviShowResult(oh){
   document.getElementById('svi-result').style.display='block';
   document.getElementById('svi-result').scrollIntoView({behavior:'smooth',block:'start'});
 }
+
+
+/* ══ 나노점 rPPG 피부 지도 — 파트너님 발상 ══
+   머리카락을 찾지 않는다. 피부를 찾아 그 바깥을 남긴다.
+   피부는 혈류 때문에 초록 채널이 미세하게 맥박치고, 머리카락·벽·옷은 치지 않는다.
+   화소마다 보지 않고 6화소 간격 점만 본다 — 계산이 1/36 이다. */
+(function(){
+  var STEP = 6;            /* 점 간격 */
+  var KEEP = 30;           /* 1초치 (30프레임) */
+  var buf = null, W = 0, H = 0, idx = 0, filled = 0;
+  window._rmaiSkinMap = null;   /* 0~1 · 클수록 피부 */
+
+  window.rmaiNanoFeed = function(ctx, x, y, w, h){
+    try{
+      var gw = Math.max(1, Math.floor(w / STEP));
+      var gh = Math.max(1, Math.floor(h / STEP));
+      if(!buf || W !== gw || H !== gh){
+        W = gw; H = gh; idx = 0; filled = 0;
+        buf = new Uint8ClampedArray(W * H * KEEP);
+        window._rmaiSkinMap = new Float32Array(W * H);
+      }
+      var img = ctx.getImageData(x, y, w, h).data;
+      var base = idx * W * H;
+      for(var gy = 0; gy < H; gy++){
+        for(var gx = 0; gx < W; gx++){
+          var sx = gx * STEP + (STEP >> 1);
+          var sy = gy * STEP + (STEP >> 1);
+          var p = (sy * w + sx) * 4;
+          /* 초록 채널 — 혈류가 가장 잘 드러난다 */
+          buf[base + gy * W + gx] = img[p + 1];
+        }
+      }
+      idx = (idx + 1) % KEEP;
+      if(filled < KEEP) filled++;
+      if(filled < 12) return;   /* 아직 못 쌓았으면 판단하지 않는다 */
+
+      /* 점마다 1초치 흔들림을 본다 — 맥박이 있으면 흔들리고, 벽은 잠잠하다 */
+      var map = window._rmaiSkinMap;
+      for(var i = 0; i < W * H; i++){
+        var mean = 0, n = filled;
+        for(var k = 0; k < n; k++) mean += buf[k * W * H + i];
+        mean /= n;
+        var v = 0, cross = 0, prev = 0;
+        for(var k2 = 0; k2 < n; k2++){
+          var d = buf[k2 * W * H + i] - mean;
+          v += d * d;
+          if(k2 && prev * d < 0) cross++;
+          prev = d;
+        }
+        v = Math.sqrt(v / n);
+        /* 맥박: 흔들림이 있고(0.4~6) 오르내림이 사람 심박 범위(0.7~3Hz) */
+        var hz = (cross / 2) / (n / 30);
+        var live = (v >= 0.4 && v <= 6 && hz >= 0.6 && hz <= 3.2) ? 1 : 0;
+        /* 천천히 따라간다 — 한 프레임에 흔들리지 않게 */
+        map[i] = map[i] * 0.85 + live * 0.15;
+      }
+    }catch(e){}
+  };
+
+  /* 그 자리가 피부인가 (0~1) */
+  window.rmaiNanoSkin = function(px, py){
+    var m = window._rmaiSkinMap;
+    if(!m || !W) return -1;                 /* 아직 모른다 */
+    var gx = Math.min(W - 1, Math.max(0, Math.floor(px / STEP)));
+    var gy = Math.min(H - 1, Math.max(0, Math.floor(py / STEP)));
+    return m[gy * W + gx];
+  };
+})();
