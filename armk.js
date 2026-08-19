@@ -250,10 +250,10 @@ function _aCN(n){
     var L = window._LANG || 'ko';
     if(L === 'ko') return n;
     var ks = _ACNM[n]; if(!ks) return n;
-    var sep = (L==='ja'||L==='zh'||L==='zh_HK'||L==='th') ? '' : ' ';
     var parts = ks.map(function(k){ return _aK(k, ''); }).filter(function(v){ return !!v; });
     if(!parts.length) return n;
-    return parts.join(sep);
+    var cjk = parts.some(function(p){ return /[\u3040-\u30ff\u4e00-\u9fff\u0e00-\u0e7f]/.test(p); });
+    return parts.join(cjk ? '' : ' ');
   }catch(e){ return n; }
 }
 
@@ -2963,7 +2963,7 @@ function _rmaiArInitColorPicker(){
   var palOhActive = (_rmaiAr.currentPalette === 'oheng');
   var palRbActive = (_rmaiAr.currentPalette === 'rainbow');
   paletteToggle += '<button onclick="rmaiArSetPalette(\'oheng\')" style="flex:1;padding:6px 8px;background:'+(palOhActive?'linear-gradient(135deg,#fbbf24,#f59e0b)':'#f3f4f6')+';border:none;border-radius:8px;color:'+(palOhActive?'#1a1408':'#888')+';font-size:10px;font-weight:'+(palOhActive?'900':'700')+';cursor:pointer;font-family:inherit;">🎨 '+_aK(12337)+' ('+(ohNames[oh]||oh)+')</button>';
-  paletteToggle += '<button onclick="rmaiArSetPalette(\'rainbow\')" style="flex:1;padding:6px 8px;background:'+(palRbActive?'linear-gradient(90deg,#dc2626,#f97316,#eab308,#16a34a,#2563eb,#9333ea)':'#f3f4f6')+';border:none;border-radius:8px;color:'+(palRbActive?'#fff':'#888')+';font-size:10px;font-weight:'+(palRbActive?'900':'700')+';cursor:pointer;font-family:inherit;text-shadow:'+(palRbActive?'0 1px 2px rgba(0,0,0,.4)':'none')+';">🌈 무지개 7색</button>';
+  paletteToggle += '<button onclick="rmaiArSetPalette(\'rainbow\')" style="flex:1;padding:6px 8px;background:'+(palRbActive?'linear-gradient(90deg,#dc2626,#f97316,#eab308,#16a34a,#2563eb,#9333ea)':'#f3f4f6')+';border:none;border-radius:8px;color:'+(palRbActive?'#fff':'#888')+';font-size:10px;font-weight:'+(palRbActive?'900':'700')+';cursor:pointer;font-family:inherit;text-shadow:'+(palRbActive?'0 1px 2px rgba(0,0,0,.4)':'none')+';">'+_aK(12332)+'</button>';
   paletteToggle += '</div>';
 
   // 현재 카테고리 + 현재 팔레트에 따른 색 배열
