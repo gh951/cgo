@@ -242,6 +242,21 @@ var _rmaiAr = {
   lastResults: null
 };
 
+
+/* ★ 색 이름 20개 언어 — 낱말 사전 조합 */
+var _ACNM = {"빨강":[12500],"다크 브라운":[12501,12502],"초콜릿 브라운":[12503,12502],"애쉬 브라운":[12504,12502],"모카 브라운":[12505,12502],"카라멜":[12506],"허니 브라운":[12507,12502],"라이트 베이지":[12508,12509],"애쉬 그레이":[12504,12510],"와인 레드":[12511,12512],"체리 레드":[12513,12512],"코퍼 오렌지":[12514,12515],"로즈 골드":[12516,12517],"애쉬 핑크":[12504,12518],"라벤더":[12519],"애쉬 블루":[12504,12520],"민트 그린":[12521,12522],"플래티넘 블론드":[12523,12524],"실버 애쉬":[12525,12504],"주황":[12526],"노랑":[12527],"초록":[12528],"파랑":[12529],"남색":[12530],"보라":[12531],"MLBB 누드":[12532,12533],"데일리 코랄":[12534,12535],"딥 베리":[12536,12537],"클래식 레드":[12538,12512],"로즈 핑크":[12516,12518],"페일 누드":[12539,12533],"딥 와인":[12536,12511],"벨벳 레드":[12540,12512],"피치 핑크":[12541,12518],"블러드 오렌지":[12542,12515],"시나몬 누드":[12543,12533],"베리 플럼":[12537,12544],"드라이 로즈":[12545,12516],"테라코타":[12546],"블러쉬 핑크":[12547,12518],"레드 와인":[12512,12511],"썬셋 코랄":[12548,12535],"딥 로즈":[12536,12516],"머스타드 누드":[12549,12533],"페일 베리":[12539,12537],"스파이시 레드":[12550,12512],"베이지 누드":[12509,12533],"베리 와인":[12537,12511],"더스티 핑크":[12551,12518],"토마토 레드":[12552,12512],"프렌치 누드":[12553,12533],"클래식 핑크":[12538,12518],"다크 베리":[12501,12537],"코코아 누드":[12554,12533],"민트 누드":[12521,12533],"벽돌 레드":[12555,12512],"로즈우드":[12556],"산호 핑크":[12557,12518],"블러디 메리":[12558,12559],"페일 살구":[12539,12560],"블러쉬 누드":[12547,12533],"딥 코랄":[12536,12535],"스칼렛":[12561],"밀크 티 누드":[12562,12563,12533],"캔디 핑크":[12564,12518],"베리 누드":[12537,12533],"딥 컨피던스":[12536,12565],"블러쉬 코랄":[12547,12535],"라이트 와인":[12508,12511],"레드 벨벳":[12512,12540],"페일 모카":[12539,12505],"블러드 우드":[12542,12566],"페일 매트":[12539,12567],"썬셋 글로우":[12548,12568],"데일리 피치":[12534,12541],"러브 핑크":[12569,12518],"블러쉬 로즈":[12547,12516],"코랄 글로우":[12535,12568],"페일 로즈":[12539,12516],"살구 블러쉬":[12560,12547],"드라이 피치":[12545,12541],"썬 키스 피치":[12570,12571,12541],"쿨 핑크":[12572,12518],"민트 로즈":[12521,12516],"피치 글로우":[12541,12568],"페일 살몬":[12539,12573],"로즈 누드":[12516,12533],"블러쉬 자몽":[12547,12574],"페일 피치":[12539,12541],"섀도 핑크":[12575,12518],"베이지 블러쉬":[12509,12547],"썬셋 핑크":[12548,12518],"쿨 코랄":[12572,12535],"블러드 로즈":[12542,12516],"페일 라즈베리":[12539,12576],"민트 블러쉬":[12521,12547],"키스 핑크":[12571,12518],"아일랜드 코랄":[12577,12535],"페일 코코아":[12539,12554],"블러쉬 매트":[12547,12567],"와인 글로우":[12511,12568],"스파이시 피치":[12550,12541],"러브 매트":[12569,12567],"블러쉬 베이지":[12547,12509],"페일 마젠타":[12539,12578],"드림 로즈":[12579,12516],"페일 자몽":[12539,12574],"블러쉬 우디":[12547,12580],"캔디 코랄":[12564,12535],"스위티 핑크":[12581,12518],"코랄 매트":[12535,12567],"와인 블러쉬":[12511,12547],"드라이 베리":[12545,12537],"페일 진주":[12539,12582],"데일리 누드":[12534,12533],"블러쉬 골드":[12547,12517],"페일 로즈우드":[12539,12556],"드림 피치":[12579,12541],"블러쉬 머스타드":[12547,12549],"페일 글로우":[12539,12568],"데일리 브라운":[12534,12502],"스모키 그레이":[12583,12510],"네추럴 누드":[12584,12533],"딥 브라운":[12536,12502],"골든 브론즈":[12585,12586],"카키 매트":[12587,12567],"페일 베이지":[12539,12509],"데일리 골드":[12534,12517],"러스트 매트":[12588,12567],"코퍼 시머":[12514,12589],"페일 핑크":[12539,12518],"스모키 블루":[12583,12520],"다크 그린":[12501,12522],"페일 라일락":[12539,12590],"페일 그레이":[12539,12510],"골든 시머":[12585,12589],"다크 차콜":[12501,12591],"페일 골드":[12539,12517],"데일리 카키":[12534,12587],"다크 머스타드":[12501,12549],"페일 인디고":[12539,12592],"네추럴 베이지":[12584,12509],"스모키 퍼플":[12583,12593],"데일리 코퍼":[12534,12514],"블랙 매트":[12594,12567],"페일 옐로우":[12539,12595],"딥 그린":[12536,12522],"스모키 카멜":[12583,12596],"페일 토프":[12539,12597],"네추럴 모카":[12584,12505],"스모키 인디고":[12583,12592],"다크 카키":[12501,12587],"네추럴 골드":[12584,12517],"스모키 와인":[12583,12511],"데일리 시머":[12534,12589],"페일 카멜":[12539,12596],"다크 코코아":[12501,12554],"블러쉬 토프":[12547,12597],"스모키 차콜":[12583,12591],"데일리 매트":[12534,12567],"네추럴 브론즈":[12584,12586],"페일 아이보리":[12539,12598],"데일리 베이지":[12534,12509],"밀키 베이지":[12599,12509],"골든 베이지":[12585,12509],"네추럴 토프":[12584,12597],"데일리 카멜":[12534,12596],"페일 새틴":[12539,12600],"바닐라 크림":[12601,12602],"네추럴 글로우":[12584,12568],"밀키 글로우":[12599,12568],"네추럴 살구":[12584,12560],"블러쉬 글로우":[12547,12568],"데일리 새틴":[12534,12600],"밀크 글로우":[12562,12568],"페일 라이트":[12539,12508],"페일 시머":[12539,12589],"데일리 글로우":[12534,12568],"밀크 누드":[12562,12533],"페일 캐러멜":[12539,12603],"네추럴 아이보리":[12584,12598],"밀크 매트":[12562,12567],"페일 미스트":[12539,12604],"네추럴 새틴":[12584,12600],"페일 핑크누드":[12539,12518,12533],"데일리 핑크":[12534,12518],"페일 메이블":[12539,12605],"밀크 베이지":[12562,12509],"네추럴 페일":[12584,12539],"블러쉬 살구":[12547,12560],"데일리 라이트":[12534,12508],"木·딥에메랄드":[12606,12536,12607],"木·포레스트":[12606,12608],"木·민트":[12606,12521],"木·세이지":[12606,12609],"木·올리브":[12606,12610],"火·정통퓨어레드":[12611,12612,12613,12512],"火·체리블러드":[12611,12513,12542],"火·진주홍":[12611,12614],"火·코랄핑크":[12611,12535,12518],"火·플래밍로즈":[12611,12615,12516],"土·골든앰버":[12616,12585,12617],"土·머스타드":[12616,12549],"土·해니브라운":[12616,12618,12502],"土·테라코타":[12616,12546],"土·구릿빛":[12616,12619],"金·누드베이지":[12620,12533,12509],"金·샤이펄":[12620,12621,12622],"金·플래티넘":[12620,12523],"金·캐러멜":[12620,12603],"金·라이트골드":[12620,12508,12517],"水·다크초콜릿":[12623,12501,12503],"水·블랙체리":[12623,12594,12513],"水·미드나잇":[12623,12624],"水·딥와인":[12623,12536,12511],"水·블러디퍼플":[12623,12558,12593],"木·민트블러쉬":[12606,12521,12547],"木·세이지글로우":[12606,12609,12568],"木·페일아쿠아":[12606,12539,12625],"木·라이트민트":[12606,12508,12521],"木·연두빛":[12606,12626],"火·정통핑크":[12611,12612,12518],"火·체리로즈":[12611,12513,12516],"火·코랄피치":[12611,12535,12541],"火·플래밍코랄":[12611,12615,12535],"土·살구피치":[12616,12560,12541],"土·골든피치":[12616,12585,12541],"土·구릿빛블러쉬":[12616,12619,12547],"土·캐러멜글로우":[12616,12603,12568],"金·누드피치":[12620,12533,12541],"金·페일베이지":[12620,12539,12509],"金·아이보리누드":[12620,12598,12533],"金·샴페인글로우":[12620,12627,12568],"金·페일핑크":[12620,12539,12518],"水·잉크퍼플":[12623,12628,12593],"水·딥보이올렛":[12623,12536,12629],"水·플럼블러쉬":[12623,12544,12547],"水·블루베리":[12623,12630],"水·미드나잇플럼":[12623,12624,12544],"木·포레스트섀도":[12606,12608,12575],"木·다크그린":[12606,12501,12522],"木·올리브섀도":[12606,12610,12575],"木·세이지스모키":[12606,12609,12583],"火·딥와인섀도":[12611,12536,12511,12575],"火·번트오렌지":[12611,12631,12515],"火·체리브라운":[12611,12513,12502],"火·러스트":[12611,12588],"火·딥레드":[12611,12536,12512],"土·골든브론즈":[12616,12585,12586],"土·캐러멜":[12616,12603],"土·머스타드섀도":[12616,12549,12575],"土·앰버스모키":[12616,12617,12583],"土·번트골드":[12616,12631,12517],"金·뉴드샤이펄":[12620,12632,12621,12622],"金·샤이샴페인":[12620,12621,12627],"金·실버화이트":[12620,12525,12633],"水·잉크블랙":[12623,12628,12594],"水·차콜":[12623,12591],"水·딥네이비":[12623,12536,12634],"水·블랙플럼":[12623,12594,12544],"木·민트누드":[12606,12521,12533],"木·페일세이지":[12606,12539,12609],"木·아쿠아미스트":[12606,12625,12604],"木·연두라이트":[12606,12635,12508],"木·민트화이트":[12606,12521,12633],"火·핑크누드":[12611,12518,12533],"火·페일코랄":[12611,12539,12535],"火·살몬크림":[12611,12573,12602],"火·로즈누드":[12611,12516,12533],"火·페일핑크":[12611,12539,12518],"土·살구누드":[12616,12560,12533],"土·페일베이지":[12616,12539,12509],"土·아이보리크림":[12616,12598,12602],"土·골든크림":[12616,12585,12602],"土·캐러멜라이트":[12616,12603,12508],"金·뉴드아이보리":[12620,12632,12598],"金·뮤트누드":[12620,12636,12533],"金·플래티넘크림":[12620,12523,12602],"水·라벤더누드":[12623,12519,12533],"水·페일바이올렛":[12623,12539,12637],"水·라일락미스트":[12623,12590,12604],"水·뮤트퍼플":[12623,12636,12593],"水·페일플럼":[12623,12539,12544]};
+function _aCN(n){
+  try{
+    var L = window._LANG || 'ko';
+    if(L === 'ko') return n;
+    var ks = _ACNM[n]; if(!ks) return n;
+    var sep = (L==='ja'||L==='zh'||L==='zh_HK'||L==='th') ? '' : ' ';
+    var parts = ks.map(function(k){ return _aK(k, ''); }).filter(function(v){ return !!v; });
+    if(!parts.length) return n;
+    return parts.join(sep);
+  }catch(e){ return n; }
+}
+
 // ★ 무지개 7색 라이브러리 (빨주노초파남보 — 모든 카테고리 공통)
 var _rmaiArRainbowSet = [
   {n:'빨강', c:'#dc2626',
@@ -1306,7 +1321,7 @@ function rmaiShowResult(oh){
 
   var ohTextEl=document.getElementById('rmai-oh-text');
   if(ohTextEl){
-    ohTextEl.innerHTML='<b style="color:#be185d;">'+ohNames[oh]+'</b> 기운이 오늘의 메이크업 에너지입니다.<br>'
+    ohTextEl.innerHTML='<b style="color:#be185d;">'+ohNames[oh]+'</b> '+_aK(12357)+'<br>'
       +'MAI <b>'+mai+'점</b> 기준, 위 추천 컬러를 활용하면 에너지 공명 지수가 <b style="color:#be185d;">+'+(Math.round((mai-50)*0.15))+'pt</b> 상승합니다.<br>'
       +'피부 균일도 '+uni+'점 · 화사함 '+glow+'점 · 커버율 '+cover+'점 · 촉촉함 '+moist+'점';
   }
@@ -2890,11 +2905,11 @@ function _rmaiArInitColorPicker(){
 
   var r = window.calcResult || {};
   var oh = r.domOh || '토';
-  var ohNames = {목:'목(木)',화:'화(火)',토:'토(土)',금:'금(金)',수:'수(水)'};
+  var ohNames = {목:_aK(12352),화:_aK(12353),토:_aK(12354),금:_aK(12355),수:_aK(12356)};
   var pal = (typeof _maiColors !== 'undefined' && _maiColors[oh]) ? _maiColors[oh] : null;
 
   if(!pal){
-    picker.innerHTML = '<div style="font-size:11px;color:#888;text-align:center;padding:12px;">색 라이브러리 로드 실패</div>';
+    picker.innerHTML = '<div style="font-size:11px;color:#888;text-align:center;padding:12px;">'+_aK(12350)+'</div>';
     return;
   }
 
@@ -2903,10 +2918,10 @@ function _rmaiArInitColorPicker(){
   
   // ★ 4 카테고리 탭 (현재 카드 모드의 색상 사용)
   var cats = [
-    {key:'lip',   icon:'💋', name:'립',     pal: currentCardLib.lip,   subtitle:'립스틱'},
-    {key:'cheek', icon:'🌸', name:'볼',     pal: currentCardLib.cheek, subtitle:'블러셔'},
-    {key:'eye',   icon:'👁️', name:'아이',   pal: currentCardLib.eye,   subtitle:_aK(12324)},
-    {key:'base',  icon:'🫧', name:'베이스', pal: currentCardLib.base,  subtitle:_aK(12325)}
+    {key:'lip',   icon:'💋', name:_aK(12338), pal: currentCardLib.lip,   subtitle:_aK(12342)},
+    {key:'cheek', icon:'🌸', name:_aK(12339), pal: currentCardLib.cheek, subtitle:_aK(12343)},
+    {key:'eye',   icon:'👁️', name:_aK(12340), pal: currentCardLib.eye,   subtitle:_aK(12324)},
+    {key:'base',  icon:'🫧', name:_aK(12341), pal: currentCardLib.base,  subtitle:_aK(12325)}
   ];
 
   // 카테고리 탭 — 5개 한 줄 (헤어 포함)
@@ -2929,7 +2944,7 @@ function _rmaiArInitColorPicker(){
     {key:'oheng', icon:'📜', name:_aK(12330), desc:_aK(12331)}
   ];
   var cardModeUI = '<div style="margin-bottom:14px;">';
-  cardModeUI += '<div style="font-size:10px;color:#888;margin-bottom:6px;font-weight:700;">🎨 컬러 라이브러리 (총 600색 · 세계 최대)</div>';
+  cardModeUI += '<div style="font-size:10px;color:#888;margin-bottom:6px;font-weight:700;">'+_aK(12335)+'</div>';
   cardModeUI += '<div style="display:flex;gap:4px;">';
   cardModes.forEach(function(cm){
     var active = (_rmaiAr.cardMode === cm.key);
@@ -2940,14 +2955,14 @@ function _rmaiArInitColorPicker(){
     cardModeUI += '<button onclick="rmaiArSetCardMode(\''+cm.key+'\')" style="flex:1;padding:8px 4px;background:'+bgGrad+';border:none;border-radius:9px;color:'+txtColor+';font-size:10px;font-weight:'+weight+';cursor:pointer;font-family:inherit;'+shadow+'transition:all .2s;">'+cm.icon+' '+cm.name+'</button>';
   });
   cardModeUI += '</div>';
-  cardModeUI += '<div style="margin-top:6px;font-size:9px;color:#999;text-align:center;line-height:1.5;">💋 립 · 🌸 볼 · 👁️ 아이 · 🫧 베이스 · ✨ 오행 보너스 100색 + 현실 500색</div>';
+  cardModeUI += '<div style="margin-top:6px;font-size:9px;color:#999;text-align:center;line-height:1.5;">'+_aK(12336)+'</div>';
   cardModeUI += '</div>';
   
   // ★ 팔레트 전환 탭 (사주 / 무지개)
   var paletteToggle = '<div style="display:flex;gap:6px;margin-bottom:12px;">';
   var palOhActive = (_rmaiAr.currentPalette === 'oheng');
   var palRbActive = (_rmaiAr.currentPalette === 'rainbow');
-  paletteToggle += '<button onclick="rmaiArSetPalette(\'oheng\')" style="flex:1;padding:6px 8px;background:'+(palOhActive?'linear-gradient(135deg,#fbbf24,#f59e0b)':'#f3f4f6')+';border:none;border-radius:8px;color:'+(palOhActive?'#1a1408':'#888')+';font-size:10px;font-weight:'+(palOhActive?'900':'700')+';cursor:pointer;font-family:inherit;">🎨 사주 추천 ('+(ohNames[oh]||oh)+')</button>';
+  paletteToggle += '<button onclick="rmaiArSetPalette(\'oheng\')" style="flex:1;padding:6px 8px;background:'+(palOhActive?'linear-gradient(135deg,#fbbf24,#f59e0b)':'#f3f4f6')+';border:none;border-radius:8px;color:'+(palOhActive?'#1a1408':'#888')+';font-size:10px;font-weight:'+(palOhActive?'900':'700')+';cursor:pointer;font-family:inherit;">🎨 '+_aK(12337)+' ('+(ohNames[oh]||oh)+')</button>';
   paletteToggle += '<button onclick="rmaiArSetPalette(\'rainbow\')" style="flex:1;padding:6px 8px;background:'+(palRbActive?'linear-gradient(90deg,#dc2626,#f97316,#eab308,#16a34a,#2563eb,#9333ea)':'#f3f4f6')+';border:none;border-radius:8px;color:'+(palRbActive?'#fff':'#888')+';font-size:10px;font-weight:'+(palRbActive?'900':'700')+';cursor:pointer;font-family:inherit;text-shadow:'+(palRbActive?'0 1px 2px rgba(0,0,0,.4)':'none')+';">🌈 무지개 7색</button>';
   paletteToggle += '</div>';
 
@@ -2957,11 +2972,11 @@ function _rmaiArInitColorPicker(){
   // 현재 카테고리 + 현재 팔레트에 따른 색 배열 (4 카테고리만)
   var currentColors = (_rmaiAr.currentPalette === 'rainbow') ? _rmaiArRainbowSet : (currentCat.pal || []);
   var appliedHex = _rmaiAr.appliedColors[currentCat.key];
-  var paletteLabel = (_rmaiAr.currentPalette === 'rainbow') ? _aK(12332) : (currentCat.icon + ' ' + currentCat.subtitle + ' — 사주 ' + (ohNames[oh]||oh) + ' · 7색');
+  var paletteLabel = (_rmaiAr.currentPalette === 'rainbow') ? _aK(12332) : (currentCat.icon + ' ' + currentCat.subtitle + ' — ' + _aK(12337) + ' ' + (ohNames[oh]||oh) + ' · ' + _aK(12351));
 
   var swatchHtml = '<div style="font-size:11px;font-weight:800;color:#1a1408;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;">'
     + '<span>'+paletteLabel+'</span>'
-    + '<span style="font-size:9px;font-weight:700;color:#888;">탭해서 적용</span>'
+    + '<span style="font-size:9px;font-weight:700;color:#888;">'+_aK(12334)+'</span>'
     + '</div>'
     + '<div style="display:flex;flex-wrap:wrap;gap:8px;">';
 
@@ -2972,7 +2987,7 @@ function _rmaiArInitColorPicker(){
     var scale = isApplied ? 'scale(1.15)' : 'scale(1)';
     swatchHtml += '<button onclick="rmaiArApplyColor(\'' + c.c + '\',this)" style="display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:none;cursor:pointer;padding:0;font-family:inherit;">'
       +   '<div style="width:38px;height:38px;border-radius:50%;background:' + c.c + ';border:'+ringWidth+' solid '+ringColor+';box-shadow:0 2px 6px rgba(0,0,0,.15);transition:transform .2s,border-color .2s;transform:'+scale+';" data-rmai-swatch="1"></div>'
-      +   '<div style="font-size:8px;color:#666;text-align:center;width:42px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+c.n+'</div>'
+      +   '<div style="font-size:8px;color:#666;text-align:center;width:42px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+_aCN(c.n)+'</div>'
       + '</button>';
   });
   swatchHtml += '</div>';
@@ -2983,14 +2998,14 @@ function _rmaiArInitColorPicker(){
   var pct = Math.round(curIntensity / maxIntensity * 100);
   var sliderHtml = '<div style="margin-top:14px;padding:12px;background:#faf5ff;border:1px solid #e9d5ff;border-radius:10px;">'
     + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">'
-    + '<span style="font-size:11px;font-weight:800;color:#581c87;">'+_cgoT('⚙️ '+currentCat.name+' 진하기')+'</span>'
+    + '<span style="font-size:11px;font-weight:800;color:#581c87;">⚙️ '+currentCat.name+' '+_aK(12346)+'</span>'
     + '<span id="rmai-ar-intensity-pct" style="font-size:11px;font-weight:900;color:#7c3aed;">'+pct+'%</span>'
     + '</div>'
     + '<input type="range" id="rmai-ar-intensity-slider" min="0" max="100" value="'+pct+'" oninput="rmaiArSetIntensity(this.value)" style="width:100%;height:6px;-webkit-appearance:none;appearance:none;background:linear-gradient(90deg,#e9d5ff,#a855f7);border-radius:3px;outline:none;cursor:pointer;" />'
-    + '<div style="display:flex;justify-content:space-between;font-size:9px;color:#888;margin-top:4px;"><span>옅게</span><span>진하게</span></div>'
+    + '<div style="display:flex;justify-content:space-between;font-size:9px;color:#888;margin-top:4px;"><span>'+_aK(12344)+'</span><span>'+_aK(12345)+'</span></div>'
     + '</div>';
 
-  var clearBtn = '<button onclick="rmaiArApplyColor(null,null)" style="margin-top:10px;width:100%;padding:8px;background:#f3f4f6;border:1px solid #e5e7eb;border-radius:8px;font-size:11px;font-weight:700;color:#666;cursor:pointer;font-family:inherit;">✕ '+_cgoT(currentCat.name)+_cgoT(' 색 적용 해제')+'</button>';
+  var clearBtn = '<button onclick="rmaiArApplyColor(null,null)" style="margin-top:10px;width:100%;padding:8px;background:#f3f4f6;border:1px solid #e5e7eb;border-radius:8px;font-size:11px;font-weight:700;color:#666;cursor:pointer;font-family:inherit;">✕ '+currentCat.name+' '+_aK(12347)+'</button>';
 
   // ★ C 박입 — 색상 패널 접기 토글 + 적용 색 미니 미리보기
   var applied = _rmaiAr.appliedColors;
@@ -3001,10 +3016,10 @@ function _rmaiArInitColorPicker(){
       miniPreview += '<span style="display:inline-flex;align-items:center;gap:3px;padding:3px 7px;background:rgba(255,255,255,.7);border-radius:8px;font-size:10px;color:#444;"><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:'+applied[cat]+';border:1px solid rgba(0,0,0,.1);"></span>'+icon+'</span>';
     }
   });
-  if(!miniPreview) miniPreview = '<span style="font-size:10px;color:#999;">색을 골라 적용해 보세요</span>';
+  if(!miniPreview) miniPreview = '<span style="font-size:10px;color:#999;">'+_aK(12333)+'</span>';
   
   var toggleBtn = '<button onclick="rmaiArTogglePicker()" style="width:100%;padding:10px 14px;background:linear-gradient(135deg,#fef3c7,#fde68a);border:1px solid #fbbf24;border-radius:12px;color:#92400e;font-size:12px;font-weight:800;cursor:pointer;font-family:inherit;margin-bottom:'+(_rmaiAr.pickerCollapsed?'0':'12px')+';display:flex;align-items:center;justify-content:space-between;gap:8px;">'
-    +'<span style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">🎨 컬러 패널 '+(_rmaiAr.pickerCollapsed?'펼치기':'접기')+' '+miniPreview+'</span>'
+    +'<span style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">🎨 '+(_rmaiAr.pickerCollapsed?_aK(12349):_aK(12348))+' '+miniPreview+'</span>'
     +'<span style="font-size:14px;">'+(_rmaiAr.pickerCollapsed?'▼':'▲')+'</span>'
     +'</button>';
   
@@ -3356,7 +3371,7 @@ window.rmaiChatGreet = function(){
 };
 
 window.rmaiChatSay = function(stage, data){
-  var ohNames = {목:'목(木)',화:'화(火)',토:'토(土)',금:'금(金)',수:'수(水)'};
+  var ohNames = {목:_aK(12352),화:_aK(12353),토:_aK(12354),금:_aK(12355),수:_aK(12356)};
   var msg = '';
   if(stage === 'before-captured'){
     msg = _cgoT('✓ 화장 전 사진 촬영 완료.<br>이제 메이크업을 마치시고 🎥 화장 후 분석 시작 버튼을 눌러주세요.');
@@ -3403,7 +3418,7 @@ window.rmaiChatSend = function(){
   // 컨텍스트 구성
   var r = window.calcResult || {};
   var oh = r.domOh || '토';
-  var ohNames = {목:'목(木)',화:'화(火)',토:'토(土)',금:'금(金)',수:'수(水)'};
+  var ohNames = {목:_aK(12352),화:_aK(12353),토:_aK(12354),금:_aK(12355),수:_aK(12356)};
   var mai = (window._rmai && _rmai._samples)
     ? Math.round((_rmai.uni+_rmai.glow+_rmai.cover+_rmai.moist)/4) : null;
   var ac = _rmaiAr.appliedColors || {};
@@ -3811,7 +3826,7 @@ function maiShowResult(oh){
   var r=window.calcResult||{};
   var engPt=r.total||mai;
   document.getElementById('mai-oh-text').innerHTML=
-    '<b style="color:#f472b6;">'+ohNames[oh]+'</b> 기운이 오늘의 메이크업 에너지입니다.<br>'
+    '<b style="color:#f472b6;">'+ohNames[oh]+'</b> '+_aK(12357)+'<br>'
     +'MAI <b>'+mai+'점</b> 기준, 위 추천 컬러를 활용하면 에너지 공명 지수가 <b style="color:#f472b6;">+'+(Math.round((mai-50)*0.15))+'pt</b> 상승합니다.<br>'
     +'피부 균일도 '+uni+'점 · 화사함 '+glow+'점 · 커버율 '+cover+'점 · 촉촉함 '+moist+'점';
 
@@ -5250,7 +5265,7 @@ function sviShowResult(oh){
   // 오행 연동
   var ohNames={목:'목(木)',화:'화(火)',토:'토(土)',금:'금(金)',수:'수(水)'};
   document.getElementById('svi-oh-text').innerHTML=
-    '오늘 <b style="color:#34d399;">'+ohNames[oh]+'</b> 기운 기준 SVI <b>'+svi+'점</b> 분석 결과입니다.<br>'
+    '<b style="color:#34d399;">'+ohNames[oh]+'</b> '+_aK(12358)+' <b>'+svi+'</b> 분석 결과입니다.<br>'
     +'윤기 '+luster+'점 · 탄력 '+elastic+'점 · 피부결 '+texture+'점 · 혈색 '+vitality+'점<br>'
     +'위 케어 루틴을 21일 이상 지속 시 SVI <b style="color:#38bdf8;">+8~15점</b> 향상 예측됩니다.';
 
