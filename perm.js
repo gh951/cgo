@@ -8,7 +8,7 @@
    결과를 만드는 종료 함수는 부르지 않는다 — 반쪽 데이터로 결과가 만들어지기 때문. */
 window.cgoResetFeatures = function(){
   /* 1) 카메라 — 취소 함수만 부른다 */
-  ['_c24Cancel','c39Stop','scStop','iqCamStop','eyeCancelMeasure','eyeStopMeasure','cgoAccCamClose'].forEach(function(fn){
+  ['sviCancel','_c24Cancel','c39Stop','scStop','iqCamStop','rmaiScanStop','rmaiArStop','rppgArStop','eyeCancelMeasure','eyeStopMeasure','cgoSleepStopAll','cgoAccCamClose'].forEach(function(fn){
     try{ if(typeof window[fn] === 'function') window[fn](); }catch(e){}
   });
   try{ if(window._cgoStopAllCams) window._cgoStopAllCams(); }catch(e){}
@@ -59,7 +59,7 @@ window.cgoResetFeatures = function(){
 
 
   /* ── 카메라 기능이 있는 페이지 ── */
-  var CAM_PAGES = ['c24','c39','scalp','iq','c44-eye','c41','acc-cam','vision','iq'];
+  var CAM_PAGES = ['svi','rppg-ar','c24','c39','scalp','iq','c44-eye','c41','acc-cam','vision','iq'];
 
   /* ── 켜져 있는 카메라 목록 ── */
   var live = [];
