@@ -2268,7 +2268,7 @@ function _rmaiArOnResults(results){
                 var attenX = Math.exp(-(dx*dx) / (2 * sigmaX * sigmaX));
                 var attenY = Math.exp(-(dy*dy) / (2 * sigmaY * sigmaY));
                 var gaussAttenuation = attenX * attenY;
-                if(gaussAttenuation <= 0.05) continue;
+                if(gaussAttenuation <= 0.012) continue;
 
                 var hr = hairData[hi], hg = hairData[hi+1], hb = hairData[hi+2];
                 var hlum = 0.2126*hr + 0.7152*hg + 0.0722*hb;
@@ -2373,9 +2373,13 @@ function _rmaiArOnResults(results){
                 // alpha (dynamic cap — slider 100 = 진짜 1.0)
                 /* ★ 밝은 머리(흰머리·새치)도 색이 실리게 한다.
                    (180-hlum)/180 만 쓰면 흰머리는 무게가 0 이 되어 물들지 않았다. */
-                var hairWeight = Math.max(0.55, (180 - hlum) / 180);
+                var hairWeight = Math.max(0.80, (180 - hlum) / 180);
                 /* ★ 확률을 그대로 투명도에 곱한다 — 가닥 사이 반투명이 살아난다 */
-                var alpha = Math.min(DYN_ALPHA_CAP, hairInt * Math.pow(hairWeight, 0.5) * gaussAttenuation * hairProb);
+                /* ★ 인공 그림자(가우스) 제거 — 네모를 감추려던 것인데
+                   돔·결·확률 셋이 경계를 잡으므로 얼룩만 남겼다.
+                   경계 바깥 가장자리에만 살짝 남겨 부드럽게 끝나게 한다. */
+                var edgeFade = 0.82 + 0.18 * Math.min(1, gaussAttenuation * 2.2);
+                var alpha = Math.min(DYN_ALPHA_CAP, hairInt * Math.pow(hairWeight, 0.5) * edgeFade * hairProb);
 
                 hairData[hi]   = Math.round(hr * (1 - alpha) + multR * alpha);
                 hairData[hi+1] = Math.round(hg * (1 - alpha) + multG * alpha);
