@@ -2208,7 +2208,7 @@ function _rmaiArOnResults(results){
           //   0.30 → 0.45 좌우 확장, 1.6 → 1.9 가로
           /* ★ 위로 0.65배는 벽까지 덮어 네모 자국을 만들었다 — 0.42배로 좁힌다 */
               var hairY = Math.max(0, Math.floor(ovalMinY - faceH * 0.42));
-          var hairH = Math.floor(faceH * 0.56);
+          var hairH = Math.floor(faceH * 0.95);
           var hairX = Math.max(0, Math.floor(ovalMinX - faceW * 0.45));
           var hairW = Math.floor(faceW * 1.9);
           hairW = Math.min(canvas.width - hairX, hairW);
@@ -2251,6 +2251,25 @@ function _rmaiArOnResults(results){
             // ★ 박입 63 — sigma 0.55 → 0.35 (도넛 안개 제거, 정수리만 컴팩트)
             var gaussSigma = Math.min(hairW, hairH) * 0.35;
 
+            /* ★ 머리는 이마에서 위로 이어져 있다 — 끊기면 그 위는 벽이다.
+               세로줄마다 위로 훑어 머리 꼭대기를 찾는다. 벽 무늬에 속지 않는다. */
+            var colTop = new Int16Array(hairW);
+            var faceCx0 = (ovalMinX + ovalMaxX) / 2 - hairX;
+            for(var cx = 0; cx < hairW; cx++){
+              var cn = Math.abs(cx - faceCx0) / (faceW * 0.5);
+              var drop = Math.max(0, Math.min(1, (cn - 0.62) / 0.38));
+              var startY = Math.min(hairH - 1, Math.floor(foreheadInRegion - faceH * 0.06 + faceH * 0.52 * drop));
+              if(startY < 0){ colTop[cx] = hairH; continue; }
+              var gap = 0, top = startY;
+              for(var cy = startY; cy >= 0; cy--){
+                var ci = (cy * hairW + cx) * 4;
+                var cl = 0.2126*hairData[ci] + 0.7152*hairData[ci+1] + 0.0722*hairData[ci+2];
+                if(cl < 172){ gap = 0; top = cy; }
+                else { gap++; if(gap > 5) break; }
+              }
+              colTop[cx] = top;
+            }
+
             if(true){
               for(var hi = 0; hi < hairData.length; hi += 4){
                 var pixelIdx = hi / 4;
@@ -2272,7 +2291,7 @@ function _rmaiArOnResults(results){
 
                 var hr = hairData[hi], hg = hairData[hi+1], hb = hairData[hi+2];
                 var hlum = 0.2126*hr + 0.7152*hg + 0.0722*hb;
-                if(hlum > 180) continue;
+                if(hlum > 232) continue;   /* ★ 180 은 흰머리를 통째로 버렸다 */
 
                 // ★ 박입 73 — 박입 71/72 사이 균형점 (이마 침범 막되 머리 안 깎음)
                 //   휘도 108 (박입 71 105 와 72 112 의 중간)
@@ -2296,8 +2315,12 @@ function _rmaiArOnResults(results){
                 /* ★ 머리 영토(돔) 안인지 먼저 본다 — 안이면 흰머리도 머리로 본다.
                    벽 거르개를 돔 안에까지 걸었더니 새치·흰머리가 함께 걸러졌다. */
                 var faceCxL = (ovalMinX + ovalMaxX) / 2 - hairX;
-                var outXR = Math.abs(px - faceCxL) / (faceW * 0.60);
-                var hairlineY = foreheadInRegion - faceH * 0.06;   /* 이마선 조금 위 */
+                var outXR = Math.abs(px - faceCxL) / (faceW * 0.68);
+                /* ★ 이마 차단은 가운데만 — 옆머리는 이마선보다 아래까지 내려온다.
+                   가로 전체를 같은 높이로 자르니 양옆 흰머리가 통째로 빠졌다. */
+                var cxN = Math.abs(px - ((ovalMinX + ovalMaxX) / 2 - hairX)) / (faceW * 0.5);
+                var sideDrop = Math.max(0, Math.min(1, (cxN - 0.62) / 0.38));
+                var hairlineY = foreheadInRegion - faceH * 0.06 + faceH * 0.52 * sideDrop;
                 var inDome = (outXR <= 1.0) && (py <= hairlineY);
 
                 var mxC = Math.max(hr, hg, hb), mnC = Math.min(hr, hg, hb);
@@ -2322,7 +2345,7 @@ function _rmaiArOnResults(results){
                     tx = Math.max(tx, Math.abs(hlum - (0.2126*hairData[n2] + 0.7152*hairData[n2+1] + 0.0722*hairData[n2+2])));
                   }
                   /* 결이 뚜렷하면 머리, 밋밋하면 벽 */
-                  hairProb = (tx >= 16) ? 0.9 : (tx >= 7 ? (tx - 7) / 9 * 0.9 : 0);
+                  hairProb = (tx >= 14) ? 1.0 : (tx >= 6 ? (tx - 6) / 8 : 0);
                 }
                 else hairProb = 0;
 
@@ -2335,6 +2358,9 @@ function _rmaiArOnResults(results){
                   var below = (py - hairlineY) / Math.max(6, faceH * 0.05);
                   hairProb *= Math.max(0, 1 - below);
                 }
+                /* 그 줄의 머리 꼭대기보다 위는 벽이다 */
+                if(py < colTop[px]) continue;
+                if(py < colTop[px]) continue;   /* 그 줄의 머리 꼭대기보다 위는 벽 */
                 if(hairProb <= 0.04) continue;
 
                 // ★ 박입 68 — 슬라이더 dynamic 시스템 (C-44 죽이게 진짜 100% 동작)
