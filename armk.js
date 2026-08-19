@@ -238,7 +238,16 @@ var _rmaiAr = {
 
 // ★ 무지개 7색 라이브러리 (빨주노초파남보 — 모든 카테고리 공통)
 var _rmaiArRainbowSet = [
-  {n:'빨강', c:'#dc2626'},
+  {n:'빨강', c:'#dc2626',
+  hair: [
+    {n:'다크 브라운', c:'#3b2418'},{n:'초콜릿 브라운', c:'#4a2c1d'},{n:'애쉬 브라운', c:'#5a4a42'},
+    {n:'모카 브라운', c:'#6b4a35'},{n:'카라멜', c:'#8a5a30'},{n:'허니 브라운', c:'#9c6b3c'},
+    {n:'라이트 베이지', c:'#b08a5e'},{n:'애쉬 그레이', c:'#6e6a68'},{n:'와인 레드', c:'#6e1420'},
+    {n:'체리 레드', c:'#9c1c28'},{n:'코퍼 오렌지', c:'#b45a20'},{n:'로즈 골드', c:'#c07a6a'},
+    {n:'애쉬 핑크', c:'#b06a78'},{n:'라벤더', c:'#8a6ea8'},{n:'애쉬 블루', c:'#3c5a7a'},
+    {n:'민트 그린', c:'#3c7a68'},{n:'플래티넘 블론드', c:'#d8c8a8'},{n:'실버 애쉬', c:'#a8a8ac'}
+  ]
+},
   {n:'주황', c:'#f97316'},
   {n:'노랑', c:'#eab308'},
   {n:'초록', c:'#16a34a'},
@@ -459,6 +468,15 @@ var _rmaiArColorLibrary = {
         {n:'블러쉬 살구', c:'#ffbf80'},
         {n:'데일리 라이트', c:'#faebd7'}
       ]
+  ,
+  hair: [
+    {n:'다크 브라운', c:'#3b2418'},{n:'초콜릿 브라운', c:'#4a2c1d'},{n:'애쉬 브라운', c:'#5a4a42'},
+    {n:'모카 브라운', c:'#6b4a35'},{n:'카라멜', c:'#8a5a30'},{n:'허니 브라운', c:'#9c6b3c'},
+    {n:'라이트 베이지', c:'#b08a5e'},{n:'애쉬 그레이', c:'#6e6a68'},{n:'와인 레드', c:'#6e1420'},
+    {n:'체리 레드', c:'#9c1c28'},{n:'코퍼 오렌지', c:'#b45a20'},{n:'로즈 골드', c:'#c07a6a'},
+    {n:'애쉬 핑크', c:'#b06a78'},{n:'라벤더', c:'#8a6ea8'},{n:'애쉬 블루', c:'#3c5a7a'},
+    {n:'민트 그린', c:'#3c7a68'},{n:'플래티넘 블론드', c:'#d8c8a8'},{n:'실버 애쉬', c:'#a8a8ac'}
+  ]
   },
   luxury: {
     lip: [
@@ -779,6 +797,15 @@ var _rmaiArColorLibrary = {
         {n:'HOURGLASS Vanish Stick 5 Linen', c:'#d6ab80'},
         {n:'BENEFIT Hello Happy Soft Blur', c:'#ebcaa6'}
       ]
+  ,
+  hair: [
+    {n:'다크 브라운', c:'#3b2418'},{n:'초콜릿 브라운', c:'#4a2c1d'},{n:'애쉬 브라운', c:'#5a4a42'},
+    {n:'모카 브라운', c:'#6b4a35'},{n:'카라멜', c:'#8a5a30'},{n:'허니 브라운', c:'#9c6b3c'},
+    {n:'라이트 베이지', c:'#b08a5e'},{n:'애쉬 그레이', c:'#6e6a68'},{n:'와인 레드', c:'#6e1420'},
+    {n:'체리 레드', c:'#9c1c28'},{n:'코퍼 오렌지', c:'#b45a20'},{n:'로즈 골드', c:'#c07a6a'},
+    {n:'애쉬 핑크', c:'#b06a78'},{n:'라벤더', c:'#8a6ea8'},{n:'애쉬 블루', c:'#3c5a7a'},
+    {n:'민트 그린', c:'#3c7a68'},{n:'플래티넘 블론드', c:'#d8c8a8'},{n:'실버 애쉬', c:'#a8a8ac'}
+  ]
   },
   oheng: {
     lip: [
@@ -929,6 +956,29 @@ var _rmaiArOhengSet = {
     {n:'GIORGIO ARMANI Luminous 4.5', c:'#e6b890'},
     {n:'CHANEL Vitalumière 22 Beige', c:'#eac9a2'},
     {n:'CLINIQUE Even Better 18 Sand', c:'#dcb591'}
+  ]
+,
+  hair: [
+    // 💇 데일리 — 자연스러운 톤
+    {n:'다크 브라운', c:'#3b2418'},
+    {n:'초콜릿 브라운', c:'#4a2c1d'},
+    {n:'애쉬 브라운', c:'#5a4a42'},
+    {n:'모카 브라운', c:'#6b4a35'},
+    {n:'카라멜', c:'#8a5a30'},
+    {n:'허니 브라운', c:'#9c6b3c'},
+    {n:'라이트 베이지', c:'#b08a5e'},
+    {n:'애쉬 그레이', c:'#6e6a68'},
+    // 💇 컬러 — 물들이는 색
+    {n:'와인 레드', c:'#6e1420'},
+    {n:'체리 레드', c:'#9c1c28'},
+    {n:'코퍼 오렌지', c:'#b45a20'},
+    {n:'로즈 골드', c:'#c07a6a'},
+    {n:'애쉬 핑크', c:'#b06a78'},
+    {n:'라벤더', c:'#8a6ea8'},
+    {n:'애쉬 블루', c:'#3c5a7a'},
+    {n:'민트 그린', c:'#3c7a68'},
+    {n:'플래티넘 블론드', c:'#d8c8a8'},
+    {n:'실버 애쉬', c:'#a8a8ac'}
   ]
 };
 
@@ -2242,7 +2292,21 @@ function _rmaiArOnResults(results){
                 var isWhiteHair = (hlum > 175 && Math.abs(hr-hg) < 12 && Math.abs(hg-hb) < 12);
                 var isDarkHair = hlum < 110;
 
-                if(!isDarkHair && !isBlondOrGinger && !isWhiteHair && hlum > 110) continue;
+                /* ★ 확률 경계 — 0/1 로 자르면 가닥 사이가 톱니가 된다.
+                   밝기 90~145 를 부드럽게 넘겨 반투명 가닥을 살린다. */
+                var hairProb;
+                if(isBlondOrGinger || isWhiteHair) hairProb = 1;
+                else if(hlum <= 90) hairProb = 1;
+                else if(hlum >= 145) hairProb = 0;
+                else hairProb = (145 - hlum) / 55;
+                /* ★ 벽 차단 — 얼굴 폭 밖으로 나갈수록 급히 죽인다 */
+                var faceCxL = (ovalMinX + ovalMaxX) / 2 - hairX;
+                var outXR = Math.abs(px - faceCxL) / (faceW * 0.62);
+                if(outXR > 1) hairProb *= Math.max(0, 1 - (outXR - 1) * 2.2);
+                /* ★ 채도 낮은 회벽 거르기 — 머리카락은 색이 실린다 */
+                var mxC = Math.max(hr, hg, hb), mnC = Math.min(hr, hg, hb);
+                if(hlum > 95 && (mxC - mnC) < 10) hairProb *= 0.25;
+                if(hairProb <= 0.04) continue;
 
                 // ★ 박입 68 — 슬라이더 dynamic 시스템 (C-44 죽이게 진짜 100% 동작)
                 //   hairInt 0~0.85 → 정규화 sliderRatio 0~1 → 3개 파라미터 동시 dynamic 제어
@@ -2279,7 +2343,8 @@ function _rmaiArOnResults(results){
 
                 // alpha (dynamic cap — slider 100 = 진짜 1.0)
                 var hairWeight = (180 - hlum) / 180;
-                var alpha = Math.min(DYN_ALPHA_CAP, hairInt * Math.pow(hairWeight, 0.5) * gaussAttenuation);
+                /* ★ 확률을 그대로 투명도에 곱한다 — 가닥 사이 반투명이 살아난다 */
+                var alpha = Math.min(DYN_ALPHA_CAP, hairInt * Math.pow(hairWeight, 0.5) * gaussAttenuation * hairProb);
 
                 hairData[hi]   = Math.round(hr * (1 - alpha) + multR * alpha);
                 hairData[hi+1] = Math.round(hg * (1 - alpha) + multG * alpha);
@@ -2709,10 +2774,11 @@ function _rmaiArInitColorPicker(){
     {key:'lip',   icon:'💋', name:'립',     pal: currentCardLib.lip,   subtitle:'립스틱'},
     {key:'cheek', icon:'🌸', name:'볼',     pal: currentCardLib.cheek, subtitle:'블러셔'},
     {key:'eye',   icon:'👁️', name:'아이',   pal: currentCardLib.eye,   subtitle:'아이쉐도우'},
-    {key:'base',  icon:'🫧', name:'베이스', pal: currentCardLib.base,  subtitle:'베이스 톤'}
+    {key:'base',  icon:'🫧', name:'베이스', pal: currentCardLib.base,  subtitle:'베이스 톤'},
+    {key:'hair',  icon:'💇', name:'헤어', pal: (currentCardLib.hair || currentCardLib.base), subtitle:'헤어 컬러'}
   ];
 
-  // 카테고리 탭 — 4개 한 줄
+  // 카테고리 탭 — 5개 한 줄 (헤어 포함)
   var tabsHtml = '<div style="display:flex;gap:4px;margin-bottom:10px;background:#f3f4f6;padding:4px;border-radius:12px;">';
   cats.forEach(function(c){
     var active = (c.key === _rmaiAr.currentCategory);
