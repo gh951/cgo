@@ -167,7 +167,10 @@ window.c39FinishQ = function(){
     + '<div style="font-size:10.5px;color:#64748b;line-height:1.75;">' + _ck(8818,'') + '</div></div>'
     + '<button type="button" onclick="c39TestClose()" style="width:100%;margin-top:14px;padding:15px;border:0;'
     + 'border-radius:999px;background:#0f172a;color:#fff;font-size:14px;font-weight:900;cursor:pointer;font-family:inherit;">'
-    + _ck(9725,'✓ 닫기') + '</button>';
+    + _ck(9725,'✓ 닫기') + '</button>'
+    + '<button type="button" onclick="c39Chat()" style="width:100%;margin-top:9px;padding:15px;border:1.5px solid #bfdbfe;'
+    + 'border-radius:999px;background:#eff6ff;color:#1d4ed8;font-size:14px;font-weight:900;cursor:pointer;font-family:inherit;">'
+    + _ck(8904,'🤖 AI 상담') + '</button>';
 };
 
 window.c39TestClose = function(){
@@ -176,3 +179,23 @@ window.c39TestClose = function(){
   if(p) p.style.display = 'none';
   window._c39Run = null;
 };
+
+/* 인지 건강 AI 상담 — 건강 밸런스와 같은 창을 쓴다 */
+window.c39Chat = function(){
+  try{
+    window._cgoChatFeature = 'c39';
+    if(window.c24Chat) c24Chat();
+  }catch(e){}
+};
+
+/* ★ 검사 중 언어 전환 — 그 자리에서 다시 그린다 */
+(function(){
+  function redraw(){
+    if(!window._c39Run) return;
+    var p=document.getElementById('c39TestPop');
+    if(!p || getComputedStyle(p).display==='none') return;
+    try{ c39RenderQ(); }catch(e){}
+  }
+  if(window.cgoRepaintOn) cgoRepaintOn(redraw);
+  else [300,1200,3000].forEach(function(d){ setTimeout(function(){ if(window.cgoRepaintOn) cgoRepaintOn(redraw); }, d); });
+})();

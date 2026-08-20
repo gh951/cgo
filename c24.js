@@ -1,3 +1,68 @@
+
+/* ══ 공용 — 카메라 앞 얼굴이 화면을 얼마나 채우는가 ══
+   cm 추정을 버리고 이 잣대 하나로 통일한다. 폰 화각이 달라도 같은 결과가 나온다.
+   나의 건강 · 인지 건강 · 두피 · IQ · 관상 · 손금 · AR 메이크업 · 음식 궁합 · 궁합 — 모두 이것을 쓴다. */
+window.cgoFaceFill = function(lms){
+  if(!lms || !lms.length) return 0;
+  var min = 1, max = 0;
+  for(var i=0;i<lms.length;i++){
+    var x = lms[i].x;
+    if(x < min) min = x;
+    if(x > max) max = x;
+  }
+  return max - min;
+};
+/* ★ 부위마다 대는 거리가 다르다 — 그 거리에서 화면이 얼마나 차는지로 판정한다.
+   얼굴 15cm · 혀 9cm · 눈 7cm · 피부 8cm · 손 20cm(안쪽 상자)
+   폰 화각이 달라도 채움 비율은 같은 뜻이라 한 잣대로 맞는다. */
+window.CGO_FIT = {
+  face:  { lo:0.68, hi:0.98, cm:15 },   /* 얼굴 — 가이드 원을 거의 채운다 */
+  tongue:{ lo:0.22, hi:0.60, cm:9  },   /* 혀 — 내민 혀가 화면 가운데 */
+  eye:   { lo:0.20, hi:0.55, cm:7  },   /* 눈 — 흰자가 보이게 바짝 */
+  skin:  { lo:0.55, hi:1.00, cm:8  },   /* 피부 — 살갗이 화면을 덮는다 */
+  hand:  { lo:0.45, hi:0.95, cm:20 },   /* 손등·손바닥 — 안쪽 상자에 맞춘다 */
+  scalp: { lo:0.50, hi:1.00, cm:8  }    /* 두피 — 가르마가 화면을 덮는다 */
+};
+window.cgoFitState = function(fill, kind){
+  var b = window.CGO_FIT[kind] || window.CGO_FIT.face;
+  if(!fill) return 'none';
+  if(fill < b.lo) return 'far';
+  if(fill > b.hi) return 'near';
+  return 'ok';
+};
+window.cgoFitCm = function(kind){
+  var b = window.CGO_FIT[kind] || window.CGO_FIT.face;
+  return b.cm;
+};
+
+/* ★ 딱 맞으면 "띵 띵 띵" 세 번 — 화면을 못 볼 때도 귀로 안다.
+   한 부위에서 한 번만 울린다. */
+window.cgoFitBeep = function(tag){
+  try{
+    if(!window._cgoBeeped) window._cgoBeeped = {};
+    if(window._cgoBeeped[tag]) return;
+    window._cgoBeeped[tag] = true;
+    var AC = window.AudioContext || window.webkitAudioContext;
+    if(!AC) return;
+    var ac = window._cgoAC || (window._cgoAC = new AC());
+    if(ac.state === 'suspended') ac.resume();
+    [0, 0.18, 0.36].forEach(function(t){
+      var o = ac.createOscillator(), g = ac.createGain();
+      o.type = 'sine';
+      o.frequency.value = 880;
+      g.gain.setValueAtTime(0.0001, ac.currentTime + t);
+      g.gain.exponentialRampToValueAtTime(0.25, ac.currentTime + t + 0.01);
+      g.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime + t + 0.13);
+      o.connect(g); g.connect(ac.destination);
+      o.start(ac.currentTime + t);
+      o.stop(ac.currentTime + t + 0.15);
+    });
+    if(navigator.vibrate) navigator.vibrate([40,60,40,60,40]);
+  }catch(e){}
+};
+window.cgoFitBeepReset = function(tag){
+  try{ if(window._cgoBeeped) delete window._cgoBeeped[tag]; }catch(e){}
+};
 function _cK(n,f){try{var v=window.K&&window.K(n);return (v&&v!==String(n))?v:f;}catch(e){return f;}}
 
 /* ══ 측정 상태 — 구 CGO에서 그대로 가져온다. 이것이 없어 카메라가 시작되지 않았다 ══ */
@@ -2306,6 +2371,7 @@ function _c24ChromStep(r, g, b){
 }
 
 function _c24CompStartStep(needBack){
+  try{ if(window.cgoFitBeepReset){ ['face','tongue','eye','skin','hand'].forEach(function(p){ cgoFitBeepReset('c24-'+p); }); } }catch(e){}
   if(_c24.isRunning) return;
   _c24.rawR=[]; _c24.rawG=[]; _c24.rawB=[];
   _c24.chromSig=[]; _c24.bpZS=[0,0];
@@ -2562,7 +2628,24 @@ function _c24Loop(){
           var _d = _c24Distance(_c24._faceLms, _vw);
           if(_d > 0) _q.distCm = _d;
         }
-        _q.distOK = !(_q.distCm && (_q.distCm < 28 || _q.distCm > 45));
+        /* ★ cm 대신 화면 채움 비율로 판정한다.
+           폰마다 렌즈 화각이 달라 같은 거리에서도 눈 사이 화소가 다르게 나왔다.
+           얼굴 너비가 화면 폭의 45~85%면 어느 폰에서도 신호가 충분하다.
+           cm 숫자는 참고로만 남긴다. */
+        var _fill = 0;
+        if(_lmsFresh && _c24._faceLms && _c24._faceLms.length){
+          var _xs = _c24._faceLms.map(function(p){ return p.x; });
+          _fill = Math.max.apply(null,_xs) - Math.min.apply(null,_xs);
+        }
+        _q.fill = _fill;
+        /* ★ 지금 재는 부위에 맞는 잣대를 쓴다 — 얼굴 15cm · 혀 9cm · 눈 7cm · 피부 8cm · 손 20cm */
+        var _part = ({0:'face',1:'tongue',2:'eye',3:'skin',4:'hand',5:'hand'})[
+          (window._c24CompState && window._c24CompState.step) || 0] || 'face';
+        _q.part = _part;
+        var _st = window.cgoFitState ? cgoFitState(_fill, _part) : 'ok';
+        _q.distOK = (_st === 'ok' || _st === 'none');
+        /* 딱 맞으면 띵 띵 띵 — 화면을 못 봐도 귀로 안다 */
+        if(_st === 'ok' && window.cgoFitBeep) cgoFitBeep('c24-' + _part);
 
         /* 조도 — 막지 않는다. 밝기를 없애고 비율만 남겨 앱이 고친다 */
         var _il = _c24Illum(cnt?rSum/cnt:0, cnt?gSum/cnt:0, cnt?bSum/cnt:0);
@@ -2578,13 +2661,13 @@ function _c24Loop(){
         /* 거리가 어긋나면 원이 빨개지고 타임바가 멈춘다 */
         if(!_q.distOK){
           _c24.fitOK = false;
-          _c24.fitState = (_q.distCm > 45) ? 'far' : 'near';
+          _c24.fitState = (window.cgoFitState ? cgoFitState(_q.fill, _q.part||'face') : 'far');
         }
         /* 왜 멈췄는지 한 줄 */
         var _hint = document.getElementById('c24-quality-hint');
         if(_hint){
           var _msg = '';
-          if(!_q.distOK)      _msg = (_q.distCm>45 ? _cK(8820,'📏 조금 더 가까이') : _cK(8821,'📏 조금 더 멀리')) + ' (' + _q.distCm + 'cm)';
+          if(!_q.distOK)      _msg = (_q.fill<0.45 ? _cK(8820,'📏 조금 더 가까이') : _cK(8821,'📏 조금 더 멀리'));
           else if(!_q.luxOK)  _msg = _cK(8822,'💡 너무 어둡습니다 · 불을 켜 주세요');
           else if(_q.motionPx > 14) _msg = _cK(8823,'🌀 흔들립니다 · 잠시 멈춰 주세요');
           _hint.textContent = _msg;
