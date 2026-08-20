@@ -5859,6 +5859,15 @@ body{font-family:Noto Sans KR,sans-serif;background:#fff;color:#111;padding:40px
   #mfu-order-pop .mop-back{width:100%;margin-top:14px;padding:13px;border:1px solid rgba(13,148,136,.28);border-radius:11px;background:#fff;color:#0f766e;font-size:12.5px;font-weight:800;cursor:pointer;font-family:inherit;}
   #mfu-order-pop .mop-note{margin-top:12px;font-size:10px;line-height:1.75;color:#5eaaa4;word-break:keep-all;}
 </style>
+<style>
+/* ★ 페이지 전환을 부드럽게 */
+.page.active{animation:cgoFadeIn .16s ease-out}
+@keyframes cgoFadeIn{from{opacity:.35}to{opacity:1}}
+/* 새로고침 때 카드가 늘었다 줄어드는 것을 막는다 — 자리를 미리 잡아 둔다 */
+.fdash-card{min-height:84px}
+#dash6-wrap,.dash-cards{contain:layout}
+@media (prefers-reduced-motion:reduce){.page.active{animation:none}}
+</style>
 </head>
 <body class="notranslate">
 
@@ -18553,7 +18562,7 @@ body.gate-open #stars,body.gate-open #fog{visibility:hidden!important}
 #spd{visibility:visible!important}
 html.gate-open{background:#f0fdfa!important}
 /* 특허 업데이트 — 화면 밖 덩어리는 그리기를 멈춘다 */
-.cgo-rest{content-visibility:auto}
+.cgo-rest{content-visibility:auto;contain-intrinsic-size:auto 600px}
 #phase0{background:linear-gradient(135deg,#ffffff 0%,#f0fdfa 50%,#ecfdf5 100%)!important}
 body{padding-top:var(--hdrH,56px)}
 header #topName,header .user-nm{color:#e8eef7!important}
