@@ -14647,6 +14647,115 @@ window.c39StartTest=function(){
 
 
 <script>
+/* ══ 실시간 추천 — 구 CGO 원문 그대로 (검증 표에서 코드가 직접 뽑는다) ══ */
+function pmYtBuildQ(oh,sj,ili){
+  var pool=_cgoYtPool[oh]||_cgoYtPool['목'];
+  var now=new Date();
+  var day=Math.floor((now-new Date(now.getFullYear(),0,0))/864e5);
+  var idx=(day+sj*3+Math.floor(ili/20))%pool.length;
+  return pool[idx]+' '+(ili>=80?'high energy':ili>=60?'harmony':'healing recovery');
+}
+window.pmYtBuildQ = pmYtBuildQ;
+function pmYtOpen(vid,title,ch){
+  var ov=document.getElementById('cgoYtOverlay');
+  var fr=document.getElementById('cgoYtFrame');
+  var ti=document.getElementById('cgoYtTitle');
+  var ci=document.getElementById('cgoYtCh');
+  if(!ov)return;
+  ov.classList.add('show');
+  ov.onclick=function(e){if(e.target===ov)cgoYtClose();};
+  if(fr)fr.src='https://www.youtube.com/embed/'+vid+'?autoplay=1&rel=0';
+  if(ti)ti.textContent=title;
+  if(ci)ci.textContent=ch+' · YouTube';
+}
+window.pmYtOpen = pmYtOpen;
+function pmYtFetch(oh,sj,ili,cid,_retry){
+  var box=document.getElementById(cid);
+  if(!box)return;
+  var isLight=(cid==='mfu-yt-live');
+  var cNum=isLight?'#b45309':'rgba(212,168,67,.7)',cTitle=isLight?'#0f172a':'rgba(240,230,200,.95)',cArtist=isLight?'#64748b':'rgba(200,185,140,.55)',cReason=isLight?'#047857':'rgba(52,211,153,.7)';
+  // ★ AI 제거 — 2,643곡 검증 DB에서 코드가 직접 5곡 무작위 추출 (오행 4 + 솔페지오 1)
+  var V=window.MUSIC_WHITELIST_V2||{};
+  function _pk(arr,n){arr=(arr||[]).slice();for(var i=arr.length-1;i>0;i--){var k=Math.floor(Math.random()*(i+1));var t=arr[i];arr[i]=arr[k];arr[k]=t;}return arr.slice(0,n);}
+  var sel=_pk(V[oh],4).concat(_pk(V['주파수'],1));
+  if(!sel.length){ sel=[{t:'528Hz 세포 치유 음악',a:'Solfeggio',cat:'주파수',m:'마인드 리프레시'},{t:'Weightless',a:'Marconi Union',cat:'해외',m:'심신 이완'}]; }
+  var nums=['①','②','③','④','⑤'];
+  var wrap=document.createElement('div');
+  wrap.style.cssText='display:flex;flex-direction:column;gap:6px;';
+  sel.slice(0,5).forEach(function(c,idx){
+    var qy=(c.t||'')+' '+(c.a||'');
+    var ytUrl='https://www.youtube.com/results?search_query='+encodeURIComponent(qy);
+    var row=document.createElement('a');
+    row.href=ytUrl; row.target='_blank'; row.rel='noopener';
+    row.style.cssText='display:flex;align-items:center;gap:12px;padding:10px 12px;background:rgba(255,255,255,'+(isLight?'.5':'.04')+');border:1px solid rgba('+(isLight?'0,0,0,.06':'255,255,255,.08')+');border-radius:10px;text-decoration:none;cursor:pointer;';
+    row.innerHTML=
+      '<div style="font-size:18px;font-weight:900;color:'+cNum+';flex-shrink:0;width:22px;text-align:center;">'+(nums[idx]||(idx+1))+'</div>'
+      +'<div style="flex:1;min-width:0;">'
+      +'<div style="font-size:12px;font-weight:700;color:'+cTitle+';">'+(c.t||'')+(c.a?' <span style="font-size:10px;color:'+cArtist+';font-weight:400;">\u2014 '+c.a+'</span>':'')+'</div>'
+      +'<div style="font-size:10px;color:'+cReason+';margin-top:2px;">'+(c.m||(c.cat==='주파수'?'솔페지오 이완 주파수':'오행 '+oh+' 에너지 매칭'))+'</div>'
+      +'</div>'
+      +'<div style="flex-shrink:0;padding:5px 10px;background:rgba(255,0,0,.15);border:1px solid rgba(255,0,0,.3);border-radius:8px;font-size:10px;font-weight:700;color:#ff6666;">\u25b6 \uc7ac\uc0dd</div>';
+    wrap.appendChild(row);
+  });
+  box.innerHTML=''; box.appendChild(wrap);
+}
+window.pmYtFetch = pmYtFetch;
+function pmGroqFullMusic(oh,sj,season,ili,bpm,hrv,cid){
+  var box=document.getElementById(cid);
+  if(!box)return;
+  var isLight=(cid==='mfu-groq-music');
+  var cTitle=isLight?'#0f172a':'rgba(240,230,200,.95)',cArtist=isLight?'#64748b':'rgba(200,185,140,.55)',cReason=isLight?'#047857':'rgba(52,211,153,.7)',cNew=isLight?'#dc2626':'#ff8a8a';
+  var V=window.MUSIC_WHITELIST_V2||{};
+  function _pk(arr,n){arr=(arr||[]).slice();for(var i=arr.length-1;i>0;i--){var k=Math.floor(Math.random()*(i+1));var t=arr[i];arr[i]=arr[k];arr[k]=t;}return arr.slice(0,n);}
+  // ★ AI 제거 — DB에서 4곡 (오행 3 + 솔페지오 1) 코드 추출
+  var dbSel=_pk(V[oh],3).concat(_pk(V['주파수'],1));
+  if(!dbSel.length){dbSel=[{t:'528Hz 세포 치유 음악',a:'Solfeggio',cat:'주파수',m:'마인드 리프레시'}];}
+  function _card(c,idx,isNew){
+    var qy=(c.t||'')+' '+(c.a||'');
+    var url=c.vid?('https://www.youtube.com/watch?v='+c.vid):('https://www.youtube.com/results?search_query='+encodeURIComponent(qy));
+    return '<a href="'+url+'" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:10px;padding:9px 11px;background:rgba(255,255,255,'+(isLight?'.5':'.04')+');border:1px solid '+(isNew?'rgba(220,38,38,.35)':'rgba('+(isLight?'0,0,0,.06':'255,255,255,.08')+')')+';border-radius:9px;text-decoration:none;margin-bottom:5px;">'
+      +'<div style="font-size:14px;flex-shrink:0;width:22px;text-align:center;">'+(isNew?'🆕':(idx+1))+'</div>'
+      +'<div style="flex:1;min-width:0;"><div style="font-size:12px;font-weight:700;color:'+(isNew?cNew:cTitle)+';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+(c.t||'')+(c.a?' <span style="font-size:10px;color:'+cArtist+';font-weight:400;">\u2014 '+c.a+'</span>':'')+'</div>'
+      +'<div style="font-size:10px;color:'+(isNew?cNew:cReason)+';margin-top:1px;">'+(isNew?'🆕 오늘 발매 \u00b7 오행 매칭':(c.m||('오행 '+oh+' 에너지 매칭')))+'</div></div>'
+      +'<div style="flex-shrink:0;padding:4px 9px;background:rgba(255,0,0,.15);border:1px solid rgba(255,0,0,.3);border-radius:7px;font-size:9px;font-weight:700;color:#ff6666;">\u25b6</div></a>';
+  }
+  function _render(newSong){
+    var h='';
+    dbSel.forEach(function(c,i){h+=_card(c,i,false);});
+    if(newSong)h+=_card(newSong,99,true);
+    box.innerHTML=h;
+  }
+  // ① DB 4곡 즉시 (AI·API 무관)
+  _render(null);
+  // ② API 신곡 1곡 (실패해도 4곡 유지) — 세션 캐시로 쿼터 절약
+  try{
+    window._mfuNewCache=window._mfuNewCache||{};
+    if(window._mfuNewCache[oh]){ _render(window._mfuNewCache[oh]); return; }
+    if(typeof _CGO_YT_KEY!=='undefined' && _CGO_YT_KEY){
+      var mood={'목':'발라드 봄 신곡','화':'댄스 신나는 신곡','토':'감성 잔잔 신곡','금':'웅장 록 신곡','수':'알앤비 감성 신곡'}[oh]||'신곡';
+      var u='https://www.googleapis.com/youtube/v3/search?part=snippet&q='+encodeURIComponent(mood+' official 2026')+'&order=date&type=video&maxResults=5&videoEmbeddable=true&relevanceLanguage=ko&key='+_CGO_YT_KEY;
+      fetch(u).then(function(r){return r.json();}).then(function(d){
+        if(d&&d.items&&d.items.length){
+          var it=d.items[0];
+          var ns={t:(it.snippet.title||'').replace(/\s*[\(\[][^\)\]]*[\)\]]\s*/g,'').slice(0,42),a:it.snippet.channelTitle||'',vid:(it.id&&it.id.videoId)||'',cat:'신곡'};
+          if(ns.vid&&ns.t){ window._mfuNewCache[oh]=ns; _render(ns); }
+        }
+      }).catch(function(){});
+    }
+  }catch(e){}
+}
+window.pmGroqFullMusic = pmGroqFullMusic;
+function _mfuSampleWL(userOh){
+  var V=window.MUSIC_WHITELIST_V2||{};
+  function pick(arr,n){arr=(arr||[]).slice();for(var i=arr.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=arr[i];arr[i]=arr[j];arr[j]=t;}return arr.slice(0,n);}
+  var out={},ohs=['목','화','토','금','수'];
+  ohs.forEach(function(k){out[k]=pick(V[k],k===userOh?22:6);});
+  out['주파수']=pick(V['주파수'],12);
+  return out;
+}
+window._mfuSampleWL = _mfuSampleWL;
+</script>
+<script>
 /* ══ 곡 표 — 구 CGO 원문 그대로 · 화이트리스트 2,693곡 ══
    MUSIC_WHITELIST     50곡 (오행별 박제)
    MUSIC_WHITELIST_V2  2,643곡 (오행 150×5 + 주파수 1,893)
