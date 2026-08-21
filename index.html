@@ -21360,8 +21360,8 @@ function _mK(n, f){ try{ var v = window.K ? window.K(n) : null; return (v && v !
 
 <script src="svi.js?v=1"></script>
 <script src="armk.js?v=6"></script>
-<script src="eye.js"></script>
-<script src="sleep.js"></script>
+
+
 <script src="c24.js"></script>
 <script src="hfu.js"></script>
 
@@ -22797,7 +22797,7 @@ function qtRenderMainGrid(){
   var totalPages=Math.ceil(QT_TAROT.length/per);
   if(window._qtBookPage>=totalPages) window._qtBookPage=totalPages-1;
   if(window._qtBookPage<0) window._qtBookPage=0;
-  var page=window._qtBookPage;
+  var page=window._qtBookPage||0;
   var start=page*per;
   var slice=QT_TAROT.slice().sort(function(){return Math.random()-0.5;}).slice(start, start+per);
 
