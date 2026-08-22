@@ -23252,72 +23252,10 @@ header.topbar{border-bottom:0!important;background:#060d1a!important}
 #cgo-hero-banner{margin-bottom:0!important}
 #cgo-hero-banner + *{margin-top:0!important}
 </style>
-<script>
-/* 📐 새로고침 재기 — 켜 두면 다음 새로고침에서 초반 프레임을 자동으로 잰다 */
-(function(){
- try{ if(sessionStorage.getItem('cgo_measure_boot')!=='1') return; }catch(e){ return; }
- var rows=[], t0=performance.now();
- function snap(tag){
-  var h=document.querySelector('header.topbar'), b=document.getElementById('cgo-hero-banner');
-  var rh=h?h.getBoundingClientRect():null, rb=b?b.getBoundingClientRect():null;
-  /* 화면의 그 지점에 실제로 무엇이 있는지 찍는다 — 흰 층의 정체를 잡는다 */
-  function at(x,y){
-   var el=document.elementFromPoint(x,y);
-   if(!el) return 'none';
-   var bg=getComputedStyle(el).backgroundColor;
-   var nm=el.tagName+(el.id?'#'+el.id:'')+(typeof el.className==='string'&&el.className?'.'+el.className.trim().split(/\s+/)[0]:'');
-   return nm+'['+bg.replace(/rgba?\(|\)|\s/g,'').replace(/,/g,'.')+']';
-  }
-  var cx=Math.round(innerWidth/2), by=rb?Math.round(rb.top+rb.height/2):200;
-  rows.push(Math.round(performance.now()-t0)+'ms '+tag
-   +' 틈'+((rh&&rb)?Math.round(rb.top-rh.bottom):'-')
-   +' 슬L'+(rb?Math.round(rb.left):'-')+' 슬R'+(rb?Math.round(innerWidth-rb.right):'-')
-   +String.fromCharCode(10)+'   위'+at(cx,58)+' 위2'+at(cx,64)
-   +String.fromCharCode(10)+'   좌'+at(3,by)+' 우'+at(innerWidth-12,by)
-   +String.fromCharCode(10)+'   덮'+at(cx,30));
- }
- [0,16,32,60,120,250,500,900,1500].forEach(function(ms){ setTimeout(function(){ snap('t+'+ms); }, ms); });
- setTimeout(function(){
-  try{ sessionStorage.removeItem('cgo_measure_boot'); }catch(e){}
-  var box=document.createElement('div');
-  box.id='cgoMeasureBox';
-  box.style.cssText='position:fixed;left:8px;right:8px;top:70px;z-index:2147483600;background:#0b1220;color:#a7f3d0;'+
-   'font:11px/1.6 monospace;padding:12px 12px 40px;border-radius:12px;white-space:pre;overflow:auto;max-height:70vh;'+
-   '-webkit-user-select:text;user-select:text;box-shadow:0 6px 24px rgba(0,0,0,.4)';
-  box.textContent=rows.join(String.fromCharCode(10));
-  var x=document.createElement('div');
-  x.textContent='닫기';
-  x.style.cssText='position:absolute;right:10px;bottom:8px;padding:5px 12px;border-radius:999px;background:#0f766e;color:#fff;font-weight:800;cursor:pointer';
-  x.onclick=function(){ box.remove(); };
-  box.appendChild(x);
-  document.body.appendChild(box);
- }, 1700);
-})();
-</script>
 
-<div id="cgoMeasureBoot" onclick="try{sessionStorage.setItem('cgo_measure_boot','1');location.reload();}catch(e){}"
- style="position:fixed;right:10px;bottom:92px;z-index:2147483000;padding:7px 13px;border-radius:999px;
- background:#b45309;color:#fff;font-size:11px;font-weight:800;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.2)">🔄 새로고침 재기</div>
-<div id="cgoMeasure" onclick="(function(){var h=document.querySelector('header.topbar'),b=document.getElementById('cgo-hero-banner');
- if(!h||!b){alert('요소 없음');return;}
- var rh=h.getBoundingClientRect(), rb=b.getBoundingClientRect();
- var t='화면 '+innerWidth+'x'+innerHeight+' · 문서폭 '+document.documentElement.clientWidth
-  +String.fromCharCode(10)+'헤더 높이 '+Math.round(rh.height)+' · 아래 테두리 '+getComputedStyle(h).borderBottomWidth
-  +String.fromCharCode(10)+'바-슬라이드 틈 '+Math.round(rb.top-rh.bottom)
-  +String.fromCharCode(10)+'슬라이드 왼쪽 '+Math.round(rb.left)+' · 오른쪽 '+Math.round(innerWidth-rb.right)
-  +String.fromCharCode(10)+'슬라이드 폭 '+Math.round(rb.width)+' · 높이 '+Math.round(rb.height)
-  +String.fromCharCode(10)+'html overflow '+getComputedStyle(document.documentElement).overflowY
-  +String.fromCharCode(10)+'--hdrH '+(getComputedStyle(document.documentElement).getPropertyValue('--hdrH')||'(없음)');
- var box=document.getElementById('cgoMeasureBox')||document.createElement('div');
- box.id='cgoMeasureBox';
- box.style.cssText='position:fixed;left:8px;right:8px;top:70px;z-index:2147483600;background:#0b1220;color:#a7f3d0;font:12px/1.7 monospace;padding:12px 12px 40px;border-radius:12px;white-space:pre;-webkit-user-select:text;user-select:text;box-shadow:0 6px 24px rgba(0,0,0,.4)';
- box.textContent=t;
- var c=document.createElement('div'); c.textContent='닫기';
- c.style.cssText='position:absolute;right:10px;bottom:8px;padding:5px 12px;border-radius:999px;background:#0f766e;color:#fff;font-weight:800;cursor:pointer';
- c.onclick=function(){ box.remove(); };
- box.appendChild(c); document.body.appendChild(box);})()"
- style="position:fixed;right:10px;bottom:56px;z-index:2147483000;padding:7px 13px;border-radius:999px;
- background:#0f766e;color:#fff;font-size:11px;font-weight:800;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.2)">📐 화면 재기</div>
+
+
+
 </body></html>
 <style>
 /* ★v5 — 앱 전체 스크롤. 구형은 .content 안에만 스크롤이 있어 휠·스와이프가 겉돌았다 */
