@@ -6926,32 +6926,29 @@ function _cgoEyeCloseAll(){
   try{ if(window.eyeStopMeasure) eyeStopMeasure(); }catch(_){}
 }
 function cgoHome(){
-  try{ _cgoEyeCloseAll(); }catch(_){}
-
-  /* 화면에 떠 있는 것을 모두 닫는다 */
-  var IDS=['c24GuidePop','c39GuidePop','c39CarePop','scGuidePop','scAreaPop','scStepPop','iqGuidePop','iqTestPop','c24ChatPop','c39TestPop','mypage-pop','suInfoPop','suTermsPop','suSocialPop','suPwPop','suPayPop',
-           'cgoGuidePopup','cgoAccUsage','cgoAccPricing','acc-guide-popup','wf10-pop','page-account',
-           'pm-intro-pop','svi-intro-pop','svi-cam-alert','todayFortuneOverlay','pm-intro-pop','cgoYtOverlay','acc-cam-overlay','page-c44-eye',
-           'qt-card-popup','qtGuidePop','cgn-help'];
-  IDS.forEach(function(id){ var e=document.getElementById(id);
-    if(e){ e.style.display='none'; if(e.classList) e.classList.remove('on','active','show'); } });
+  /* ══ 대시보드로 돌아가기 — 한 번 훑어 닫는다 ══
+     이름 서른다섯 개를 하나씩 찾던 것을 없앴다. 떠 있는 것을 한 번에 훑는다.
+     새 기능을 만들 때 목록에 넣는 일도 사라진다. */
+  var pops=document.querySelectorAll('body > [id]');
+  for(var i=0;i<pops.length;i++){
+    var e=pops[i], cs=getComputedStyle(e);
+    if(cs.position!=='fixed' || cs.display==='none') continue;
+    if(/^(entSplash|phase0|topbar)$/.test(e.id) || e.classList.contains('topbar')) continue;
+    if(e.tagName==='HEADER') continue;
+    e.style.display='none';
+    if(e.classList) e.classList.remove('on','active','show');
+  }
+  document.querySelectorAll('.modal.on,.popup.on,.fsp.on').forEach(function(e){ e.classList.remove('on'); });
   /* 실행 중에 만들어진 팝업은 지운다 */
   ['c24-scan-guide-pop','c24-chat-guide','c24-capture-cd','cgoInAppGuide'].forEach(function(id){
     var e=document.getElementById(id); if(e&&e.parentNode) e.parentNode.removeChild(e); });
-  document.querySelectorAll('.modal.on,.popup.on,.fsp.on').forEach(function(e){ e.classList.remove('on'); });
-  /* 측정 중이면 결과를 만들지 않고 접는다 · 카메라도 끈다 */
-  try{ if(window._c24Cancel) window._c24Cancel(); }catch(_){}
-  try{ if(window.c39Stop) window.c39Stop(); }catch(_){}
-  try{ if(window.scStop) window.scStop(); }catch(_){}
-  try{ if(window.sviCancel) window.sviCancel(); }catch(_){}
-  try{ if(window.musicStop) window.musicStop(); }catch(_){}
-  try{ if(window._cgoStopAllCams) window._cgoStopAllCams(); }catch(_){}
+  /* 카메라·소리는 한 창구로 */
+  ['_c24Cancel','c39Stop','scStop','sviCancel','musicStop','eyeCancelMeasure','iqCamStop','cgoNaviStop','_cgoStopAllCams','_cgoEyeCloseAll']
+    .forEach(function(f){ try{ if(window[f]) window[f](); }catch(_){} });
   /* 팝업이 잠갔던 스크롤을 되돌린다 */
   try{ document.body.style.overflow=''; document.documentElement.style.overflow=''; }catch(_){}
-  try{ var _qh=document.getElementById('qt-help'); if(_qh){ _qh.style.display='none'; _qh.style.zIndex=''; } }catch(_){}
   try{ cgoGoPage('dashboard'); }catch(_){}
-  try{ window.scrollTo(0,0); }catch(_){
-    try{ if(window.cgoNaviClose) cgoNaviClose(); }catch(e){}}
+  try{ window.scrollTo(0,0); }catch(_){}
 }
 window.cgoHome=cgoHome;
 
@@ -8416,7 +8413,7 @@ function cgoGuideFeature(key){
     <!-- 카드: 타로·MSP·역학 -->
     <div onclick="_cgoFusion3IntroPopup()" class="fdash-card" style="--fc:#e3c05a"><div data-k="1463" class="fdash-ico">🌌</div><div data-k="1464" class="fdash-ttl" data-i18n="타로 · 성격 · 역학">Tarot · Personality · Divination</div><div data-k="1465" class="fdash-desc" data-i18n="3중 융합 리딩">Triple Fusion Reading</div></div>
     <!-- 🆕 신규(준비중) — 후배 C: 완성 후 onclick을 cgoGoPage('?')로 교체 -->
-    <div onclick="cgoNaviOpen()" class="fdash-card" style="--fc:#047857;"><span data-k="1466" class="fdash-badge new">NEW</span><div data-k="1467" class="fdash-ico">🧭</div><div data-k="1468" class="fdash-ttl" data-i18n="나의 네비게이션">My Navigation</div><div data-k="1469" class="fdash-desc" data-i18n="오행 길방 · GPS 도보">Five-Element lucky direction · GPS walking</div></div>
+    <div onclick="naviGuideOpen()" class="fdash-card" style="--fc:#047857;"><span data-k="1466" class="fdash-badge new">NEW</span><div data-k="1467" class="fdash-ico">🧭</div><div data-k="1468" class="fdash-ttl" data-i18n="나의 네비게이션">My Navigation</div><div data-k="1469" class="fdash-desc" data-i18n="오행 길방 · GPS 도보">Five-Element lucky direction · GPS walking</div></div>
     <!-- 🆕 신규(준비중) — 후배 C: 완성 후 onclick을 cgoGoPage('?')로 교체 -->
     <div onclick="cgoPhotoOpen()" class="fdash-card" style="--fc:#a78bfa;"><span data-k="1470" class="fdash-badge new">NEW</span><div data-k="1471" class="fdash-ico">📸</div><div data-k="1472" class="fdash-ttl" data-i18n="에너지 사진 분석">Energy Photo Analysis</div><div data-k="1473" class="fdash-desc" data-i18n="사진 색·기운 → 오행 궁합">Photo color·energy → Five-Element match</div></div>
   </div>
@@ -11448,6 +11445,7 @@ window.CGN_MODE='pure'; /* pure · sat · rppg */
   var raw=null;
   function go(){ try{ (raw||window.cgoNaviOpen)(); }catch(e){} }
   window.naviGuideOpen=function(){
+    if(typeof raw!=='function' && typeof window.cgoNaviOpen==='function' && String(window.cgoNaviOpen).indexOf('naviGuideOpen')<0) raw=window.cgoNaviOpen;
     try{ if(localStorage.getItem('navi_guide_skip')===today()){ go(); return; } }catch(e){}
     var p=document.getElementById('naviGuidePop'); if(!p){ go(); return; }
     p.style.display='block'; p.scrollTop=0;
@@ -16393,15 +16391,14 @@ function checkHealth(){
 <script>
 /* ★ 팝업이 떠 있는 동안 뒤 대시보드를 재운다 — 특허(보이는 것만 살린다)를 팝업에도 적용 */
 (function(){
-  var IDS=['c24GuidePop','c39GuidePop','c39CarePop','scGuidePop','scAreaPop','scStepPop',
-           'iqGuidePop','iqTestPop','c39TestPop','c24ChatPop','mypage-pop','wf10-pop','cgoGuidePopup','qtGuidePop'];
-  function anyOpen(){
-    for(var i=0;i<IDS.length;i++){
-      var e=document.getElementById(IDS[i]);
-      if(e && getComputedStyle(e).display!=='none') return true;
-    }
+  /* 이름 목록을 두지 않는다 — 떠 있는 것을 그때그때 훑는다 (새 기능도 저절로 든다) */
+  function _open(){
+    var L=document.querySelectorAll('body > [id]');
+    for(var i=0;i<L.length;i++){ var e=L[i], cs=getComputedStyle(e);
+      if(cs.position==='fixed' && cs.display!=='none' && +cs.zIndex>=20000) return true; }
     return false;
   }
+  var anyOpen=_open;
   function tick(){ try{ document.documentElement.classList.toggle('cgo-pop', anyOpen()); }catch(e){} }
   document.addEventListener('click', function(){ setTimeout(tick,60); setTimeout(tick,320); }, true);
   [600,1600,3200].forEach(function(d){ setTimeout(tick,d); });
