@@ -21908,7 +21908,18 @@ var _TF_NM={"사주명리":16100,"토정비결":16101,"성명학":16102,"매화�
 var _TF_GP={"🇰🇷 대한민국":17400,"🇨🇳 중국":17401,"🇯🇵 일본":17402,"🇮🇳 인도":17403,"🇺🇸🇬🇧 영미권":17404,"🇩🇪 독일":17405,"🇫🇷 프랑스":17406,"🇪🇸🇧🇷 중남미":17407,"🇷🇺 러시아":17408,"🇻🇳 베트남":17409,"🇹🇭 태국":17410,"🇮🇩 인도네시아":17411,"🇮🇱 중동":17412,"🌐 글로벌 특수":17413};
 var _TF_CU={'동양':17465,'인도':17466,'서양':17467,'기타':17468};
 var _TF_CU2={'동양':17470,'인도':17471,'서양':17472,'기타':17473};
-function _tfT(n,f){ if(!n) return f; try{ var q=window.K?window.K(n):null; return (q&&q!==String(n))?q:f; }catch(e){ return f; } }
+function _tfT(n,f){ if(!n) return f;
+  try{ var q=window.K?window.K(n):null; if(q&&q!==String(n)) return q; }catch(e){}
+  try{
+    if(!window._tfDict){
+      var el=document.getElementById('dash6');
+      window._tfDict = el ? JSON.parse(el.textContent) : {};
+    }
+    var L = window.CGO_LANG || (window.localStorage&&localStorage.getItem('cgo_lang')) || 'ko';
+    var d = window._tfDict[L] || window._tfDict[String(L).split('_')[0]] || null;
+    if(d && d[n]) return d[n];
+  }catch(e){}
+  return f; }
 function cgoTfRenderEngineList(){
   var el=document.getElementById('tf-engine-list'); if(!el) return;
   var _cult={
