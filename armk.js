@@ -96,6 +96,8 @@ window._aK = function(n, f){
   };
 
 
+      var p = document.getElementById('page-rppg-ar');
+      if(!p) return;
       function tryGreet(){
         if(p.classList.contains('active')){
           // ★ 정보 입력 검증 — 미입력 시 차단 + 대시보드로 이동

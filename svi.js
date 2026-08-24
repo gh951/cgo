@@ -1660,7 +1660,7 @@ window.sviShowIntroPopup = function(){
       var now = p.classList.contains('active') || p.classList.contains('on');
       if(now === was) return;      /* 같은 상태면 아무것도 하지 않는다 — 팝업이 되풀이되는 원인 */
       was = now;
-      if(now){ setTimeout(function(){ try{ window.sviShowIntroPopup(); }catch(e){} }, 60); }
+      if(now){ try{ window.sviShowIntroPopup(); }catch(e){} }
       else { var e = document.getElementById('svi-intro-pop'); if(e) e.remove(); }
     });
     ob.observe(p, {attributes:true, attributeFilter:['class']});

@@ -10,7 +10,6 @@ window.cgoResetFeatures = function(){
   /* 1) 카메라 — 취소 함수만 부른다 (결과를 만드는 종료 함수는 절대 부르지 않는다)
         새 기능을 만들면 그 기능의 '취소' 함수 이름을 아래 목록에 넣는다 */
   ['foodCamStop','musicStop','sviCancel','_c24Cancel','c39Stop','scStop','iqCamStop','rmaiScanStop','rmaiArStop','rppgArStop','eyeCancelMeasure','eyeStopMeasure','cgoSleepStopAll','cgoAccCamClose'].forEach(function(fn){
-    try{ if(window.cgoNaviStop) cgoNaviStop(); }catch(e){}
     try{ if(typeof window[fn] === 'function') window[fn](); }catch(e){}
   });
   try{ if(window._cgoStopAllCams) window._cgoStopAllCams(); }catch(e){}
