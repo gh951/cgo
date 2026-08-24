@@ -21909,17 +21909,16 @@ var _TF_GP={"🇰🇷 대한민국":18050,"🇨🇳 중국":18051,"🇯🇵 일�
 var _TF_CU={'동양':18070,'인도':18071,'서양':18072,'기타':18073};
 var _TF_CU2={'동양':18080,'인도':18081,'서양':18082,'기타':18083};
 function _tfT(n,f){ if(!n) return f;
-  try{ var q=window.K?window.K(n):null; if(q&&q!==String(n)) return q; }catch(e){}
   try{
-    if(!window._tfDict){
-      var el=document.getElementById('dash6');
-      window._tfDict = el ? JSON.parse(el.textContent) : {};
-    }
+    if(!window._tfDict){ var el=document.getElementById('dash6');
+      window._tfDict = el ? JSON.parse(el.textContent) : {}; }
     var L = window.CGO_LANG || (window.localStorage&&localStorage.getItem('cgo_lang')) || 'ko';
     var d = window._tfDict[L] || window._tfDict[String(L).split('_')[0]] || null;
     if(d && d[n]) return d[n];
-  }catch(e){}
+  }catch(_e){}
+  try{ var q=window.K?window.K(n):null; if(q&&q!==String(n)) return q; }catch(_e){}
   return f; }
+
 function cgoTfRenderEngineList(){
   var el=document.getElementById('tf-engine-list'); if(!el) return;
   var _cult={
