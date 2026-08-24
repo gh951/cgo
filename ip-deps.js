@@ -21904,81 +21904,81 @@ function _cgoTransPopup(elId) {
   }, 200);
 };
 
+var _TF_NM={"사주명리":16100,"토정비결":16101,"성명학":16102,"매화역수":16103,"양택가상학":16104,"자미두수":16105,"기문둔갑":16106,"태을신수":16107,"육임":16108,"주역":16109,"육효":16110,"현공풍수":16111,"구성기학":16112,"음양도":16113,"육요":16114,"칸소":16115,"베딕 점성술":16116,"나크샤트라":16117,"라 리 키탑":16118,"KP 시스템":16119,"바스투 샤스트라":16120,"헬레니즘 점성술":16121,"호라리":16122,"세이비언 심볼":16123,"인간 설계":16124,"유전자키":16125,"생체 리듬":16126,"신성 기하학":16127,"룬 문자":16128,"테루아":16129,"레이더스테지아":16130,"레노먼드":16131,"마야 촐킨":16132,"에니어그램":16133,"브라질 토속 에너지학":16134,"러시아 수비학":16135,"슬라브 토템 역학":16136,"시베리아 관측 역학":16137,"베트남 자미두수":16138,"옹따오":16139,"태국 왕실 점성술":16140,"산 프라 품":16141,"프리본":16142,"와양 기질학":16143,"카발라 게마트리아":16144,"아랍 파트":16145,"지오맨시":16146,"이집트 데칸":16147,"나경 풍수":16148,"수비학 (피타고라스)":16149};
+var _TF_GP={"🇰🇷 대한민국":17400,"🇨🇳 중국":17401,"🇯🇵 일본":17402,"🇮🇳 인도":17403,"🇺🇸🇬🇧 영미권":17404,"🇩🇪 독일":17405,"🇫🇷 프랑스":17406,"🇪🇸🇧🇷 중남미":17407,"🇷🇺 러시아":17408,"🇻🇳 베트남":17409,"🇹🇭 태국":17410,"🇮🇩 인도네시아":17411,"🇮🇱 중동":17412,"🌐 글로벌 특수":17413};
+var _TF_CU={'동양':17465,'인도':17466,'서양':17467,'기타':17468};
+var _TF_CU2={'동양':17470,'인도':17471,'서양':17472,'기타':17473};
+function _tfT(n,f){ if(!n) return f; try{ var q=window.K?window.K(n):null; return (q&&q!==String(n))?q:f; }catch(e){ return f; } }
 function cgoTfRenderEngineList(){
   var el=document.getElementById('tf-engine-list'); if(!el) return;
-
-  // ★ 문화권 계열 정의
   var _cult={
     '동양':['bazi','tojeong','onomancy','maehwa','yangtaek','ziwei','qimen','taiyi','liuren','iching','sixlines','xuankong','kyusei','onmyodo','rokuyo','kanso','tuvi','ongtao','primbon','wayang'],
-    '인도':['jyotish','nakshatra','lalkitab','kp','vastu'],
-    '서양':['hellenistic','horary','sabian','humandesign','genekeys','biorhythm','sacredgeo','runes','terroir','radiesthesia','lenormand','ru_numerology','slav_totem','siberian','tzolkin','enneagram','brazil_energy','gematria','arabparts','geomancy','decans','luopan','numerology','thai_royal','san_phra']
+    '인도':['jyotish','nakshatra','lalkitab','kp','vastu']
   };
-  function _getCult(id){
-    for(var c in _cult){ if(_cult[c].indexOf(id)>=0) return c; }
-    return '기타';
-  }
+  function _cu(id){ for(var c in _cult){ if(_cult[c].indexOf(id)>=0) return c; } return '서양'; }
 
-  // ★ 선택 현황 파악
   var selIds=_TF_ENGINES.filter(function(e){return _tfSelected[e.id];}).map(function(e){return e.id;});
-  var selCount=selIds.length;
-  var _cultSet={};selIds.map(_getCult).forEach(function(x){_cultSet[x]=1;});var uniqueCults=Object.keys(_cultSet);
-  var mixedCult=uniqueCults.length>1;
+  var n=selIds.length;
+  var cs={}; selIds.map(_cu).forEach(function(x){cs[x]=1;});
+  var cults=Object.keys(cs), mixed=cults.length>1;
 
-  // ★ 안내 메시지
-  var guideColor=selCount===0?'rgba(212,168,67,.6)':selCount===1?'#34d399':mixedCult?'#f87171':'#d4a843';
-  var guideText=selCount===0?'역학을 선택하세요 (1개 권장 — 가장 정확)':
-    selCount===1?'✅ 순수 분석 — '+(_TF_ENGINES.find(function(e){return e.id===selIds[0];})||{name:''}).name+' 전문가 집중 분석':
-    mixedCult?'⚠️ 다른 계열 혼합 중 — 같은 계열 선택 시 점수 정확도 높아집니다':
-    selCount<=3?'✅ '+uniqueCults[0]+' 계열 '+selCount+'개 교차 검증':
-    '📊 다중 융합 — ILI 종합점수로 계산';
+  var gc = n===0?'rgba(212,168,67,.6)' : n===1?'#34d399' : mixed?'#f87171' : '#d4a843';
+  var gk = n===0?17450 : n===1?17454 : mixed?17456 : n<=3?17457 : 17459;
+  var gt;
+  if(n===1){ var one=(_TF_ENGINES.find(function(e){return e.id===selIds[0];})||{name:''}).name;
+             gt=_tfT(17454,'')+_tfT(_TF_NM[one]||0, one)+_tfT(17455,''); }
+  else if(n>1&&!mixed&&n<=3){ gt=_tfT(_TF_CU[cults[0]]||0, cults[0])+_tfT(17457,'')+n+_tfT(17458,''); }
+  else { gt=_tfT(gk,''); }
 
-  var html='<div style="margin-bottom:12px;padding:10px 12px;border-radius:10px;background:#ffffff;border:1px solid '+guideColor+';">'
-    +'<div style="font-size:11px;font-weight:700;color:'+guideColor+';margin-bottom:6px;">'+guideText+'</div>'
-    +'<div style="display:flex;gap:5px;flex-wrap:wrap;">'
-    +'<span style="font-size:9px;padding:2px 7px;border-radius:5px;background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.3);color:#0f172a;">1개 = 순수 정확</span>'
-    +'<span style="font-size:9px;padding:2px 7px;border-radius:5px;background:rgba(212,168,67,.1);border:1px solid rgba(212,168,67,.3);color:#0f172a;">같은계열 2~3개 = 교차검증</span>'
-    +'<span style="font-size:9px;padding:2px 7px;border-radius:5px;background:rgba(167,139,250,.1);border:1px solid rgba(167,139,250,.3);color:#0f172a;">전체 = ILI 융합</span>'
-    +'</div></div>';
+  var h='<div style="margin-bottom:12px;padding:10px 12px;border-radius:10px;background:#ffffff;border:1px solid '+gc+';">'
+   +'<div '+(n===1||(n>1&&!mixed&&n<=3)?'':'data-k="'+gk+'" ')+'style="font-size:11px;font-weight:700;color:'+gc+';margin-bottom:6px;">'+gt+'</div>'
+   +'<div style="display:flex;gap:5px;flex-wrap:wrap;">'
+   +'<span data-k="17451" style="font-size:9px;padding:2px 7px;border-radius:5px;background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.3);color:#0f172a;">'+_tfT(17451,'')+'</span>'
+   +'<span data-k="17452" style="font-size:9px;padding:2px 7px;border-radius:5px;background:rgba(212,168,67,.1);border:1px solid rgba(212,168,67,.3);color:#0f172a;">'+_tfT(17452,'')+'</span>'
+   +'<span data-k="17453" style="font-size:9px;padding:2px 7px;border-radius:5px;background:rgba(167,139,250,.1);border:1px solid rgba(167,139,250,.3);color:#0f172a;">'+_tfT(17453,'')+'</span>'
+   +'</div></div>';
 
-  // 그룹별 렌더링
   var groups={};
-  _TF_ENGINES.forEach(function(e){
-    if(!groups[e.group]) groups[e.group]=[];
-    groups[e.group].push(e);
-  });
+  _TF_ENGINES.forEach(function(e){ (groups[e.group]=groups[e.group]||[]).push(e); });
 
-  var lastCult='';
+  var last='';
   Object.keys(groups).forEach(function(g){
-    var thisCult=_getCult(groups[g][0].id);
-    if(thisCult!==lastCult){
-      var cc=thisCult==='동양'?'#38bdf8':thisCult==='인도'?'#f472b6':thisCult==='서양'?'#a78bfa':'#d4a843';
-      html+='<div style="font-size:9px;color:'+cc+';margin:14px 0 4px;font-weight:800;padding:3px 8px;background:'+cc+'11;border-radius:4px;border-left:3px solid '+cc+';letter-spacing:.05em;">【'+thisCult+' 계열】 같은 계열 선택 시 점수 정확도 ↑</div>';
-      lastCult=thisCult;
+    var cu=_cu(groups[g][0].id);
+    if(cu!==last){
+      var cc = cu==='동양'?'#38bdf8' : cu==='인도'?'#f472b6' : '#a78bfa';
+      h+='<div data-k="'+(_TF_CU2[cu]||'')+'" style="font-size:9px;color:'+cc+';margin:14px 0 4px;font-weight:800;padding:3px 8px;background:'+cc+'11;border-radius:4px;border-left:3px solid '+cc+';letter-spacing:.05em;">'+_tfT(_TF_CU2[cu]||0,'')+'</div>';
+      last=cu;
     }
-    html+='<div style="font-size:10px;color:#0f172a;letter-spacing:.1em;margin:8px 0 4px;font-weight:800;padding:3px 8px;border-left:2px solid rgba(212,168,67,.4);">'+g+'</div>';
+    h+='<div data-k="'+(_TF_GP[g]||'')+'" style="font-size:10px;color:#0f172a;letter-spacing:.1em;margin:8px 0 4px;font-weight:800;padding:3px 8px;border-left:2px solid rgba(212,168,67,.4);">'+_tfT(_TF_GP[g]||0, g)+'</div>';
     groups[g].forEach(function(e){
-      var chk=_tfSelected[e.id]?'checked':'';
-      var sel=_tfSelected[e.id];
-      var eCult=_getCult(e.id);
-      var cc=eCult==='동양'?'#38bdf8':eCult==='인도'?'#f472b6':eCult==='서양'?'#a78bfa':'#d4a843';
-      html+='<label style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;cursor:pointer;transition:all .2s;'+(sel?'background:rgba(212,168,67,.1);border:1px solid rgba(212,168,67,.25);':'background:transparent;border:1px solid transparent;')+'margin-bottom:3px;" onmouseover="this.style.background=\'rgba(212,168,67,.07)\';this.style.borderColor=\'rgba(212,168,67,.2)\'" onmouseout="this.style.background=\''+(sel?'rgba(212,168,67,.1)':'transparent')+'\';this.style.borderColor=\''+(sel?'rgba(212,168,67,.25)':'transparent')+'\'">'
-    +'<input type="checkbox" '+chk+' onchange="cgoTfCheckEngine(\''+e.id+'\',this.checked)" style="width:17px;height:17px;accent-color:#b45309;cursor:pointer;flex-shrink:0;">'
-    +'<div style="font-size:18px;flex-shrink:0;width:24px;text-align:center;">'+e.icon+'</div>'
-    +'<div style="flex:1;min-width:0;">'
-    +'<div style="font-size:12px;font-weight:700;color:#0f172a;">'+e.name+'</div>'
-    +'<div style="font-size:10px;color:#64748b;margin-top:1px;">'+e.en+' · '+e.w+'pt · <span style="color:#475569;font-weight:700;">'+eCult+'계</span></div>'
-    +'</div>'
-        +(sel?'<div style="font-size:10px;color:#b45309;font-weight:700;flex-shrink:0;">✓</div>':'')
-        +'</label>';
+      var sel=!!_tfSelected[e.id], ecu=_cu(e.id);
+      var cc = ecu==='동양'?'#38bdf8' : ecu==='인도'?'#f472b6' : '#a78bfa';
+      h+='<label style="display:flex;align-items:center;gap:9px;padding:8px 10px;margin-bottom:4px;border-radius:9px;background:'+(sel?'rgba(180,83,9,.07)':'#ffffff')+';border:1px solid '+(sel?'rgba(180,83,9,.3)':'rgba(15,23,42,.08)')+';cursor:pointer;">'
+       +'<input type="checkbox" '+(sel?'checked':'')+' onchange="cgoTfCheckEngine(\''+e.id+'\',this.checked)" style="width:17px;height:17px;accent-color:#b45309;cursor:pointer;flex-shrink:0;">'
+       +'<div style="font-size:18px;flex-shrink:0;width:24px;text-align:center;">'+e.icon+'</div>'
+       +'<div style="flex:1;min-width:0;">'
+       +'<div data-k="'+(_TF_NM[e.name]||'')+'" style="font-size:12px;font-weight:700;color:#0f172a;">'+_tfT(_TF_NM[e.name]||0, e.name)+'</div>'
+       +'<div style="font-size:10px;color:#64748b;margin-top:1px;">'+e.en+' · '+e.w+'pt · <span data-k="'+(_TF_CU[ecu]||'')+'" style="color:'+cc+';font-weight:700;">'+_tfT(_TF_CU[ecu]||0, ecu)+'</span></div>'
+       +'</div>'
+       +(sel?'<div style="font-size:10px;color:#b45309;font-weight:700;flex-shrink:0;">✓</div>':'')
+       +'</label>';
     });
   });
-  el.innerHTML=html;
-  cgoTfUpdateCount();
-  if(window._LANG&&window._LANG!=='ko'){
-    setTimeout(function(){_cgoTransPopup('tf-engine-list');},250);
-  }
-};
+  el.innerHTML=h;
 
+  /* 사전이 늦게 와도 잡는다 — 번호를 직접 훑어 채운다 */
+  (function(){
+    function paint(){
+      try{ el.querySelectorAll('[data-k]').forEach(function(x){
+        var num=+x.getAttribute('data-k'); if(!num) return;
+        var v=window.K?window.K(num):null;
+        if(v && v!==String(num)) x.textContent=v;
+      }); }catch(_e){}
+    }
+    paint(); [60,200,600,1400].forEach(function(ms){ setTimeout(paint, ms); });
+  })();
+  try{ cgoTfUpdateCount(); }catch(_e){}
+}
 function cgoTfUpdateWeight(){
   // 가중치 계산 (막둥이 설계)
   var nasa=_tfOnNasa?20:0, wx=_tfOnWeather?4:0, env=_tfOnEnv?4:0, bio=6;
