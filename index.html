@@ -10080,6 +10080,20 @@ var familyData = window.familyData, selectedFamilyId = window.selectedFamilyId, 
         </div>
       </div>
     </div>
+<script>
+window._rfuArrange=function(){
+  try{
+    var rp=document.getElementById('page-report'); if(!rp) return;
+    var rc=document.getElementById('reportContainer'); if(!rc) return;
+    var v2=document.getElementById('page-report-v2');
+    var src=v2||rp;
+    var chaps=[].slice.call(src.querySelectorAll(':scope > .rfu-chap'));
+    if(!chaps.length) return;
+    var anchor=rc.nextSibling;
+    chaps.forEach(function(c){ rp.insertBefore(c, anchor); });
+  }catch(e){}
+};
+</script>
 <script src="ip-deps.js?v=90" defer></script>
 
 
@@ -17657,6 +17671,7 @@ function cgoGoPage(page){
     if(mainEl) mainEl.scrollTop = 0;
     window.scrollTo(0,0);
   }
+  try{ if(page==='report' && window._rfuArrange) setTimeout(_rfuArrange, 30); }catch(e){}
 }
 /* ★v5 — 구 CGO의 사전 번역기(_cgoT)를 부르는 곳이 33군데다.
    v5는 번호 사전을 쓰므로, 한국어 원문을 그대로 돌려주고
@@ -31790,7 +31805,7 @@ window.c14SetTier=function(t,el){
       <div class="rfu-chap-ko">통합 라이프 인덱스</div>
       </div>
     <div class="rfu-ili">
-      <div class="rfu-ili-cap">— GO Future System —</div>
+      <div class="rfu-ili-cap"></div>
       <div class="rfu-ili-name">ILI 4분면 종합 점수</div>
       <div class="rfu-ili-desc">
         18개 분야 점수를 <em>기반·운용·조화·비전</em> 4분면으로 합산해<br>
@@ -31840,7 +31855,7 @@ window.c14SetTier=function(t,el){
       </div>
     <div class="rfu-bio">
       <div class="rfu-bio-header">
-        <div class="rfu-bio-eye">— LIVE BIOMETRIC ENGINE —</div>
+        <div class="rfu-bio-eye"></div>
         <div class="rfu-bio-title">스마트폰 카메라가<br><b>얼굴의 생기 톤을 읽어냅니다</b></div>
         <div class="rfu-bio-sub">CHROM rPPG 알고리즘 — 카메라 영상 속 얼굴 미세 색상 변화로<br>활력 박자·내면 탄력·생기 톤·기운 부하를 관찰해<br>리포트의 18개 분야 위에 *지금의 컨디션* 층을 더합니다.<br><span style="font-size:9px;opacity:.75;">웰니스 참고용 · 의료기기가 아니며 건강 상태를 판정하지 않습니다</span></div>
       </div>
@@ -31892,20 +31907,20 @@ window.c14SetTier=function(t,el){
       <div class="rfu-tarot-deck">
         <div class="rfu-card-fanned left">
           🌙
-          <div class="rfu-card-label">過 去</div>
+          <div class="rfu-card-label"></div>
         </div>
         <div class="rfu-card-fanned center">
           ☀️
-          <div class="rfu-card-label">現 在</div>
+          <div class="rfu-card-label"></div>
         </div>
         <div class="rfu-card-fanned right">
           ⭐
-          <div class="rfu-card-label">未 來</div>
+          <div class="rfu-card-label"></div>
         </div>
       </div>
       <div style="height:32px"></div>
       <div class="rfu-tarot-info">
-        <div class="rfu-tarot-eye">— EVERY DAY · NEW MESSAGE —</div>
+        <div class="rfu-tarot-eye"></div>
         <div class="rfu-tarot-ttl">사주팔자(영원) × 오늘 날짜(시간)</div>
         <div class="rfu-tarot-desc">
           사주의 영원한 본질에 *오늘이라는 시간 변수*를 곱해,<br>
