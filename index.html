@@ -10081,6 +10081,7 @@ var familyData = window.familyData, selectedFamilyId = window.selectedFamilyId, 
       </div>
     </div>
 <script>
+window._rfuArrangeBoot=1;
 window._rfuArrange=function(){
   try{
     var rp=document.getElementById('page-report'); if(!rp) return;
@@ -10093,6 +10094,10 @@ window._rfuArrange=function(){
     chaps.forEach(function(c){ rp.insertBefore(c, anchor); });
   }catch(e){}
 };
+(function boot(){ try{ if(document.getElementById('page-report-v2')&&document.getElementById('reportContainer')){ _rfuArrange(); return; } }catch(e){}
+  setTimeout(boot, 200); })();
+document.addEventListener('DOMContentLoaded', function(){ try{ _rfuArrange(); }catch(e){} });
+window.addEventListener('load', function(){ try{ _rfuArrange(); }catch(e){} });
 </script>
 <script src="ip-deps.js?v=90" defer></script>
 
