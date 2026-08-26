@@ -7152,30 +7152,26 @@ function _cgoEyeCloseAll(){
 }
 function cgoHome(){
   try{ _cgoEyeCloseAll(); }catch(_){}
-
-  /* 화면에 떠 있는 것을 모두 닫는다 */
   var IDS=['c24GuidePop','c39GuidePop','c39CarePop','scGuidePop','scAreaPop','scStepPop','iqGuidePop','iqTestPop','c24ChatPop','c39TestPop','mypage-pop','suInfoPop','suTermsPop','suSocialPop','suPwPop','suPayPop',
            'cgoGuidePopup','cgoAccUsage','cgoAccPricing','acc-guide-popup','wf10-pop','page-account',
-           'pm-intro-pop','svi-intro-pop','svi-cam-alert','todayFortuneOverlay','pm-intro-pop','cgoYtOverlay','acc-cam-overlay','page-c44-eye',
-           'qt-card-popup','qtGuidePop'];
+           'pm-intro-pop','svi-intro-pop','svi-cam-alert','todayFortuneOverlay','cgoYtOverlay','acc-cam-overlay','page-c44-eye',
+           'qt-card-popup','qtGuidePop','rfu-intro-pop','cgo-report-intro-pop'];
   IDS.forEach(function(id){ var e=document.getElementById(id);
     if(e){ e.style.display='none'; if(e.classList) e.classList.remove('on','active','show'); } });
-  /* 실행 중에 만들어진 팝업은 지운다 */
-  ['c24-scan-guide-pop','c24-chat-guide','c24-capture-cd','cgoInAppGuide'].forEach(function(id){
-    var e=document.getElementById(id); if(e&&e.parentNode) e.parentNode.removeChild(e); });
   document.querySelectorAll('.modal.on,.popup.on,.fsp.on').forEach(function(e){ e.classList.remove('on'); });
-  /* 측정 중이면 결과를 만들지 않고 접는다 · 카메라도 끈다 */
-  try{ if(window._c24Cancel) window._c24Cancel(); }catch(_){}
-  try{ if(window.c39Stop) window.c39Stop(); }catch(_){}
-  try{ if(window.scStop) window.scStop(); }catch(_){}
-  try{ if(window.sviCancel) window.sviCancel(); }catch(_){}
-  try{ if(window.musicStop) window.musicStop(); }catch(_){}
-  try{ if(window._cgoStopAllCams) window._cgoStopAllCams(); }catch(_){}
-  /* 팝업이 잠갔던 스크롤을 되돌린다 */
   try{ document.body.style.overflow=''; document.documentElement.style.overflow=''; }catch(_){}
-  try{ var _qh=document.getElementById('qt-help'); if(_qh){ _qh.style.display='none'; _qh.style.zIndex=''; } }catch(_){}
+  /* ★ 화면을 먼저 바꾼다 — 카메라 끄기는 다음 프레임으로 미룬다 (누름이 먹히던 자리) */
   try{ cgoGoPage('dashboard'); }catch(_){}
   try{ window.scrollTo(0,0); }catch(_){}
+  requestAnimationFrame(function(){
+    ['c24-scan-guide-pop','c24-chat-guide','c24-capture-cd','cgoInAppGuide'].forEach(function(id){
+      var e=document.getElementById(id); if(e&&e.parentNode) e.parentNode.removeChild(e); });
+    if(window._cgoCamOn!==false){
+      ['_c24Cancel','c39Stop','scStop','sviCancel','musicStop','_cgoStopAllCams','eyeCancelMeasure','iqCamStop','cgoNaviStop']
+        .forEach(function(f){ try{ if(typeof window[f]==='function') window[f](); }catch(_){} });
+    }
+    try{ var _qh=document.getElementById('qt-help'); if(_qh){ _qh.style.display='none'; _qh.style.zIndex=''; } }catch(_){}
+  });
 }
 window.cgoHome=cgoHome;
 
