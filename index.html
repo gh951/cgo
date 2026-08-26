@@ -22667,7 +22667,15 @@ function qtRenderMainGrid(){
   var hdr=document.createElement('div');
   hdr.style.cssText='text-align:center;padding:6px 0 2px;font-size:12px;color:#1f2937;letter-spacing:.04em;';
   var _sN=window._qtSpread||1, _sX=(window._qtSpreadCards||[]).length;
-  function _tk(n,d){ try{ var v=window.K?window.K(n):null; return (v&&v!==String(n))?v:d; }catch(e){ return d; } }
+  function _tk(n,d){
+    try{ var v=window.K?window.K(n):null; if(v&&v!==String(n)) return v; }catch(e){}
+    try{
+      if(!window._qtDict){ var el=document.getElementById('dash6'); window._qtDict = el? JSON.parse(el.textContent) : {}; }
+      var L=window.CGO_LANG||(window.localStorage&&localStorage.getItem('cgo_lang'))||'ko';
+      var dd=window._qtDict[L]||window._qtDict[String(L).split('_')[0]];
+      if(dd && dd[n]) return dd[n];
+    }catch(e){}
+    return d; }
   if(_sN>1){ hdr.innerHTML='💫 '+_tk(15351,'직감으로 '+_sN+'장을 골라주세요').replace('{n}',_sN)+' <span style="color:#334155;font-weight:700;margin-left:8px;">'+_sX+' / '+_sN+'</span>'; }
   else { hdr.innerHTML='💫 '+_tk(15350,'직감으로 한 장을 골라주세요')+' <span style="color:#334155;font-weight:700;margin-left:8px;">'+(page+1)+' / '+totalPages+'</span>'; }
   grid.appendChild(hdr);
@@ -23014,7 +23022,15 @@ function qtChatSend(){
 function qtInitChat(){
   if(_qt.chatHistory.length>0) return;
   (function(){
-  function _t(n,d){ try{ var v=window.K?window.K(n):null; return (v&&v!==String(n))?v:d; }catch(e){ return d; } }
+  function _t(n,d){
+    try{ var v=window.K?window.K(n):null; if(v&&v!==String(n)) return v; }catch(e){}
+    try{
+      if(!window._qtDict){ var el=document.getElementById('dash6'); window._qtDict = el? JSON.parse(el.textContent) : {}; }
+      var L=window.CGO_LANG||(window.localStorage&&localStorage.getItem('cgo_lang'))||'ko';
+      var dd=window._qtDict[L]||window._qtDict[String(L).split('_')[0]];
+      if(dd && dd[n]) return dd[n];
+    }catch(e){}
+    return d; }
   qtAddMsg('ai', _t(15360,'안녕하세요 😊')+'<br>'+_t(15361,'위의 카드 그리드에서 <b style="color:#d4a843;">마음에 끌리는 카드를 클릭</b>해 주세요.')+'<br>'+_t(15362,'카드 선택 후 채팅으로 질문하시면 바로 분석해 드립니다! 🔮'));
  })();
 }
