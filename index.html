@@ -8881,7 +8881,7 @@ function cgoBannerPrev(){ cgoBannerGo(_cgoBannerIdx-1); }
 
 // 자동 재생
 document.addEventListener('DOMContentLoaded', function(){
-  _cgoBannerTimer = setInterval(function(){ if(document.hidden) return; cgoBannerGo(_cgoBannerIdx+1); }, 4000);
+  _cgoBannerTimer = setInterval(function(){ cgoBannerGo(_cgoBannerIdx+1); }, 4000);
 
   // ILI 점수 카드 실시간 동기화
   setInterval(function(){ if(document.hidden) return;
