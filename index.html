@@ -216,6 +216,9 @@ window.CGO_I18N=window.CGO_I18N||{};   /* 옛 코드가 이 이름을 찾는다 
  }
  function paint(L,root){
   var sc=root||document, els=sc.querySelectorAll('[data-k]'), c=0, far=[];
+  /* ★ 슬라이드 위치를 지켜 준다 — 칠하는 동안 첫 장으로 되돌아가던 자리 */
+  var _sl=document.getElementById('cgo-slides'), _tf=null;
+  if(_sl){ _tf=_sl.style.transform; }
   for(var i=0;i<els.length;i++){
    var e=els[i], ks=e.getAttribute('data-k');
    if(e.children.length) continue;
@@ -250,7 +253,11 @@ window.CGO_I18N=window.CGO_I18N||{};   /* 옛 코드가 이 이름을 찾는다 
    }
   }
   return c;
- }
+ 
+  if(_sl){ if(_tf) _sl.style.transform=_tf;
+           requestAnimationFrame(function(){ _sl.style.transition='transform .5s cubic-bezier(.4,0,.2,1)'; }); }
+  if(_sl && _tf && _sl.style.transform!==_tf) _sl.style.transform=_tf;
+}
 
  function roots(){
   var r=[], ap=document.querySelector('.page.active');
@@ -6037,7 +6044,7 @@ body{font-family:Noto Sans KR,sans-serif;background:#fff;color:#111;padding:40px
 [id$="GuidePop"]{-webkit-overflow-scrolling:touch;overscroll-behavior:contain;contain:paint}
 .page.active [class*="card"],.page.active [class*="Card"]{box-shadow:none!important}
 .page.active{-webkit-overflow-scrolling:touch}
-.page.active *:hover{transform:none!important}
+.page.active .fdash-card:hover,.page.active .lc:hover,.page.active .card:hover{transform:none!important}
 </style>
 
 <style id="cgo-mv-light">
@@ -7164,30 +7171,36 @@ function cgoHome(){
   /* ★ 특허 — 안 보이는 것은 셈하지 않는다.
      getComputedStyle 을 모두에게 물으면 그 자리에서 배치 셈이 강제된다.
      인라인 style 로 먼저 걸러, 실제로 떠 있는 것만 물어본다. */
+  /* ★특허 — getComputedStyle 도 offsetParent 도 묻지 않는다. 둘 다 배치 셈을 강제한다.
+     인라인 style 만 보고 닫는다 — 팝업은 열 때 인라인으로 켜지므로 이것으로 충분하다 */
   var pops=document.querySelectorAll('body > [id]');
   for(var i=0;i<pops.length;i++){
     var e=pops[i];
-    if(e.style.display==='none') continue;              /* 셈 없이 걸러낸다 */
-    if(!e.offsetParent && e.style.position!=='fixed') continue;
-    var cs=getComputedStyle(e);
-    if(cs.position!=='fixed' || cs.display==='none') continue;
-    if(/^(entSplash|phase0|topbar)$/.test(e.id) || e.classList.contains('topbar')) continue;
+    var st=e.style;
+    if(st.display==='none' || st.display==='') continue;
+    if(/^(entSplash|phase0|topbar)$/.test(e.id)) continue;
     if(e.tagName==='HEADER') continue;
-    e.style.display='none';
+    st.display='none';
     if(e.classList) e.classList.remove('on','active','show');
   }
   document.querySelectorAll('.modal.on,.popup.on,.fsp.on').forEach(function(e){ e.classList.remove('on'); });
   /* 카메라·소리는 한 창구로 */
   /* 카메라가 켜져 있지 않으면 취소를 부르지 않는다 */
-  if(window._cgoCamOn!==false){
-    ['_c24Cancel','c39Stop','scStop','sviCancel','musicStop','eyeCancelMeasure','iqCamStop','cgoNaviStop','cgoNaviClose','_cgoVisionClose','_cgoStopAllCams','_cgoEyeCloseAll']
-      .forEach(function(f){ try{ if(typeof window[f]==='function') window[f](); }catch(_){} });
-  }
-  try{ if(window.cgoNaviClose) window.cgoNaviClose(); }catch(_){}
   /* 팝업이 잠갔던 스크롤을 되돌린다 */
   try{ document.body.style.overflow=''; document.documentElement.style.overflow=''; }catch(_){}
   try{ cgoGoPage('dashboard'); }catch(_){}
   try{ window.scrollTo(0,0); }catch(_){}
+  /* ★특허 — 정지 명령은 즉시 내린다. 다만 하드웨어 반환(track.stop)은 운영체제 응답을
+     기다리므로, 화면을 먼저 바꾼 뒤 다음 프레임에 명령한다 (한 프레임 = 16ms) */
+  requestAnimationFrame(function(){
+    /* ★특허 — 켜져 있는 한 대만 끈다. 열두 개를 다 부르면 없는 것까지 훑는다 */
+    try{
+      var f=window._cgoCamOwner;
+      if(f && typeof window[f]==='function'){ window[f](); }
+      else if(window._cgoCamOn!==false && typeof window._cgoStopAllCams==='function'){ window._cgoStopAllCams(); }
+      window._cgoCamOwner=null; window._cgoCamOn=false;
+    }catch(_){}
+  });
   /* 실행 중 만들어진 팝업 지우기는 다음 프레임으로 — 화면 교체를 막지 않는다 */
   requestAnimationFrame(function(){
     ['c24-scan-guide-pop','c24-chat-guide','c24-capture-cd','cgoInAppGuide'].forEach(function(id){
@@ -33076,7 +33089,7 @@ function getMspCorrection(domOh) {
 /* ★v5 — 앱 전체 스크롤. 구형은 .content 안에만 스크롤이 있어 휠·스와이프가 겉돌았다 */
 html,body{height:auto!important;min-height:100%;max-height:none!important;
  overflow-x:hidden;overflow-y:auto;-webkit-overflow-scrolling:touch;position:static!important}
-.content{overflow:visible!important;height:auto!important;max-height:none!important}
+/* 스크롤 상자를 한 곳으로 — 두 상자가 갈려 손끝이 어긋났다 */
 .page{overflow:visible!important}
 /* ★ 스마트폰 — 기능 페이지는 팝업처럼 화면을 꽉 채운다.
    좁은 화면 규칙들이 .page에 좌우 여백을 !important로 넣어 양옆에 빈 띠가 생겼다.
