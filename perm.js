@@ -114,14 +114,13 @@ window.cgoResetFeatures = function(){
     if(typeof window.cgoGoPage !== 'function' || window.cgoGoPage.__permWrapped) return false;
     var inner = window.cgoGoPage;
     var wrapped = function(page){
-      /* ★ 카메라 끄기가 화면 교체를 막고 있었다 — 다음 프레임으로 미룬다 */
-      var _needStop = false;
-      try{ _needStop = (CAM_PAGES.indexOf(String(page)) < 0); }catch(e){}
+      try{
+        if(CAM_PAGES.indexOf(String(page)) < 0) window._cgoStopAllCams();
+      }catch(e){}
       /* ★ 보던 페이지를 기억한다 — 폰이 카메라를 켜다 메모리를 회수해
          화면을 다시 불러오면 대시보드로 튕겼다. */
       try{ sessionStorage.setItem('cgo_page', String(page)); }catch(e){}
       var r = inner.apply(this, arguments);
-      if(_needStop) requestAnimationFrame(function(){ try{ window._cgoStopAllCams(); }catch(e){} });
       /* ★ 특허 장치가 숨은 페이지를 재워 두는데, 다시 열 때 깨우지 않으면
          높이가 0으로 남아 화면이 비어(검게) 보였다. 열자마자 깨운다. */
       try{
@@ -130,24 +129,23 @@ window.cgoResetFeatures = function(){
           el.classList.remove('cgo-rest');
           el.style.contentVisibility = 'visible';
           el.style.containIntrinsicSize = '';
-          /* ★특허 — 페이지 안 모든 구역을 깨우면 배치 셈이 한 덩이로 몰린다.
-             첫 화면에 드는 앞쪽 여섯 구역만 깨우고, 나머지는 스크롤이 닿을 때 깨어난다 */
-          var _rest = el.querySelectorAll('.cgo-rest');
-          for(var _i=0; _i<_rest.length && _i<6; _i++){
-            var x=_rest[_i];
+          el.querySelectorAll('.cgo-rest').forEach(function(x){
             x.classList.remove('cgo-rest');
             x.style.contentVisibility = 'visible';
             x.style.containIntrinsicSize = '';
-          }
+          });
           try{ if(window.cgoResetFeatures) cgoResetFeatures(); }catch(e){}
           /* ★ 스크롤은 .content 가 쥐고 있다. 페이지만 0으로 돌려선 소용이 없어
              앞 화면에서 내려둔 만큼 제목이 헤더 뒤로 숨은 것처럼 보였다. */
           try{
             var sc = document.querySelector('.content');
-            if(sc){ sc.scrollTop = 0; setTimeout(function(){ sc.scrollTop = 0; }, 60); }
+            if(sc){ sc.scrollTop = 0; [0,60,240].forEach(function(d){ setTimeout(function(){ sc.scrollTop = 0; }, d); }); }
           }catch(e){}
-          /* ★특허 — 세 번 훑던 것을 한 번으로. 열린 뒤 높이가 생긴 다음에 한 번만 */
-          setTimeout(function(){ try{ if(window.cgoCullScan) cgoCullScan(el); }catch(e){} }, 60);
+          [0, 60, 240].forEach(function(d){
+            setTimeout(function(){
+              try{ if(window.cgoCullScan) cgoCullScan(el); }catch(e){}
+            }, d);
+          });
         }
       }catch(e){}
       return r;
