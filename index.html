@@ -215,7 +215,18 @@ window.CGO_I18N=window.CGO_I18N||{};   /* 옛 코드가 이 이름을 찾는다 
    return r.bottom > -260 && r.top < (window.innerHeight||800) + 260;
   }catch(_){ return true; }
  }
- function paint(L,root){
+ function _cgoFlat(L){
+  if(window._cgoFlatL===L && window._cgoFlatT) return window._cgoFlatT;
+  var t={}, D=null;
+  try{ var el=document.getElementById('dash6'); if(el) D=JSON.parse(el.textContent); }catch(e){}
+  var pk=null; try{ pk=(window.CGO_PACK||{})[L]||null; }catch(e){}
+  var base=(D&&(D[L]||D[String(L).split('_')[0]]))||null;
+  if(base) for(var k in base) t[k]=base[k];
+  if(pk) for(var k2 in pk) t[k2]=pk[k2];
+  window._cgoFlatL=L; window._cgoFlatT=t;
+  return t;
+}
+function paint(L,root){
   var scopes;
   if(root){ scopes=[root]; }
   else{
@@ -227,8 +238,17 @@ window.CGO_I18N=window.CGO_I18N||{};   /* 옛 코드가 이 이름을 찾는다 
     var pgs=document.querySelectorAll('.page');
     for(var p=0;p<pgs.length;p++){
       var st=pgs[p].style.display;
-      if(st!=='none' && st!=='') scopes.push(pgs[p]);
-      else if(st==='' && pgs[p].offsetParent) scopes.push(pgs[p]);
+      var on=(st!=='none' && st!=='') || (st==='' && pgs[p].offsetParent);
+      if(!on) continue;
+      /* ★특허 — 대시보드는 첫 화면(LIVE 까지)만 즉시. 아래는 다가올 때 */
+      if(pgs[p].id==='page-dashboard'){
+        var lv=pgs[p].querySelector('.live-row,#cgoLiveRow,[id*=live],[class*=live]');
+        if(lv) scopes.push(lv);
+        var first=pgs[p].firstElementChild;
+        if(first) scopes.push(first);
+        continue;
+      }
+      scopes.push(pgs[p]);
     }
     var pops=document.querySelectorAll('body > div[id]');
     for(var q=0;q<pops.length;q++){
@@ -237,19 +257,22 @@ window.CGO_I18N=window.CGO_I18N||{};   /* 옛 코드가 이 이름을 찾는다 
     }
     if(!scopes.length) scopes=[document];
   }
-  var c=0;
+  var c=0, FT=_cgoFlat(L);
   for(var si=0;si<scopes.length;si++){
-   var sc=scopes[si], els=sc.querySelectorAll('[data-k]');
+   var sc=scopes[si];
+   if(!root && sc.classList && sc.classList.contains('cgo-rest')) continue;
+   var els=sc.querySelectorAll(':scope > *:not(.cgo-rest) [data-k], :scope > [data-k]');
+   if(!els.length) els=sc.querySelectorAll('[data-k]');
    for(var i=0;i<els.length;i++){
     var e=els[i], ks=e.getAttribute('data-k');
     if(e.children.length) continue;
-    if(!root && e.closest && e.closest('.cgo-rest')) continue;
+
     var v;
     if(ks.indexOf(',')>=0){
      var ps=ks.split(','), buf='';
-     for(var q2=0;q2<ps.length;q2++){ var pv=val(L,+ps[q2]); if(pv==null){ buf=null; break; } buf+=pv; }
+     for(var q2=0;q2<ps.length;q2++){ var pv=FT[ps[q2]]; if(pv===undefined) pv=val(L,+ps[q2]); if(pv==null){ buf=null; break; } buf+=pv; }
      v=buf;
-    } else v=val(L,+ks);
+    } else { v=FT[ks]; if(v===undefined) v=val(L,+ks); }
     if(v!=null && e.textContent!==v){ e.textContent=v; c++; }
    }
    var ph=sc.querySelectorAll('[data-kp]');
@@ -466,7 +489,7 @@ window.setLang=window.cgoSwitchLang=function(L){
  if(!window.IntersectionObserver) return;
  var MARK='_cgoCull';
  /* 실제 이 앱의 덩어리들 — 클래스 이름이 달라 아무것도 잡히지 않았다 */
- var SEL='.content > div, .page, .fdash-cat, .fdash-grid, .fdash-card, .lc, .card, section, .fsp, .acc, .panel, [id^=page-], [id^=cgo-], details, .gf-item, .mypg-card, .guide-sec, #cgoGuidePopup > div > div, #mypage-pop-content > div';
+ var SEL='.content > div, .page, .fdash-cat, .fdash-grid, .fdash-card, .lc, .card, section, .fsp, .acc, .panel, [id^=page-], [id^=cgo-], details, .gf-item, .mypg-card, .guide-sec, #cgoGuidePopup > div > div, #mypage-pop-content > div, .dash-sec, .dash-row, .fdash-wrap, #cgo-fdash, .mypg-wrap, .hero-card, .live-row, .dash-card';
  /* 화면 위치를 직접 재서 켜고 끈다 — 관찰기만 믿었을 때 한 번도 쉬지 않았다 */
  var LIST=[], tick=null;
  function judge(){
@@ -489,7 +512,8 @@ window.setLang=window.cgoSwitchLang=function(L){
      if(near){ el.classList.remove('cgo-rest');
        if(!el._cgoPainted || el._cgoPainted!==(window.CGO_LANG||'ko')){
          el._cgoPainted=(window.CGO_LANG||'ko');
-         try{ if(window.CGO_T&&CGO_T.paint) CGO_T.paint(el); }catch(_e){}
+         /* ★특허 — 깨어나는 구역은 다음 한가한 틈에 칠한다. 전환을 막지 않는다 */
+         (function(t){ setTimeout(function(){ try{ if(window.CGO_T&&CGO_T.paint) CGO_T.paint(t); }catch(_e){} }, 0); })(el);
        } }
      else{
        if(!el.dataset.cgoH){ var hh=b.height; if(hh>0) el.dataset.cgoH=Math.round(hh); }
@@ -7169,46 +7193,27 @@ function _cgoEyeCloseAll(){
   try{ if(window.eyeStopMeasure) eyeStopMeasure(); }catch(_){}
 }
 function cgoHome(){
-  /* ══ 대시보드로 돌아가기 — 한 번 훑어 닫는다 ══
-     이름 서른다섯 개를 하나씩 찾던 것을 없앴다. 떠 있는 것을 한 번에 훑는다.
-     새 기능을 만들 때 목록에 넣는 일도 사라진다. */
-  /* ★ 특허 — 안 보이는 것은 셈하지 않는다.
-     getComputedStyle 을 모두에게 물으면 그 자리에서 배치 셈이 강제된다.
-     인라인 style 로 먼저 걸러, 실제로 떠 있는 것만 물어본다. */
-  /* ★특허 — getComputedStyle 도 offsetParent 도 묻지 않는다. 둘 다 배치 셈을 강제한다.
-     인라인 style 만 보고 닫는다 — 팝업은 열 때 인라인으로 켜지므로 이것으로 충분하다 */
-  var pops=document.querySelectorAll('body > [id]');
-  for(var i=0;i<pops.length;i++){
-    var e=pops[i];
-    var st=e.style;
-    if(st.display==='none' || st.display==='') continue;
-    if(/^(entSplash|phase0|topbar)$/.test(e.id)) continue;
-    if(e.tagName==='HEADER') continue;
-    st.display='none';
-    if(e.classList) e.classList.remove('on','active','show');
-  }
-  document.querySelectorAll('.modal.on,.popup.on,.fsp.on').forEach(function(e){ e.classList.remove('on'); });
-  /* 카메라·소리는 한 창구로 */
-  /* 카메라가 켜져 있지 않으면 취소를 부르지 않는다 */
-  /* 팝업이 잠갔던 스크롤을 되돌린다 */
+  /* ★특허 — 화면을 먼저 바꾼다. 정리는 그림이 올라간 뒤에 */
   try{ document.body.style.overflow=''; document.documentElement.style.overflow=''; }catch(_){}
   try{ cgoGoPage('dashboard'); }catch(_){}
   try{ window.scrollTo(0,0); }catch(_){}
-  /* ★특허 — 정지 명령은 즉시 내린다. 다만 하드웨어 반환(track.stop)은 운영체제 응답을
-     기다리므로, 화면을 먼저 바꾼 뒤 다음 프레임에 명령한다 (한 프레임 = 16ms) */
   requestAnimationFrame(function(){
-    /* ★특허 — 켜져 있는 한 대만 끈다. 열두 개를 다 부르면 없는 것까지 훑는다 */
-    try{
-      var f=window._cgoCamOwner;
-      if(f && typeof window[f]==='function'){ window[f](); }
-      else if(window._cgoCamOn!==false && typeof window._cgoStopAllCams==='function'){ window._cgoStopAllCams(); }
-      window._cgoCamOwner=null; window._cgoCamOn=false;
-    }catch(_){}
-  });
-  /* 실행 중 만들어진 팝업 지우기는 다음 프레임으로 — 화면 교체를 막지 않는다 */
-  requestAnimationFrame(function(){
+    try{ _cgoEyeCloseAll(); }catch(_){}
+    var IDS=['c24GuidePop','c39GuidePop','c39CarePop','scGuidePop','scAreaPop','scStepPop','iqGuidePop','iqTestPop','c24ChatPop','c39TestPop','mypage-pop','suInfoPop','suTermsPop','suSocialPop','suPwPop','suPayPop',
+             'cgoGuidePopup','cgoAccUsage','cgoAccPricing','acc-guide-popup','wf10-pop','page-account',
+             'pm-intro-pop','svi-intro-pop','svi-cam-alert','todayFortuneOverlay','cgoYtOverlay','acc-cam-overlay','page-c44-eye',
+             'qt-card-popup','qtGuidePop','rfu-intro-pop','cgo-report-intro-pop'];
+    IDS.forEach(function(id){ var e=document.getElementById(id);
+      if(e){ e.style.display='none'; if(e.classList) e.classList.remove('on','active','show'); } });
+    document.querySelectorAll('.modal.on,.popup.on,.fsp.on').forEach(function(e){ e.classList.remove('on'); });
     ['c24-scan-guide-pop','c24-chat-guide','c24-capture-cd','cgoInAppGuide'].forEach(function(id){
       var e=document.getElementById(id); if(e&&e.parentNode) e.parentNode.removeChild(e); });
+    try{ var _qh=document.getElementById('qt-help'); if(_qh){ _qh.style.display='none'; _qh.style.zIndex=''; } }catch(_){}
+    /* 카메라는 가장 뒤 — 기기 응답을 기다리므로 */
+    setTimeout(function(){
+      ['_c24Cancel','c39Stop','scStop','_cgoStopAllCams','eyeCancelMeasure','iqCamStop','cgoNaviStop','_cgoVisionClose']
+        .forEach(function(f){ try{ if(typeof window[f]==='function') window[f](); }catch(_){} });
+    }, 0);
   });
 }
 window.cgoHome=cgoHome;
@@ -19675,12 +19680,16 @@ function checkHealth(){
   S.textContent=line(); }
  /* 화면이 실제로 다시 그려진 순간을 두 프레임으로 잡는다 —
     DOM 감시만 쓰면 특허 판정의 상시 변화에 먼저 소비돼 측정이 성립하지 않았다 */
+ /* ★특허 — 보이는 화면이 완성된 시점을 잰다.
+    글자 칠하기가 끝나고 그림이 실제로 올라간 프레임까지 */
  function measure(){
   var mark=t0; if(mark===null)return;
   requestAnimationFrame(function(){
-    var ms=performance.now()-mark;
-    if(t0===mark) t0=null;
-    show(ms);
+    requestAnimationFrame(function(){
+      var ms=performance.now()-mark;
+      if(t0===mark) t0=null;
+      show(ms);
+    });
   });
  }
  document.addEventListener('click',function(e){
