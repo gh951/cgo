@@ -129,17 +129,14 @@ window.cgoResetFeatures = function(){
           el.classList.remove('cgo-rest');
           el.style.contentVisibility = 'visible';
           el.style.containIntrinsicSize = '';
-          el.querySelectorAll('.cgo-rest').forEach(function(x){
-            x.classList.remove('cgo-rest');
-            x.style.contentVisibility = 'visible';
-            x.style.containIntrinsicSize = '';
-          });
+          /* ★특허 — 안쪽까지 다 깨우면 배치 셈이 한 덩이로 몰린다.
+             페이지 자체만 깨우고, 안쪽은 관찰기가 화면에 들어올 때 깨운다 */
           try{ if(window.cgoResetFeatures) cgoResetFeatures(); }catch(e){}
           /* ★ 스크롤은 .content 가 쥐고 있다. 페이지만 0으로 돌려선 소용이 없어
              앞 화면에서 내려둔 만큼 제목이 헤더 뒤로 숨은 것처럼 보였다. */
           try{
             var sc = document.querySelector('.content');
-            if(sc){ sc.scrollTop = 0; [0,60,240].forEach(function(d){ setTimeout(function(){ sc.scrollTop = 0; }, d); }); }
+            if(sc){ sc.scrollTop = 0; }
           }catch(e){}
           [0, 60, 240].forEach(function(d){
             setTimeout(function(){
