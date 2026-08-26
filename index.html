@@ -8777,7 +8777,7 @@ function cgoGuideFeature(key){
 
 <div id="langMenu" onclick="event.stopPropagation()" style="contain:layout style;display:none;position:fixed;top:56px;right:12px;background:var(--bg-card);border:1px solid rgba(2,132,199,.4);border-radius:14px;padding:8px;min-width:170px;z-index:2147483647;box-shadow:0 6px 18px rgba(0,0,0,.35);max-height:80vh;overflow-y:auto;contain:layout paint;will-change:transform">
   <div onclick="cgoSwitchLang('ko');document.getElementById('langMenu').style.display='none'" class="lang-opt" id="langOpt-ko" style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text-1)"><span data-k="6387" style="font-size:16px">🇰🇷</span> <span data-k="6388">한국어</span></div>
-  <div onclick="cgoSwitchLang('en');document.getElementById('langMenu').style.display='none'" class="lang-opt" id="langOpt-en" style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text-1)"><span data-k="6389" style="font-size:16px">🇺🇸</span> <span data-k="6390">English</span></div>
+  <div id="cgoMark1" onclick="cgoSwitchLang('en');document.getElementById('langMenu').style.display='none'" class="lang-opt" id="langOpt-en" style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text-1)"><span style="color:#fff;font-weight:900;margin-right:6px;">1</span><span data-k="6389" style="font-size:16px">🇺🇸</span> <span data-k="6390">English</span></div>
   <div onclick="cgoSwitchLang('zh');document.getElementById('langMenu').style.display='none'" class="lang-opt" id="langOpt-zh" style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text-1)"><span data-k="6391" style="font-size:16px">🇨🇳</span> <span data-k="6392">中文</span></div>
   <div onclick="cgoSwitchLang('zh_HK');document.getElementById('langMenu').style.display='none'" class="lang-opt" id="langOpt-zh_HK" style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text-1)"><span data-k="6393" style="font-size:16px">🇹🇼</span> <span data-k="6394">繁體中文</span></div>
   <div onclick="cgoSwitchLang('ja');document.getElementById('langMenu').style.display='none'" class="lang-opt" id="langOpt-ja" style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text-1)"><span data-k="6395" style="font-size:16px">🇯🇵</span> <span data-k="6396">日本語</span></div>
@@ -27964,8 +27964,6 @@ function _cgoFDIntro(cfg){
     if(window.cgoRepaintOn) cgoRepaintOn(function(){
       var c=window._cgoFDLast; if(!c) return;
       var el=document.getElementById(c.id); if(!el) return;
-      /* ★ 떠 있지 않은 팝업은 다시 만들지 않는다 — 대시봇드에서 언어를 바꾸면 엉팝업이 되살아나 다른 화면으로 햄다 */
-      var _ds=el.style.display; if(_ds==='none'||_ds==='') return;
       var sk=c.skipKey; var save=null;
       try{ save=localStorage.getItem(sk); localStorage.removeItem(sk); }catch(e){}
       el.remove(); _cgoFDIntro(c);
