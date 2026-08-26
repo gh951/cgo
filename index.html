@@ -8881,7 +8881,7 @@ function cgoBannerPrev(){ cgoBannerGo(_cgoBannerIdx-1); }
 
 // 자동 재생
 document.addEventListener('DOMContentLoaded', function(){
-  _cgoBannerTimer = setInterval(function(){ cgoBannerGo(_cgoBannerIdx+1); }, 4000);
+  _cgoBannerTimer = setInterval(function(){ if(document.hidden) return; cgoBannerGo(_cgoBannerIdx+1); }, 4000);
 
   // ILI 점수 카드 실시간 동기화
   setInterval(function(){ if(document.hidden) return;
@@ -27964,6 +27964,8 @@ function _cgoFDIntro(cfg){
     if(window.cgoRepaintOn) cgoRepaintOn(function(){
       var c=window._cgoFDLast; if(!c) return;
       var el=document.getElementById(c.id); if(!el) return;
+      /* ★ 떠 있지 않은 팝업은 다시 만들지 않는다 — 대시봇드에서 언어를 바꾸면 엉팝업이 되살아나 다른 화면으로 햄다 */
+      try{ if(getComputedStyle(el).display==='none' || !el.offsetHeight) return; }catch(e){ return; }
       var sk=c.skipKey; var save=null;
       try{ save=localStorage.getItem(sk); localStorage.removeItem(sk); }catch(e){}
       el.remove(); _cgoFDIntro(c);
