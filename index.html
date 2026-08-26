@@ -216,14 +216,10 @@ window.CGO_I18N=window.CGO_I18N||{};   /* 옛 코드가 이 이름을 찾는다 
   }catch(_){ return true; }
  }
  function paint(L,root){
-  var sc=root||document, els=sc.querySelectorAll('[data-k]'), c=0, far=[];
-  /* ★ 슬라이드 위치를 지켜 준다 — 칠하는 동안 첫 장으로 되돌아가던 자리 */
-  var _sl=document.getElementById('cgo-slides'), _tf=null;
-  if(_sl){ _tf=_sl.style.transform; }
+  var sc=root||document, els=sc.querySelectorAll('[data-k]'), c=0;
   for(var i=0;i<els.length;i++){
    var e=els[i], ks=e.getAttribute('data-k');
    if(e.children.length) continue;
-   if(!_cgoPaintNear(e)){ far.push(e); continue; }
    var v;
    if(ks.indexOf(',')>=0){
     /* 한 자리에 여러 번호가 묶인 곳 — 조각을 순서대로 이어 붙인다.
@@ -237,28 +233,8 @@ window.CGO_I18N=window.CGO_I18N||{};   /* 옛 코드가 이 이름을 찾는다 
   var ph=sc.querySelectorAll('[data-kp]');
   for(var j=0;j<ph.length;j++){ var w=val(L,+ph[j].getAttribute('data-kp'));
    if(w!=null) ph[j].setAttribute('placeholder',w); }
-  /* 화면 밖 자리 — 네 덩이로 나눠 미룬다 (손가락·휠을 잠그지 않는다) */
-  if(far.length){
-   var _paintFar=function(list){
-    for(var m=0;m<list.length;m++){
-     var e2=list[m], k2=e2.getAttribute('data-k'), v2;
-     if(k2.indexOf(',')>=0){ var ps2=k2.split(','), bf=''; 
-      for(var q2=0;q2<ps2.length;q2++){ var pv2=val(L,+ps2[q2]); if(pv2==null){ bf=null; break; } bf+=pv2; }
-      v2=bf; } else v2=val(L,+k2);
-     if(v2!=null && e2.textContent!==v2) e2.textContent=v2;
-    }
-   };
-   var step=Math.ceil(far.length/4);
-   for(var g=0; g<4; g++){
-    (function(part){ setTimeout(function(){ _paintFar(part); }, g*40); })(far.slice(g*step, (g+1)*step));
-   }
-  }
   return c;
- 
-  if(_sl){ if(_tf) _sl.style.transform=_tf;
-           requestAnimationFrame(function(){ _sl.style.transition='transform .5s cubic-bezier(.4,0,.2,1)'; }); }
-  if(_sl && _tf && _sl.style.transform!==_tf) _sl.style.transform=_tf;
-}
+ }
 
  function roots(){
   var r=[], ap=document.querySelector('.page.active');
@@ -8789,7 +8765,7 @@ function cgoGuideFeature(key){
     
 </div>
 
-<div id="langMenu" onclick="event.stopPropagation()" style="contain:layout style;display:none;position:fixed;top:56px;right:12px;background:var(--bg-card);border:1px solid rgba(2,132,199,.4);border-radius:14px;padding:8px;min-width:170px;z-index:2147483647;box-shadow:0 6px 18px rgba(0,0,0,.35);max-height:80vh;overflow-y:auto;contain:layout paint;will-change:transform">
+<div id="langMenu" onclick="event.stopPropagation()" style="contain:layout style;display:none;position:fixed;top:56px;right:12px;background:var(--bg-card);border:1px solid rgba(2,132,199,.4);border-radius:14px;padding:8px;min-width:170px;z-index:2147483647;box-shadow:0 6px 18px rgba(0,0,0,.35);max-height:80vh;overflow-y:auto;contain:layout paint">
   <div onclick="cgoSwitchLang('ko');document.getElementById('langMenu').style.display='none'" class="lang-opt" id="langOpt-ko" style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text-1)"><span data-k="6387" style="font-size:16px">🇰🇷</span> <span data-k="6388">한국어</span></div>
   <div onclick="cgoSwitchLang('en');document.getElementById('langMenu').style.display='none'" class="lang-opt" id="langOpt-en" style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text-1)"><span data-k="6389" style="font-size:16px">🇺🇸</span> <span data-k="6390">English</span></div>
   <div onclick="cgoSwitchLang('zh');document.getElementById('langMenu').style.display='none'" class="lang-opt" id="langOpt-zh" style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text-1)"><span data-k="6391" style="font-size:16px">🇨🇳</span> <span data-k="6392">中文</span></div>
