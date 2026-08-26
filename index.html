@@ -373,9 +373,7 @@ window.setLang=window.cgoSwitchLang=function(L){
    setTimeout(function(){ try{ window._mb52AllRepaint && window._mb52AllRepaint(); }catch(e){} }, 90);
    /* ★ 29개 다시-칠하기를 한꺼번에 돌리면 3초까지 멈췄다 — 손이 쉬는 동안으로 미룬다 */
    clearTimeout(window._cgoRepaintLater);
-   (function later(){ window._cgoRepaintLater=setTimeout(function(){
-     if(window._cgoBusy){ later(); return; }
-     try{ window._cgoRepaintAll(); }catch(e){} }, 600); })();
+   window._cgoRepaintLater=setTimeout(function(){ try{ window._cgoRepaintAll(); }catch(e){} }, 600);
 
 
 
@@ -444,7 +442,7 @@ window.setLang=window.cgoSwitchLang=function(L){
   document.documentElement.classList.toggle('gate-open', !!open);
   document.body.classList.toggle('gate-open', !!open); }
  addEventListener('DOMContentLoaded',lock);
- var _lv=setInterval(function(){ if(document.hidden||window._cgoBusy) return; lock(); if(window._p0Entered){ clearInterval(_lv); lock(); } },300);
+ var _lv=setInterval(function(){ if(document.hidden) return; lock(); if(window._p0Entered){ clearInterval(_lv); lock(); } },300);
 })();
 /* ══════════════════════════════════════════════════════════════
    ★v5 특허 업데이트 — 보이는 것만 살린다 (화면 단위 → 화면 안 단위)
@@ -593,7 +591,7 @@ window.p0SelectLang=function(L){ return window.CGO_T.set(L); };
  window._LANG=saved||'ko'; CUR=window._LANG;
  /* 첫 그림부터 고른 언어여야 한다 — 문서가 만들어지는 중에 계속 칠한다.
     다 만들어진 뒤에 칠하면 그 사이 한 프레임이 다른 언어로 스친다. */
- var iv=setInterval(function(){ if(document.hidden||window._cgoBusy) return; try{ window.CGO_T.paint(document); }catch(e){} },50);
+ var iv=setInterval(function(){ if(document.hidden) return; try{ window.CGO_T.paint(document); }catch(e){} },50);
  document.addEventListener('DOMContentLoaded',function(){
   clearInterval(iv);
   window.CGO_T.set(window._LANG);
@@ -7325,10 +7323,10 @@ window.entSplashGo=entSplashGo;
     <div class="topbar-right">
       <!-- 언어 선택 -->
       <div id="langSelector" style="position:relative;display:inline-flex;align-items:center;z-index:200;cursor:default;line-height:0;">
-        <button onclick="toggleLangMenu()" id="langBtn" style="display:flex;align-items:center;gap:5px;min-height:38px;padding:8px 14px;touch-action:manipulation;cursor:pointer;background:rgba(2,132,199,.08);border:1px solid rgba(2,132,199,.25);border-radius:8px;color:var(--text-2);font-size:12px;font-weight:600;font-family:inherit;transition:background .15s;position:relative;z-index:300;pointer-events:auto;-webkit-tap-highlight-color:transparent;">
-          <span id="langFlag" style="pointer-events:none;">🇰🇷</span>
-          <span id="langCode" style="font-size:10px;pointer-events:none;">KO</span>
-          <span data-k="408" style="font-size:8px;opacity:.5;pointer-events:none;">▾</span>
+        <button onclick="toggleLangMenu()" id="langBtn" style="display:flex;align-items:center;gap:5px;min-height:34px;padding:6px 11px;touch-action:manipulation;cursor:pointer;background:rgba(2,132,199,.08);border:1px solid rgba(2,132,199,.25);border-radius:8px;color:var(--text-2);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:background .2s,border-color .2s,box-shadow .2s;position:relative;z-index:300;pointer-events:auto;">
+          <span id="langFlag">🇰🇷</span>
+          <span id="langCode" style="font-size:10px">KO</span>
+          <span data-k="408" style="font-size:8px;opacity:.5">▾</span>
         </button>
 
       </div>
@@ -8773,29 +8771,29 @@ function cgoGuideFeature(key){
 </div>
 
 <div id="langMenu" onclick="event.stopPropagation()" style="contain:layout style;display:none;position:fixed;top:56px;right:12px;background:var(--bg-card);border:1px solid rgba(2,132,199,.4);border-radius:14px;padding:8px;min-width:170px;z-index:2147483647;box-shadow:0 6px 18px rgba(0,0,0,.35);max-height:80vh;overflow-y:auto;contain:layout paint;will-change:transform">
-  <div onclick="event.stopPropagation();event.preventDefault();cgoSwitchLang('ko');(function(){var _m=document.getElementById('langMenu');_m.style.visibility='hidden';_m.style.pointerEvents='none';})()" class="lang-opt" id="langOpt-ko" style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text-1)"><span data-k="6387" style="font-size:16px">🇰🇷</span> <span data-k="6388">한국어</span></div>
-  <div onclick="event.stopPropagation();event.preventDefault();cgoSwitchLang('en');(function(){var _m=document.getElementById('langMenu');_m.style.visibility='hidden';_m.style.pointerEvents='none';})()" class="lang-opt" id="langOpt-en" style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text-1)"><span data-k="6389" style="font-size:16px">🇺🇸</span> <span data-k="6390">English</span></div>
-  <div onclick="event.stopPropagation();event.preventDefault();cgoSwitchLang('zh');(function(){var _m=document.getElementById('langMenu');_m.style.visibility='hidden';_m.style.pointerEvents='none';})()" class="lang-opt" id="langOpt-zh" style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text-1)"><span data-k="6391" style="font-size:16px">🇨🇳</span> <span data-k="6392">中文</span></div>
-  <div onclick="event.stopPropagation();event.preventDefault();cgoSwitchLang('zh_HK');(function(){var _m=document.getElementById('langMenu');_m.style.visibility='hidden';_m.style.pointerEvents='none';})()" class="lang-opt" id="langOpt-zh_HK" style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text-1)"><span data-k="6393" style="font-size:16px">🇹🇼</span> <span data-k="6394">繁體中文</span></div>
-  <div onclick="event.stopPropagation();event.preventDefault();cgoSwitchLang('ja');(function(){var _m=document.getElementById('langMenu');_m.style.visibility='hidden';_m.style.pointerEvents='none';})()" class="lang-opt" id="langOpt-ja" style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text-1)"><span data-k="6395" style="font-size:16px">🇯🇵</span> <span data-k="6396">日本語</span></div>
-  <div onclick="event.stopPropagation();event.preventDefault();cgoSwitchLang('ru');(function(){var _m=document.getElementById('langMenu');_m.style.visibility='hidden';_m.style.pointerEvents='none';})()" class="lang-opt" id="langOpt-ru" style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text-1)"><span data-k="6397" style="font-size:16px">🇷🇺</span> <span data-k="6398">Русский</span></div>
+  <div onclick="event.stopPropagation();cgoSwitchLang('ko');(function(){var _m=document.getElementById('langMenu');_m.style.visibility='hidden';_m.style.pointerEvents='none';})()" class="lang-opt" id="langOpt-ko" style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text-1)"><span data-k="6387" style="font-size:16px">🇰🇷</span> <span data-k="6388">한국어</span></div>
+  <div onclick="event.stopPropagation();cgoSwitchLang('en');(function(){var _m=document.getElementById('langMenu');_m.style.visibility='hidden';_m.style.pointerEvents='none';})()" class="lang-opt" id="langOpt-en" style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text-1)"><span data-k="6389" style="font-size:16px">🇺🇸</span> <span data-k="6390">English</span></div>
+  <div onclick="event.stopPropagation();cgoSwitchLang('zh');(function(){var _m=document.getElementById('langMenu');_m.style.visibility='hidden';_m.style.pointerEvents='none';})()" class="lang-opt" id="langOpt-zh" style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text-1)"><span data-k="6391" style="font-size:16px">🇨🇳</span> <span data-k="6392">中文</span></div>
+  <div onclick="event.stopPropagation();cgoSwitchLang('zh_HK');(function(){var _m=document.getElementById('langMenu');_m.style.visibility='hidden';_m.style.pointerEvents='none';})()" class="lang-opt" id="langOpt-zh_HK" style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text-1)"><span data-k="6393" style="font-size:16px">🇹🇼</span> <span data-k="6394">繁體中文</span></div>
+  <div onclick="event.stopPropagation();cgoSwitchLang('ja');(function(){var _m=document.getElementById('langMenu');_m.style.visibility='hidden';_m.style.pointerEvents='none';})()" class="lang-opt" id="langOpt-ja" style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text-1)"><span data-k="6395" style="font-size:16px">🇯🇵</span> <span data-k="6396">日本語</span></div>
+  <div onclick="event.stopPropagation();cgoSwitchLang('ru');(function(){var _m=document.getElementById('langMenu');_m.style.visibility='hidden';_m.style.pointerEvents='none';})()" class="lang-opt" id="langOpt-ru" style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text-1)"><span data-k="6397" style="font-size:16px">🇷🇺</span> <span data-k="6398">Русский</span></div>
   <div style="height:1px;background:rgba(255,255,255,.08);margin:4px 8px"></div>
-  <div onclick="event.stopPropagation();event.preventDefault();cgoSwitchLang('hi');(function(){var _m=document.getElementById('langMenu');_m.style.visibility='hidden';_m.style.pointerEvents='none';})()" class="lang-opt" id="langOpt-hi" style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text-1)"><span data-k="6399" style="font-size:16px">🇮🇳</span> <span data-k="6400">हिन्दी</span></div>
-  <div onclick="event.stopPropagation();event.preventDefault();cgoSwitchLang('ar');(function(){var _m=document.getElementById('langMenu');_m.style.visibility='hidden';_m.style.pointerEvents='none';})()" class="lang-opt" id="langOpt-ar" style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text-1)"><span data-k="6401" style="font-size:16px">🇸🇦</span> <span data-k="6402">العربية</span></div>
-  <div onclick="event.stopPropagation();event.preventDefault();cgoSwitchLang('tr');(function(){var _m=document.getElementById('langMenu');_m.style.visibility='hidden';_m.style.pointerEvents='none';})()" class="lang-opt" id="langOpt-tr" style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text-1)"><span data-k="6403" style="font-size:16px">🇹🇷</span> <span data-k="6404">Türkçe</span></div>
-  <div onclick="event.stopPropagation();event.preventDefault();cgoSwitchLang('es');(function(){var _m=document.getElementById('langMenu');_m.style.visibility='hidden';_m.style.pointerEvents='none';})()" class="lang-opt" id="langOpt-es" style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text-1)"><span data-k="6405" style="font-size:16px">🇪🇸</span> <span data-k="6406">Español</span></div>
-  <div onclick="event.stopPropagation();event.preventDefault();cgoSwitchLang('pt');(function(){var _m=document.getElementById('langMenu');_m.style.visibility='hidden';_m.style.pointerEvents='none';})()" class="lang-opt" id="langOpt-pt" style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text-1)"><span data-k="6407" style="font-size:16px">🇧🇷</span> <span data-k="6408">Português</span></div>
-  <div onclick="event.stopPropagation();event.preventDefault();cgoSwitchLang('fr');(function(){var _m=document.getElementById('langMenu');_m.style.visibility='hidden';_m.style.pointerEvents='none';})()" class="lang-opt" id="langOpt-fr" style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text-1)"><span data-k="6409" style="font-size:16px">🇫🇷</span> <span data-k="6410">Français</span></div>
-  <div onclick="event.stopPropagation();event.preventDefault();cgoSwitchLang('it');(function(){var _m=document.getElementById('langMenu');_m.style.visibility='hidden';_m.style.pointerEvents='none';})()" class="lang-opt" id="langOpt-it" style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text-1)"><span data-k="6411" style="font-size:16px">🇮🇹</span> <span data-k="6412">Italiano</span></div>
-  <div onclick="event.stopPropagation();event.preventDefault();cgoSwitchLang('de');(function(){var _m=document.getElementById('langMenu');_m.style.visibility='hidden';_m.style.pointerEvents='none';})()" class="lang-opt" id="langOpt-de" style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text-1)"><span data-k="6413" style="font-size:16px">🇩🇪</span> <span data-k="6414">Deutsch</span></div>
-  <div onclick="event.stopPropagation();event.preventDefault();cgoSwitchLang('nl');(function(){var _m=document.getElementById('langMenu');_m.style.visibility='hidden';_m.style.pointerEvents='none';})()" class="lang-opt" id="langOpt-nl" style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text-1)"><span data-k="6415" style="font-size:16px">🇳🇱</span> <span data-k="6416">Nederlands</span></div>
+  <div onclick="event.stopPropagation();cgoSwitchLang('hi');(function(){var _m=document.getElementById('langMenu');_m.style.visibility='hidden';_m.style.pointerEvents='none';})()" class="lang-opt" id="langOpt-hi" style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text-1)"><span data-k="6399" style="font-size:16px">🇮🇳</span> <span data-k="6400">हिन्दी</span></div>
+  <div onclick="event.stopPropagation();cgoSwitchLang('ar');(function(){var _m=document.getElementById('langMenu');_m.style.visibility='hidden';_m.style.pointerEvents='none';})()" class="lang-opt" id="langOpt-ar" style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text-1)"><span data-k="6401" style="font-size:16px">🇸🇦</span> <span data-k="6402">العربية</span></div>
+  <div onclick="event.stopPropagation();cgoSwitchLang('tr');(function(){var _m=document.getElementById('langMenu');_m.style.visibility='hidden';_m.style.pointerEvents='none';})()" class="lang-opt" id="langOpt-tr" style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text-1)"><span data-k="6403" style="font-size:16px">🇹🇷</span> <span data-k="6404">Türkçe</span></div>
+  <div onclick="event.stopPropagation();cgoSwitchLang('es');(function(){var _m=document.getElementById('langMenu');_m.style.visibility='hidden';_m.style.pointerEvents='none';})()" class="lang-opt" id="langOpt-es" style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text-1)"><span data-k="6405" style="font-size:16px">🇪🇸</span> <span data-k="6406">Español</span></div>
+  <div onclick="event.stopPropagation();cgoSwitchLang('pt');(function(){var _m=document.getElementById('langMenu');_m.style.visibility='hidden';_m.style.pointerEvents='none';})()" class="lang-opt" id="langOpt-pt" style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text-1)"><span data-k="6407" style="font-size:16px">🇧🇷</span> <span data-k="6408">Português</span></div>
+  <div onclick="event.stopPropagation();cgoSwitchLang('fr');(function(){var _m=document.getElementById('langMenu');_m.style.visibility='hidden';_m.style.pointerEvents='none';})()" class="lang-opt" id="langOpt-fr" style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text-1)"><span data-k="6409" style="font-size:16px">🇫🇷</span> <span data-k="6410">Français</span></div>
+  <div onclick="event.stopPropagation();cgoSwitchLang('it');(function(){var _m=document.getElementById('langMenu');_m.style.visibility='hidden';_m.style.pointerEvents='none';})()" class="lang-opt" id="langOpt-it" style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text-1)"><span data-k="6411" style="font-size:16px">🇮🇹</span> <span data-k="6412">Italiano</span></div>
+  <div onclick="event.stopPropagation();cgoSwitchLang('de');(function(){var _m=document.getElementById('langMenu');_m.style.visibility='hidden';_m.style.pointerEvents='none';})()" class="lang-opt" id="langOpt-de" style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text-1)"><span data-k="6413" style="font-size:16px">🇩🇪</span> <span data-k="6414">Deutsch</span></div>
+  <div onclick="event.stopPropagation();cgoSwitchLang('nl');(function(){var _m=document.getElementById('langMenu');_m.style.visibility='hidden';_m.style.pointerEvents='none';})()" class="lang-opt" id="langOpt-nl" style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text-1)"><span data-k="6415" style="font-size:16px">🇳🇱</span> <span data-k="6416">Nederlands</span></div>
   
   <div style="height:1px;background:rgba(255,255,255,.08);margin:4px 8px"></div>
-  <div onclick="event.stopPropagation();event.preventDefault();cgoSwitchLang('vi');(function(){var _m=document.getElementById('langMenu');_m.style.visibility='hidden';_m.style.pointerEvents='none';})()" class="lang-opt" id="langOpt-vi" style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text-1)"><span data-k="6417" style="font-size:16px">🇻🇳</span> <span data-k="6418">Tiếng Việt</span></div>
-  <div onclick="event.stopPropagation();event.preventDefault();cgoSwitchLang('th');(function(){var _m=document.getElementById('langMenu');_m.style.visibility='hidden';_m.style.pointerEvents='none';})()" class="lang-opt" id="langOpt-th" style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text-1)"><span data-k="6419" style="font-size:16px">🇹🇭</span> <span data-k="6420">ภาษาไทย</span></div>
-  <div onclick="event.stopPropagation();event.preventDefault();cgoSwitchLang('id');(function(){var _m=document.getElementById('langMenu');_m.style.visibility='hidden';_m.style.pointerEvents='none';})()" class="lang-opt" id="langOpt-id" style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text-1)"><span data-k="6421" style="font-size:16px">🇮🇩</span> <span data-k="6422">Bahasa Indonesia</span></div>
-  <div onclick="event.stopPropagation();event.preventDefault();cgoSwitchLang('ms');(function(){var _m=document.getElementById('langMenu');_m.style.visibility='hidden';_m.style.pointerEvents='none';})()" class="lang-opt" id="langOpt-ms" style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text-1)"><span data-k="6423" style="font-size:16px">🇲🇾</span> <span data-k="6424">Bahasa Melayu</span></div>
-  <div onclick="event.stopPropagation();event.preventDefault();cgoSwitchLang('tl');(function(){var _m=document.getElementById('langMenu');_m.style.visibility='hidden';_m.style.pointerEvents='none';})()" class="lang-opt" id="langOpt-tl" style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text-1)"><span data-k="6425" style="font-size:16px">🇵🇭</span> <span data-k="6426">Filipino</span></div>
+  <div onclick="event.stopPropagation();cgoSwitchLang('vi');(function(){var _m=document.getElementById('langMenu');_m.style.visibility='hidden';_m.style.pointerEvents='none';})()" class="lang-opt" id="langOpt-vi" style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text-1)"><span data-k="6417" style="font-size:16px">🇻🇳</span> <span data-k="6418">Tiếng Việt</span></div>
+  <div onclick="event.stopPropagation();cgoSwitchLang('th');(function(){var _m=document.getElementById('langMenu');_m.style.visibility='hidden';_m.style.pointerEvents='none';})()" class="lang-opt" id="langOpt-th" style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text-1)"><span data-k="6419" style="font-size:16px">🇹🇭</span> <span data-k="6420">ภาษาไทย</span></div>
+  <div onclick="event.stopPropagation();cgoSwitchLang('id');(function(){var _m=document.getElementById('langMenu');_m.style.visibility='hidden';_m.style.pointerEvents='none';})()" class="lang-opt" id="langOpt-id" style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text-1)"><span data-k="6421" style="font-size:16px">🇮🇩</span> <span data-k="6422">Bahasa Indonesia</span></div>
+  <div onclick="event.stopPropagation();cgoSwitchLang('ms');(function(){var _m=document.getElementById('langMenu');_m.style.visibility='hidden';_m.style.pointerEvents='none';})()" class="lang-opt" id="langOpt-ms" style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text-1)"><span data-k="6423" style="font-size:16px">🇲🇾</span> <span data-k="6424">Bahasa Melayu</span></div>
+  <div onclick="event.stopPropagation();cgoSwitchLang('tl');(function(){var _m=document.getElementById('langMenu');_m.style.visibility='hidden';_m.style.pointerEvents='none';})()" class="lang-opt" id="langOpt-tl" style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text-1)"><span data-k="6425" style="font-size:16px">🇵🇭</span> <span data-k="6426">Filipino</span></div>
 </div>
 
 <script>
@@ -8812,7 +8810,7 @@ function cgoGuideFeature(key){
  function kill(){ if(!window._p0Entered) return false;
   var p=document.getElementById('phase0'); if(!p) return true;
   p.remove(); return true; }
- var _kv=setInterval(function(){ if(document.hidden||window._cgoBusy) return; if(kill()) clearInterval(_kv); },200);
+ var _kv=setInterval(function(){ if(document.hidden) return; if(kill()) clearInterval(_kv); },200);
 })();
 window.p0SelectLang=function(L){
  /* 구 CGO 방식 — .p0lb 하이라이트 + 번호 사전으로 대문만 칠한다 */
@@ -8842,10 +8840,6 @@ addEventListener('keydown',function(e){ if(e.key!=='Escape') return;
  if(g && getComputedStyle(g).display!=='none') g.style.display='none'; });
 window.toggleLangMenu=function(){
  var m=document.getElementById('langMenu'); if(!m) return;
- /* ★ 여는 동안 뒤에서 도는 일을 쉬게 한다 — 그리기가 한 줄로만 돌기 때문 */
- window._cgoBusy=1;
- clearTimeout(window._cgoBusyT);
- window._cgoBusyT=setTimeout(function(){ window._cgoBusy=0; }, 700);
  /* ★ 처음 한 번만 배치를 셈하고, 그 뒤로는 보이기만 바꾼다 */
  if(!m._warm){
    m._warm=1;
@@ -8885,7 +8879,7 @@ function cgoBannerGo(n){
     d.style.background = isActive ? '#0284c7' : 'rgba(255,255,255,.25)';
   });
   clearInterval(_cgoBannerTimer);
-  _cgoBannerTimer = setInterval(function(){ if(document.hidden||window._cgoBusy) return; cgoBannerGo(_cgoBannerIdx+1); }, 4000);
+  _cgoBannerTimer = setInterval(function(){ if(document.hidden) return; cgoBannerGo(_cgoBannerIdx+1); }, 4000);
 }
 function cgoBannerNext(){ cgoBannerGo(_cgoBannerIdx+1); }
 function cgoBannerPrev(){ cgoBannerGo(_cgoBannerIdx-1); }
@@ -8895,7 +8889,7 @@ document.addEventListener('DOMContentLoaded', function(){
   _cgoBannerTimer = setInterval(function(){ cgoBannerGo(_cgoBannerIdx+1); }, 4000);
 
   // ILI 점수 카드 실시간 동기화
-  setInterval(function(){ if(document.hidden||window._cgoBusy) return;
+  setInterval(function(){ if(document.hidden) return;
     var iliEl = document.getElementById('dash-ili-num');
     var cardIli = document.getElementById('cgo-card-ili');
     var bannerIli = document.getElementById('cgo-banner-ili');
@@ -13669,7 +13663,7 @@ if(typeof _cgoIntroObs==="undefined") var _cgoIntroObs=null;
        if(log){ log.innerHTML=''; if(window.qtInitChat) qtInitChat(); } }catch(e){}
  }
  function reg(){ if(typeof window.cgoRepaintOn==='function'){ window.cgoRepaintOn(rp); return true; } return false; }
- if(!reg()){ var _c=0, t=setInterval(function(){ if(document.hidden||window._cgoBusy) return; if(reg()||++_c>75) clearInterval(t); },400);
+ if(!reg()){ var _c=0, t=setInterval(function(){ if(document.hidden) return; if(reg()||++_c>75) clearInterval(t); },400);
    setTimeout(function(){ clearInterval(t); },15000); }
 })();
 </script>
@@ -13992,7 +13986,7 @@ window.CGN_MODE='pure'; /* pure · sat · rppg */
       try{ var g=document.getElementById('cgn-gps');
         if(g && /[가-힣]/.test(g.textContent||'')) g.textContent=T(16244,'📍 GPS'); }catch(e){}
     }); return true; } return false; }
-  if(!reg()){ var _c=0, t=setInterval(function(){ if(document.hidden||window._cgoBusy) return; if(reg()||++_c>75) clearInterval(t); },400); setTimeout(function(){ clearInterval(t); },15000); }
+  if(!reg()){ var _c=0, t=setInterval(function(){ if(document.hidden) return; if(reg()||++_c>75) clearInterval(t); },400); setTimeout(function(){ clearInterval(t); },15000); }
 })();
 </script>
 
@@ -14234,7 +14228,7 @@ window.CGN_MODE='pure'; /* pure · sat · rppg */
     window.cgoNaviOpen=function(){ window.naviGuideOpen(); };
     return true;
   }
-  if(!wrap()){ var t=setInterval(function(){ if(document.hidden||window._cgoBusy) return; if(wrap()) clearInterval(t); },300);
+  if(!wrap()){ var t=setInterval(function(){ if(document.hidden) return; if(wrap()) clearInterval(t); },300);
     setTimeout(function(){ clearInterval(t); },15000); }
 })();
 </script>
@@ -14680,7 +14674,7 @@ window.cgpSchool=function(){ return CGP_SEL || cgpAutoSchool(); };
   /* 언어를 바꾸면 그 자리에서 다시 칠한다 */
   (function(){ function reg(){ if(typeof window.cgoRepaintOn!=='function') return false;
       window.cgoRepaintOn(function(){ try{ cgp3Render(); }catch(e){} }); return true; }
-    if(!reg()){ var _c=0,t=setInterval(function(){ if(document.hidden||window._cgoBusy) return; if(reg()||++_c>75) clearInterval(t); },400); } })();
+    if(!reg()){ var _c=0,t=setInterval(function(){ if(document.hidden) return; if(reg()||++_c>75) clearInterval(t); },400); } })();
 })();
 </script>
 
@@ -15320,7 +15314,7 @@ window.cgpSchool=function(){ return CGP_SEL || cgpAutoSchool(); };
     (function(){ function rp(){ var h=document.getElementById('cgn-score');
         if(h && h.innerHTML.trim()) window._cgnRepaintPanel(); }
       function reg(){ if(typeof window.cgoRepaintOn!=='function') return false; window.cgoRepaintOn(rp); return true; }
-      if(!reg()){ var _c=0,t=setInterval(function(){ if(document.hidden||window._cgoBusy) return; if(reg()||++_c>75) clearInterval(t); },400); }
+      if(!reg()){ var _c=0,t=setInterval(function(){ if(document.hidden) return; if(reg()||++_c>75) clearInterval(t); },400); }
     })();
     if(typeof _cgoNaviIntroPopup==='function') _cgoNaviIntroPopup();
   };
@@ -15884,14 +15878,14 @@ window.cgpSchool=function(){ return CGP_SEL || cgpAutoSchool(); };
     }catch(e){}
   }
   function reg(){ if(typeof window.cgoRepaintOn==='function'){ window.cgoRepaintOn(_tnRepaintCard); return true; } return false; }
-  if(!reg()){ var _c=0, t=setInterval(function(){ if(document.hidden||window._cgoBusy) return; if(reg()||++_c>75) clearInterval(t); },400);
+  if(!reg()){ var _c=0, t=setInterval(function(){ if(document.hidden) return; if(reg()||++_c>75) clearInterval(t); },400);
     setTimeout(function(){ clearInterval(t); },15000); }
 })();
 (function(){
   function rp(){ try{ window._f3RepaintCard&&_f3RepaintCard(); }catch(e){}
                  try{ var p=document.getElementById('f3-picker'); if(p&&p.innerHTML.trim()&&window.f3RenderPicker) f3RenderPicker(); }catch(e){} }
   function reg(){ if(typeof window.cgoRepaintOn==='function'){ window.cgoRepaintOn(rp); return true; } return false; }
-  if(!reg()){ var _c=0, t=setInterval(function(){ if(document.hidden||window._cgoBusy) return; if(reg()||++_c>75) clearInterval(t); },400); setTimeout(function(){ clearInterval(t); },15000); }
+  if(!reg()){ var _c=0, t=setInterval(function(){ if(document.hidden) return; if(reg()||++_c>75) clearInterval(t); },400); setTimeout(function(){ clearInterval(t); },15000); }
 })();
 window.f3PickTier=function(t,el){
   try{ var p=el&&el.parentNode; if(p) [].slice.call(p.children).forEach(function(c){ c.style.outline=''; });
@@ -16189,7 +16183,7 @@ window.tnPickTier=function(t,el){
  function rp(){ var p=document.getElementById('qtGuidePop');
   if(p && p.style.display!=='none'){ try{ window.CGO_T&&CGO_T.paint(p); }catch(e){} } }
  if(typeof window.cgoRepaintOn==='function') window.cgoRepaintOn(rp);
- else { var t=setInterval(function(){ if(document.hidden||window._cgoBusy) return; if(typeof window.cgoRepaintOn==='function'){ clearInterval(t); window.cgoRepaintOn(rp); } },400); setTimeout(function(){ clearInterval(t); },15000); }
+ else { var t=setInterval(function(){ if(document.hidden) return; if(typeof window.cgoRepaintOn==='function'){ clearInterval(t); window.cgoRepaintOn(rp); } },400); setTimeout(function(){ clearInterval(t); },15000); }
 })();
 </script>
 <script>
@@ -19275,7 +19269,7 @@ function reviewHtml(){
 window._mission.quizStart=function(){
   Q.list=todayQuiz();Q.idx=0;Q.ans=new Array(15).fill(null);Q.left=900;Q.started=true;Q.submitted=false;
   renderQuiz();
-  Q.timer=setInterval(function(){ if(document.hidden||window._cgoBusy) return;
+  Q.timer=setInterval(function(){ if(document.hidden) return;
     Q.left--;
     var t=el('mq-timer');if(t){t.textContent='⏱️ '+fmt(Q.left);if(Q.left<60)t.style.color='#dc2626';}
     if(Q.left<=0){clearInterval(Q.timer);Q.timer=null;window._mission.quizSubmit();}
@@ -19305,7 +19299,7 @@ window._mission.walkToggle=function(){
   var bt=el('mw-btn');
   if(WALK.iv){ clearInterval(WALK.iv);WALK.iv=null; if(bt){bt.textContent=_cgoT('▶ 측정 시작');bt.style.background='#059669';} return; }
   if(bt){bt.textContent=_cgoT('⏸️ 잠시 멈춤');bt.style.background='#d97706';}
-  WALK.iv=setInterval(function(){ if(document.hidden||window._cgoBusy) return;
+  WALK.iv=setInterval(function(){ if(document.hidden) return;
     var s=gn('cgo_walk_sec',0)+1;si('cgo_walk_sec',s);
     var t=el('mw-time');if(t)t.textContent=fmtH(s);
     var bar=el('mw-bar');if(bar)bar.style.width=Math.min(100,Math.round(s/1800*100))+'%';
@@ -20094,7 +20088,7 @@ function checkHealth(){
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', ready);
   ready();
-  var n=0, iv=setInterval(function(){ if(document.hidden||window._cgoBusy) return; ready(); if(++n>80) clearInterval(iv); }, 120);
+  var n=0, iv=setInterval(function(){ if(document.hidden) return; ready(); if(++n>80) clearInterval(iv); }, 120);
   document.addEventListener('click', function(){ setTimeout(ready,60); setTimeout(ready,400); }, true);
 })();
 </script>
@@ -27232,7 +27226,7 @@ window.c24CondGo=function(){
     }catch(e){}
   }
   if(typeof window.cgoRepaintOn === 'function') window.cgoRepaintOn(rp);
-  else { var t = setInterval(function(){ if(document.hidden||window._cgoBusy) return; if(typeof window.cgoRepaintOn === 'function'){ clearInterval(t); window.cgoRepaintOn(rp); } }, 400); setTimeout(function(){ clearInterval(t); }, 15000); }
+  else { var t = setInterval(function(){ if(document.hidden) return; if(typeof window.cgoRepaintOn === 'function'){ clearInterval(t); window.cgoRepaintOn(rp); } }, 400); setTimeout(function(){ clearInterval(t); }, 15000); }
 })();
 </script>
 <script>
@@ -27492,7 +27486,7 @@ window.fcpClose = function(){ var p = document.getElementById('fcp'); if(p) p.st
   }
   window.cgoPaintPH = paintPH;
   if(typeof window.cgoRepaintOn === 'function') window.cgoRepaintOn(function(){ paintPH(); });
-  else { var t = setInterval(function(){ if(document.hidden||window._cgoBusy) return; if(typeof window.cgoRepaintOn === 'function'){ clearInterval(t); window.cgoRepaintOn(function(){ paintPH(); }); } }, 400); setTimeout(function(){ clearInterval(t); }, 15000); }
+  else { var t = setInterval(function(){ if(document.hidden) return; if(typeof window.cgoRepaintOn === 'function'){ clearInterval(t); window.cgoRepaintOn(function(){ paintPH(); }); } }, 400); setTimeout(function(){ clearInterval(t); }, 15000); }
   setTimeout(function(){ paintPH(); }, 900);
 })();
 </script>
@@ -27567,7 +27561,7 @@ window.msppClose = function(){ var p = document.getElementById('mspp'); if(p) p.
     }catch(e){}
   }
   if(typeof window.cgoRepaintOn === 'function') window.cgoRepaintOn(rp);
-  else { var t = setInterval(function(){ if(document.hidden||window._cgoBusy) return; if(typeof window.cgoRepaintOn === 'function'){ clearInterval(t); window.cgoRepaintOn(rp); } }, 400); setTimeout(function(){ clearInterval(t); }, 15000); }
+  else { var t = setInterval(function(){ if(document.hidden) return; if(typeof window.cgoRepaintOn === 'function'){ clearInterval(t); window.cgoRepaintOn(rp); } }, 400); setTimeout(function(){ clearInterval(t); }, 15000); }
 })();
 </script>
 <script>
@@ -27614,7 +27608,7 @@ window.cgoSleepClose = function(){
   }
   window._mb52LvRepaint = rp;
   if(typeof window.cgoRepaintOn === 'function') window.cgoRepaintOn(rp);
-  else { var t = setInterval(function(){ if(document.hidden||window._cgoBusy) return; if(typeof window.cgoRepaintOn === 'function'){ clearInterval(t); window.cgoRepaintOn(rp); } }, 400); setTimeout(function(){ clearInterval(t); }, 15000); }
+  else { var t = setInterval(function(){ if(document.hidden) return; if(typeof window.cgoRepaintOn === 'function'){ clearInterval(t); window.cgoRepaintOn(rp); } }, 400); setTimeout(function(){ clearInterval(t); }, 15000); }
 })();
 </script>
 <script>
@@ -27629,7 +27623,7 @@ window.cgoSleepClose = function(){
   }
   window._mb52QRepaint = rp;
   if(typeof window.cgoRepaintOn === 'function') window.cgoRepaintOn(rp);
-  else { var t = setInterval(function(){ if(document.hidden||window._cgoBusy) return; if(typeof window.cgoRepaintOn === 'function'){ clearInterval(t); window.cgoRepaintOn(rp); } }, 400); setTimeout(function(){ clearInterval(t); }, 15000); }
+  else { var t = setInterval(function(){ if(document.hidden) return; if(typeof window.cgoRepaintOn === 'function'){ clearInterval(t); window.cgoRepaintOn(rp); } }, 400); setTimeout(function(){ clearInterval(t); }, 15000); }
 })();
 </script>
 <script>
@@ -27644,7 +27638,7 @@ window.cgoSleepClose = function(){
   }
   window._mb52GridRepaint = rp;
   if(typeof window.cgoRepaintOn === 'function') window.cgoRepaintOn(rp);
-  else { var t = setInterval(function(){ if(document.hidden||window._cgoBusy) return; if(typeof window.cgoRepaintOn === 'function'){ clearInterval(t); window.cgoRepaintOn(rp); } }, 400); setTimeout(function(){ clearInterval(t); }, 15000); }
+  else { var t = setInterval(function(){ if(document.hidden) return; if(typeof window.cgoRepaintOn === 'function'){ clearInterval(t); window.cgoRepaintOn(rp); } }, 400); setTimeout(function(){ clearInterval(t); }, 15000); }
 })();
 </script>
 
@@ -27669,7 +27663,7 @@ window._mb52AllRepaint = function(){
   }
   window._mb52ResRepaint = rp;
   if(typeof window.cgoRepaintOn === 'function') window.cgoRepaintOn(rp);
-  else { var t = setInterval(function(){ if(document.hidden||window._cgoBusy) return; if(typeof window.cgoRepaintOn === 'function'){ clearInterval(t); window.cgoRepaintOn(rp); } }, 400); setTimeout(function(){ clearInterval(t); }, 15000); }
+  else { var t = setInterval(function(){ if(document.hidden) return; if(typeof window.cgoRepaintOn === 'function'){ clearInterval(t); window.cgoRepaintOn(rp); } }, 400); setTimeout(function(){ clearInterval(t); }, 15000); }
 })();
 </script>
 
@@ -30597,7 +30591,7 @@ function _cgoPureGoOld(){ try{ if(localStorage.getItem('cgo_pure_intro_skip_v2')
   function rp(){ try{ var p=document.getElementById('tf-engine-list');
     if(p && p.innerHTML.trim() && window.cgoTfRenderEngineList) cgoTfRenderEngineList(); }catch(e){} }
   function reg(){ if(typeof window.cgoRepaintOn==='function'){ window.cgoRepaintOn(rp); return true; } return false; }
-  if(!reg()){ var _c=0, t=setInterval(function(){ if(document.hidden||window._cgoBusy) return;
+  if(!reg()){ var _c=0, t=setInterval(function(){ if(document.hidden) return;
     if(reg()||++_c>75) clearInterval(t); },400); setTimeout(function(){ clearInterval(t); },15000); }
 })();
 window.pureGuideGo=function(){
