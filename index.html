@@ -216,23 +216,46 @@ window.CGO_I18N=window.CGO_I18N||{};   /* 옛 코드가 이 이름을 찾는다 
   }catch(_){ return true; }
  }
  function paint(L,root){
-  var sc=root||document, els=sc.querySelectorAll('[data-k]'), c=0;
-  for(var i=0;i<els.length;i++){
-   var e=els[i], ks=e.getAttribute('data-k');
-   if(e.children.length) continue;
-   var v;
-   if(ks.indexOf(',')>=0){
-    /* 한 자리에 여러 번호가 묶인 곳 — 조각을 순서대로 이어 붙인다.
-       구형은 이런 자리를 건너뛰어 영어가 남았다. */
-    var ps=ks.split(','), buf='';
-    for(var q=0;q<ps.length;q++){ var pv=val(L,+ps[q]); if(pv==null){ buf=null; break; } buf+=pv; }
-    v=buf;
-   } else v=val(L,+ks);
-   if(v!=null && e.textContent!==v){ e.textContent=v; c++; }
+  var scopes;
+  if(root){ scopes=[root]; }
+  else{
+    /* ★특허 — 재운 구역·잠든 페이지는 칠하지 않는다. 깨어날 때 그 자리에서 칠한다 */
+    scopes=[];
+    var hdr=document.querySelector('header'); if(hdr) scopes.push(hdr);
+    var bn=document.getElementById('cgo-hero-banner'); if(bn) scopes.push(bn);
+    var lm=document.getElementById('langMenu'); if(lm) scopes.push(lm);
+    var pgs=document.querySelectorAll('.page');
+    for(var p=0;p<pgs.length;p++){
+      var st=pgs[p].style.display;
+      if(st!=='none' && st!=='') scopes.push(pgs[p]);
+      else if(st==='' && pgs[p].offsetParent) scopes.push(pgs[p]);
+    }
+    var pops=document.querySelectorAll('body > div[id]');
+    for(var q=0;q<pops.length;q++){
+      var s2=pops[q].style.display;
+      if(s2==='block'||s2==='flex') scopes.push(pops[q]);
+    }
+    if(!scopes.length) scopes=[document];
   }
-  var ph=sc.querySelectorAll('[data-kp]');
-  for(var j=0;j<ph.length;j++){ var w=val(L,+ph[j].getAttribute('data-kp'));
-   if(w!=null) ph[j].setAttribute('placeholder',w); }
+  var c=0;
+  for(var si=0;si<scopes.length;si++){
+   var sc=scopes[si], els=sc.querySelectorAll('[data-k]');
+   for(var i=0;i<els.length;i++){
+    var e=els[i], ks=e.getAttribute('data-k');
+    if(e.children.length) continue;
+    if(!root && e.closest && e.closest('.cgo-rest')) continue;
+    var v;
+    if(ks.indexOf(',')>=0){
+     var ps=ks.split(','), buf='';
+     for(var q2=0;q2<ps.length;q2++){ var pv=val(L,+ps[q2]); if(pv==null){ buf=null; break; } buf+=pv; }
+     v=buf;
+    } else v=val(L,+ks);
+    if(v!=null && e.textContent!==v){ e.textContent=v; c++; }
+   }
+   var ph=sc.querySelectorAll('[data-kp]');
+   for(var k=0;k<ph.length;k++){ var w=val(L,+ph[k].getAttribute('data-kp'));
+    if(w!=null) ph[k].setAttribute('placeholder',w); }
+  }
   return c;
  }
 
@@ -463,7 +486,11 @@ window.setLang=window.cgoSwitchLang=function(L){
      var host=box(el), top=0, bot=vh;
      if(host){ var hb=host.getBoundingClientRect(); top=hb.top; bot=hb.bottom; }
      var near = b.bottom > top-pad && b.top < bot+pad;
-     if(near){ el.classList.remove('cgo-rest'); }
+     if(near){ el.classList.remove('cgo-rest');
+       if(!el._cgoPainted || el._cgoPainted!==(window.CGO_LANG||'ko')){
+         el._cgoPainted=(window.CGO_LANG||'ko');
+         try{ if(window.CGO_T&&CGO_T.paint) CGO_T.paint(el); }catch(_e){}
+       } }
      else{
        if(!el.dataset.cgoH){ var hh=b.height; if(hh>0) el.dataset.cgoH=Math.round(hh); }
        if(el.dataset.cgoH) el.style.containIntrinsicSize='auto '+el.dataset.cgoH+'px';
