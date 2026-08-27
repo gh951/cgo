@@ -33827,8 +33827,10 @@ function _rpFill(){
     if(!(r&&r.ili)){
       /* 정보 입력에 저장된 값으로 되살린다 */
       try{
-        var nm=(document.getElementById('ipName')||{}).value||localStorage.getItem('cgo_name')||'';
-        var by=(document.getElementById('ipY')||{}).value||localStorage.getItem('cgo_y')||'';
+        var sv=null;
+        try{ sv=JSON.parse(localStorage.getItem('cgo_saved_info')||localStorage.getItem('cgo_info')||'null'); }catch(e){}
+        var nm=(document.getElementById('ipName')||{}).value||(sv&&(sv.name||sv.ipName))||'';
+        var by=(document.getElementById('ipBirthY')||{}).value||(sv&&(sv.y||sv.ipBirthY))||'';
         if(nm||by){
           if(typeof window.cgoCalcAll==='function'){ try{ cgoCalcAll(); }catch(e){} r=window.calcResult; }
           if(!(r&&r.ili)){ r=window.calcResult={ ili:72, name:nm, dGJ:{gan:'甲',ji:'子'} }; }
