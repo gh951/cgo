@@ -6241,6 +6241,11 @@ html.cgo-ready #entSplash,html.cgo-ready #phase0{content-visibility:hidden;conta
 #page-c14-v2 *:hover{transform:none!important}
 #c14-intro-pop{inset:var(--hdrH,56px) 0 0 0!important;position:fixed!important;overflow-y:auto!important;contain:paint;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
 </style>
+<style id="cgo-pop-solo">
+/* ★특허 — 팝업이 떠 있으면 뒤 페이지는 셈에서 뺀다 */
+body.cgo-pop-on .page{content-visibility:hidden;contain:strict}
+body.cgo-pop-on .page.cgo-pop-keep{content-visibility:visible;contain:none}
+</style>
 </head>
 <body class="notranslate">
 
@@ -29783,7 +29788,7 @@ try{
         <div class="mfu-intro-p" style="color:#a78bfa;font-weight:700;font-size:13px;line-height:1.7;"><span data-k="13330"></span><br><span data-k="13331"></span></div>
       </div>
       
-      <button class="mfu-intro-cta" onclick="event.stopPropagation();try{cgoGoPage('music-v2');}catch(e){};setTimeout(function(){var g=document.getElementById('mfu-intro-pop');if(g)g.style.display='none';},0);" data-k="13318"></button>
+      <button class="mfu-intro-cta" onclick="event.stopPropagation();var g=document.getElementById('mfu-intro-pop');if(g)g.style.display='none';requestAnimationFrame(function(){try{cgoGoPage('music-v2');}catch(e){}});" data-k="13318"></button>
       
       <div class="mfu-intro-credit" data-k="13319"></div>
     </div>
@@ -29794,7 +29799,7 @@ try{
 
 
 
-<div class="page" id="page-music-v2" style="background:#f0fdf9;min-height:100vh;padding:0;color:#0f172a;">
+<div class="page" id="page-music-v2" style="background:#f0fdf9;min-height:100vh;padding:0;color:#0f172a;contain:layout paint style;">
   <button onclick="window.mfuRefresh && window.mfuRefresh()" style="position:fixed;bottom:24px;right:16px;z-index:9000;min-width:88px;height:42px;padding:0 18px;background:linear-gradient(135deg,rgba(52,211,153,.25),rgba(56,189,248,.15));border:2px solid rgba(212,168,67,.75);border-radius:22px;color:#fbbf24;font-size:14px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;box-shadow:0 0 14px rgba(212,168,67,.35);animation:goldPulse 2s ease-in-out infinite;white-space:nowrap;font-family:inherit;"><span data-k="13400"></span></button>
 
   <style>
@@ -33434,6 +33439,26 @@ header.topbar{border-bottom:0!important;background:#060d1a!important}
   var _h=window.cgoHome;   if(typeof _h==='function') window.cgoHome=function(){ var r=_h.apply(this,arguments); setTimeout(keep,0); return r; };
   draw();
 })();
+</script>
+<script>
+/* ★ 가장 빠른 열기 — 눈 건강과 같은 길. 팝업만 살리고 그 자리에서 칠한다 */
+window._cgoOpenPop=function(id, launch){
+  var p=document.getElementById(id);
+  if(!p){ if(typeof launch==='function') launch(); return; }
+  p.style.display='block';
+  p.scrollTop=0;
+  try{ if(window.CGO_T&&CGO_T.paint) CGO_T.paint(p); }catch(e){}
+  try{ if(window.cgoCullScan) cgoCullScan(p); }catch(e){}
+  try{ document.body.classList.add('cgo-pop-on'); }catch(e){}
+};
+window._cgoClosePop=function(id){
+  var p=document.getElementById(id); if(p) p.style.display='none';
+  try{
+    var any=false, all=document.querySelectorAll('body > div[id]');
+    for(var i=0;i<all.length;i++){ var d=all[i].style.display; if(d==='block'||d==='flex'){ any=true; break; } }
+    if(!any) document.body.classList.remove('cgo-pop-on');
+  }catch(e){}
+};
 </script>
 </body></html>
 <style>
