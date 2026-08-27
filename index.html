@@ -33822,7 +33822,20 @@ function _rfuToggleAll(expand){
 </script>
 <script>
 function _k(n){ try{ var v=window.K?window.K(n):null; return (v&&v!==String(n))?v:''; }catch(e){ return ''; } }
-function _rpFill(){
+function _rpName(el,i){
+    try{
+      var L=(window._LANG||'ko');
+      var P=(window.CGO_PACK&&window.CGO_PACK[L])||null;
+      var b=el.querySelector('.rp-tt b'), m=el.querySelector('.rp-tt em');
+      if(b){ var k1=b.getAttribute('data-k'); var v1=P?P[k1]:null;
+             if(!v1 && window.K) v1=window.K(+k1);
+             if(v1 && v1!==k1) b.textContent=v1; }
+      if(m){ var k2=m.getAttribute('data-k'); var v2=P?P[k2]:null;
+             if(!v2 && window.K) v2=window.K(+k2);
+             if(v2 && v2!==k2) m.textContent=v2; }
+    }catch(e){}
+  }
+  function _rpFill(){
   try{
     var r=window.calcResult;
     if(!(r&&r.ili)){
@@ -33857,6 +33870,7 @@ function _rpFill(){
                17:[_palm,19092,"cgoGoPage('sonkeum')",19102],
                18:[_bio,19090,"cgoGoPage('c24')",19100]};
     for(var i=0;i<cards.length;i++){
+      _rpName(cards[i], i);
       var lk=LOCK[i];
       if(lk && !lk[0]){
         var e3=cards[i].querySelector('.rp-sc'); if(e3) e3.textContent='🔒';
