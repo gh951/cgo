@@ -19726,7 +19726,8 @@ function _cgoFDIntro(cfg){
   h+='<button onclick="(function(){var cb=document.getElementById(\''+cbId+'\');if(cb&&cb.checked){try{localStorage.setItem(\''+(sk||'')+'\',\'1\');}catch(e){}}var p=document.getElementById(\''+id+'\');if(p)p.remove();'+(cfg.launch||'')+'})();" style="width:100%;padding:16px;background:linear-gradient(135deg,'+ac+','+ac2+');border:none;border-radius:14px;color:#334155;font-size:15px;font-weight:900;cursor:pointer;">'+_t('btnLabel',cfg.btnLabel||'시작하기')+'</button>';
   h+='</div>';
   pop.innerHTML=h;
-  window._cgoFDLast=cfg;
+  /* ★ 마지막 팝업 기억은 두지 않는다 — 언어를 바꾸면 옛 팝업이 되살아나 다른 화면으로 튀었다 */
+  window._cgoFDLast=null;
   try{ if(!window._cgoFDHook){ window._cgoFDHook=1;
     if(window.cgoRepaintOn) cgoRepaintOn(function(){
       var c=window._cgoFDLast; if(!c) return;
