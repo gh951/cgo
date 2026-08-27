@@ -33834,6 +33834,9 @@ function _rpFill(){
         if(nm||by){
           if(typeof window.cgoCalcAll==='function'){ try{ cgoCalcAll(); }catch(e){} r=window.calcResult; }
           if(!(r&&r.ili)){ r=window.calcResult={ ili:72, name:nm, dGJ:{gan:'甲',ji:'子'} }; }
+        } else {
+          /* 저장값도 입력칸도 비었을 때만 대기 */
+          r=null;
         }
       }catch(e){}
     }
@@ -33874,6 +33877,31 @@ function _rpTier(n){ [1,2,3].forEach(function(i){ var t=document.getElementById(
 function _rpCopy(){ try{ var t=document.querySelector('#page-report .rp-wrap').innerText;
   navigator.clipboard.writeText(t); }catch(e){} }
 function _rpAI(){ try{ if(window.runAiAnalysis) runAiAnalysis(); }catch(e){} }
+</script>
+<script>
+(function _rpFillHook(){
+  var n=0;
+  (function t(){
+    try{ if(window._rpFill){ _rpFill(); } }catch(e){}
+    if(++n<6) setTimeout(t, 500);
+  })();
+})();
+(function _ipRestore(){
+  function put(){
+    try{
+      var sv=JSON.parse(localStorage.getItem('cgo_saved_info')||'null');
+      if(!sv) return true;
+      var M={name:'ipName',birthY:'ipBirthY',birthM:'ipBirthM',birthD:'ipBirthD',
+             gender:'ipGender',time:'ipTime',birthPlace:'ipBirthPlace',curPlace:'ipCurPlace',calType:'ipCalType'};
+      var ok=false;
+      for(var k in M){ var el=document.getElementById(M[k]);
+        if(el && sv[k]!==undefined && sv[k]!=='' && !el.value){ el.value=sv[k]; ok=true; } }
+      return ok || !!document.getElementById('ipName');
+    }catch(e){ return true; }
+  }
+  var n=0;
+  (function t(){ if(put()||++n>20) return; setTimeout(t,300); })();
+})();
 </script>
 </body></html>
 <style>
