@@ -33911,6 +33911,13 @@ function _rpCopy(){ try{ var t=document.querySelector('#page-report .rp-wrap').i
 function _rpAI(){ try{ if(window.runAiAnalysis) runAiAnalysis(); }catch(e){} }
 </script>
 <script>
+(function _rpPaintHook(){
+  try{ if(window.cgoRepaintOn) cgoRepaintOn(function(){
+    var p=document.getElementById('page-report');
+    if(!p || getComputedStyle(p).display==='none') return;
+    try{ if(window.CGO_T&&CGO_T.paint) CGO_T.paint(p); }catch(e){}
+  }); }catch(e){}
+})();
 (function _rpRepaintHook(){
   try{ if(window.cgoRepaintOn) cgoRepaintOn(function(){
     var p=document.getElementById('page-report');
