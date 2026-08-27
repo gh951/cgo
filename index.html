@@ -22044,9 +22044,28 @@ window._cgoRepTier=function(t){
 };
 function _cgoReportDraw(){
   try{ if(typeof _syncBioUI==='function') _syncBioUI(); }catch(e){}
-  try{ if(window.calcResult && window.calcResult.ili && typeof generateReport==='function')
-         setTimeout(function(){ generateReport(window.calcResult); }, 100); }catch(e){}
-  try{ if(typeof _rfuMakeCollapsible==='function') setTimeout(_rfuMakeCollapsible, 300); }catch(e){}
+  var preview=false;
+  try{
+    var r=window.calcResult;
+    if(!(r&&r.ili&&r.dGJ&&r.mGJ&&r.wz)){
+      preview=true;
+      r={ ili:0, scores:{}, domOh:'목', kujusei:1,
+          sGan:'甲', sJi:'子',
+          dGJ:{gan:'甲',ji:'子'}, mGJ:{gan:'甲',ji:'子'},
+          yGan:'甲', yJi:'子', lifeNum:1, lifeMark:'',
+          wz:{sym:'☯',name:'',en:''}, zodiacName:'',
+          y:1990, m:1, d:1, h:0, name:'', shiIdx:0,
+          birthPlace:'', birthLat:37.5, birthLng:127.0,
+          curPlace:'', curLat:37.5, isM:true, _preview:true };
+      window.calcResult=r;
+    }
+    if(typeof generateReport==='function') setTimeout(function(){
+      try{ generateReport(r); }catch(e){}
+      setTimeout(_rfuTierRow, 60);
+      if(preview) setTimeout(_rfuBlankPreview, 90);
+    }, 80);
+  }catch(e){}
+  try{ if(typeof _rfuMakeCollapsible==='function') setTimeout(_rfuMakeCollapsible, 400); }catch(e){}
 }
 function _cgoRepClose(){
   try{ var c=document.getElementById('cgo-report-intro-skip'); var sk='cgo_report_intro_skip_v2';
@@ -33403,6 +33422,7 @@ header.topbar{border-bottom:0!important;background:#060d1a!important}
     else if(t.closest && t.closest('[onclick*="cgoGoPage"]')) nm='page';
     else if(t.closest && t.closest('[onclick*="cgoSwitchLang"]')) nm='lang';
     else if(t.closest && t.closest('.fdash-card,.lc,.card')) nm='open';
+    else if(t.closest && t.closest('[onclick]')) nm='tap';
     if(!nm) return;
     kind=nm; t0=performance.now();
     requestAnimationFrame(function(){ requestAnimationFrame(done); });
@@ -33413,6 +33433,18 @@ header.topbar{border-bottom:0!important;background:#060d1a!important}
   pill.addEventListener('click', function(e){ e.stopPropagation(); if(!box._drag) open(); box._drag=false; });
   pill.addEventListener('pointerup', function(e){ e.stopPropagation(); if(!box._drag) open(); box._drag=false; });
   document.getElementById('spd2min').addEventListener('click', function(e){ e.stopPropagation(); box.classList.remove('open'); });
+  var _cardEl=document.getElementById('spd2card');
+  function _copy(e){ if(e) e.stopPropagation();
+    var txt=vB.textContent+' | '+sub.textContent;
+    function ok(){ cp.textContent='복사됨 ✓'; setTimeout(function(){ cp.textContent='두 번 눌러 복사'; },1200); }
+    try{ navigator.clipboard.writeText(txt).then(ok, function(){ fb(); }); }catch(_){ fb(); }
+    function fb(){ var ta=document.createElement('textarea'); ta.value=txt;
+      ta.style.cssText='position:fixed;left:-9999px'; document.body.appendChild(ta); ta.select();
+      try{ document.execCommand('copy'); ok(); }catch(__){}
+      document.body.removeChild(ta); }
+  }
+  if(_cardEl) _cardEl.addEventListener('dblclick', _copy);
+  cp.textContent='두 번 눌러 복사';
   cp.addEventListener('click', function(e){ e.stopPropagation();
     var txt=vB.textContent+' | '+sub.textContent;
     try{ navigator.clipboard.writeText(txt); cp.textContent='copied'; setTimeout(function(){ cp.textContent='tap to copy'; },900); }
@@ -33465,6 +33497,125 @@ window._cgoClosePop=function(id){
     if(!any) document.body.classList.remove('cgo-pop-on');
   }catch(e){}
 };
+</script>
+<script>
+function _rfuTierRow(){
+  try{
+    var rc=document.getElementById('reportContainer'); if(!rc) return;
+    if(rc.querySelector('#rfu-tier')) return;
+    var cats=rc.querySelector('.ili-cats'); if(!cats) return;
+    var d=document.createElement('div');
+    d.id='rfu-tier';
+    d.style.cssText='max-width:1100px;margin:14px auto 4px;padding:0 12px;';
+    d.innerHTML=
+     '<div data-k="16140" style="font-size:13px;font-weight:900;color:#0f172a;text-align:center;margin-bottom:3px;">분석 등급을 고르세요</div>'+
+     '<div data-k="16473" style="font-size:10px;color:#64748b;text-align:center;margin-bottom:10px;">✦ 읽는 것은 같고, 풀이의 깊이가 다릅니다</div>'+
+     '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">'+
+       _rfuTierCard('rfu-t1','🟢',16142,16143,18606,true)+
+       _rfuTierCard('rfu-t2','⭐',18600,18601,18602,false)+
+       _rfuTierCard('rfu-t3','💎',18603,18604,18605,false)+
+     '</div>'+
+     '<div data-k="16480" style="font-size:9.5px;color:#64748b;text-align:center;margin-top:8px;line-height:1.6;">※ 기본은 유료 회원께 1회 무료입니다. 고급·최고급은 AI 풀이에 실제 비용이 들어 별을 차감합니다.</div>';
+    cats.parentNode.insertBefore(d, cats.nextSibling);
+    try{ if(window.CGO_T&&CGO_T.paint) CGO_T.paint(d); }catch(e){}
+  }catch(e){}
+}
+function _rfuTierCard(id,ico,nT,nP,nD,on){
+  return '<div id="'+id+'" onclick="_rfuPickTier(\''+id+'\')" style="background:#fff;border:1px solid '+(on?'rgba(184,134,11,.55)':'rgba(15,23,42,.1)')+';border-radius:12px;padding:11px 9px;text-align:center;cursor:pointer;">'+
+    '<div style="font-size:18px;margin-bottom:4px;">'+ico+'</div>'+
+    '<div data-k="'+nT+'" style="font-size:11.5px;font-weight:900;color:#0f172a;"></div>'+
+    '<div data-k="'+nP+'" style="font-size:10px;color:#b8860b;font-weight:800;margin:3px 0;"></div>'+
+    '<div data-k="'+nD+'" style="font-size:9.5px;color:#64748b;line-height:1.5;"></div></div>';
+}
+function _rfuPickTier(id){
+  try{ ['rfu-t1','rfu-t2','rfu-t3'].forEach(function(z){
+    var el=document.getElementById(z); if(!el) return;
+    el.style.borderColor = (z===id)?'rgba(184,134,11,.55)':'rgba(15,23,42,.1)';
+    el.style.background  = (z===id)?'#fffdf6':'#fff';
+  }); window._rfuTier=id; }catch(e){}
+}
+function _rfuBlankPreview(){
+  try{
+    var rc=document.getElementById('reportContainer'); if(!rc) return;
+    /* ① 머리 카드를 「대기 중」 안내로 바꾼다 */
+    var hd=rc.querySelector('.rh-wrap,.report-head,[class*=rh-]');
+    if(hd){ var box=hd.closest('div')||hd;
+      box.innerHTML='<div style="text-align:center;padding:44px 20px;color:#475569;">'+
+        '<div style="font-size:44px;margin-bottom:12px;">📜</div>'+
+        '<div data-k="0" style="font-size:15px;font-weight:800;color:#334155;margin-bottom:6px;">분석 리포트 생성 대기 중</div>'+
+        '<div style="font-size:11.5px;color:#64748b;">대시보드에서 이름과 생년월일을 입력하면 자동으로 생성됩니다</div></div>';
+    }
+    /* ② 4분면 점수를 0 으로 */
+    rc.querySelectorAll('.ic-score').forEach(function(n){ n.textContent='0'; });
+    rc.querySelectorAll('.ic-desc').forEach(function(n){ n.textContent=''; });
+    /* ③ 18카드 안 미리 계산된 수치를 비운다 */
+    rc.querySelectorAll('.rfu-card-tag,.ix-score,[class*=score]').forEach(function(n){
+      if(/^[0-9.\-]+$/.test(n.textContent.trim())) n.textContent='—'; });
+  }catch(e){}
+}
+function _rfuMakeCollapsible(){
+  var container = document.getElementById('reportContainer');
+  if(!container){
+    setTimeout(_rfuMakeCollapsible, 200);
+    return;
+  }
+  
+  function applyToCard(card){
+    if(!card || !card.classList) return;
+    if(card.classList.contains('ac-collapsible')) return;
+    card.classList.add('ac-collapsible');
+    card.classList.add('ac-collapsed'); // ★ 처음부터 접힘
+  }
+  
+  // 현재 존재하는 모든 카드 즉시 처리
+  container.querySelectorAll('.analysis-card').forEach(applyToCard);
+  
+  // ★ MutationObserver — reportContainer가 재생성되어도 자동 따라잡음
+  if(!container._rfuObserver){
+    var observer = new MutationObserver(function(mutations){
+      mutations.forEach(function(m){
+        if(!m.addedNodes) return;
+        m.addedNodes.forEach(function(node){
+          if(!node || node.nodeType !== 1) return;
+          if(node.classList && node.classList.contains('analysis-card')){
+            applyToCard(node);
+          }
+          if(node.querySelectorAll){
+            node.querySelectorAll('.analysis-card').forEach(applyToCard);
+          }
+        });
+      });
+    });
+    observer.observe(container, {childList: true, subtree: true});
+    container._rfuObserver = observer;
+  }
+  
+  // 클릭 위임 (한 번만 등록)
+  if(!container._rfuClickBound){
+    container._rfuClickBound = true;
+    container.addEventListener('click', function(e){
+      var header = e.target.closest('.ac-header');
+      if(!header) return;
+      var card = header.closest('.analysis-card.ac-collapsible');
+      if(!card) return;
+      if(e.target.closest('button,a,input,select,textarea')) return;
+      card.classList.toggle('ac-collapsed');
+    });
+  }
+}
+function _rfuToggleAll(expand){
+  var container = document.getElementById('reportContainer');
+  if(!container) return;
+  if(!container.querySelector('.analysis-card.ac-collapsible')){
+    _rfuMakeCollapsible();
+  }
+  var cards = container.querySelectorAll('.analysis-card.ac-collapsible');
+  if(!cards.length) return;
+  cards.forEach(function(card){
+    if(expand) card.classList.remove('ac-collapsed');
+    else card.classList.add('ac-collapsed');
+  });
+}
 </script>
 </body></html>
 <style>
