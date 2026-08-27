@@ -17489,13 +17489,19 @@ try{
 /* 카드 → 팝업 → 페이지. 팝업이 이미 있으면 그것을 쓰고, 없으면 곧장 페이지로. */
 (function(){
   window.mvOpen=function(){
-    var g=document.getElementById('mfu-intro-pop');
-    if(g){ g.style.display='block'; g.scrollTop=0;
+  var g=document.getElementById('mfu-intro-pop');
+  if(g){
+    g.style.display='block'; g.scrollTop=0;
+    try{ document.body.classList.add('cgo-pop-on'); }catch(e){}
+    /* ★ 화면부터 띄우고, 칠하기·재우기는 다음 프레임으로 */
+    requestAnimationFrame(function(){
       try{ if(window.CGO_T) CGO_T.paint(g); }catch(e){}
       try{ if(window.cgoCullScan) cgoCullScan(g); }catch(e){}
-      return; }
-    try{ cgoGoPage('music-v2'); }catch(e){}
-  };
+    });
+    return;
+  }
+  try{ cgoGoPage('music-v2'); }catch(e){}
+}
 })();
 
 }catch(e){}
@@ -29744,7 +29750,7 @@ try{
   .mfu-intro-credit{text-align:center;margin-top:14px;font-size:9px;color:#94a3b8;letter-spacing:.14em;}
   .mfu-intro-cta{display:block;width:100%;margin-top:18px;padding:15px;background:linear-gradient(135deg,#a78bfa,#7c3aed);border:none;border-radius:14px;color:#fff;font-size:14px;font-weight:900;cursor:pointer;font-family:inherit;letter-spacing:.03em;box-shadow:0 8px 24px rgba(124,58,237,.35);}
 </style>
-<div id="mfu-intro-pop">
+<div id="mfu-intro-pop" style="contain:layout paint style;overscroll-behavior:contain;">
   <div class="mfu-intro-wrap">
     <div class="mfu-intro-top">
       <button class="mfu-intro-x" onclick="document.getElementById('mfu-intro-pop').style.display='none';">✕</button>
@@ -29788,7 +29794,7 @@ try{
         <div class="mfu-intro-p" style="color:#a78bfa;font-weight:700;font-size:13px;line-height:1.7;"><span data-k="13330"></span><br><span data-k="13331"></span></div>
       </div>
       
-      <button class="mfu-intro-cta" onclick="event.stopPropagation();var g=document.getElementById('mfu-intro-pop');if(g)g.style.display='none';requestAnimationFrame(function(){try{cgoGoPage('music-v2');}catch(e){}});" data-k="13318"></button>
+      <button class="mfu-intro-cta" onclick="event.stopPropagation();var g=document.getElementById('mfu-intro-pop');if(g)g.style.display='none';try{document.body.classList.remove('cgo-pop-on');}catch(e){};requestAnimationFrame(function(){try{cgoGoPage('music-v2');}catch(e){}});" data-k="13318"></button>
       
       <div class="mfu-intro-credit" data-k="13319"></div>
     </div>
