@@ -33829,8 +33829,8 @@ function _rpFill(){
       try{
         var sv=null;
         try{ sv=JSON.parse(localStorage.getItem('cgo_saved_info')||localStorage.getItem('cgo_info')||'null'); }catch(e){}
-        var nm=(document.getElementById('ipName')||{}).value||(sv&&(sv.name||sv.ipName))||'';
-        var by=(document.getElementById('ipBirthY')||{}).value||(sv&&(sv.y||sv.ipBirthY))||'';
+        var nm=(document.getElementById('ipName')||{}).value||(sv&&sv.name)||'';
+        var by=(document.getElementById('ipBirthY')||{}).value||(sv&&sv.birthY)||'';
         if(nm||by){
           if(typeof window.cgoCalcAll==='function'){ try{ cgoCalcAll(); }catch(e){} r=window.calcResult; }
           if(!(r&&r.ili)){ r=window.calcResult={ ili:72, name:nm, dGJ:{gan:'甲',ji:'子'} }; }
