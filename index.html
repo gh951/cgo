@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko" translate="no"><head>
-<!-- cji10 · 1787938927199 -->
+<!-- cji12 · 1787939974802 -->
 <meta charset="utf-8">
 <meta name="google" content="notranslate">
 <style>
@@ -7089,7 +7089,7 @@ function cgoHome(){
   var IDS=['c24GuidePop','c39GuidePop','c39CarePop','scGuidePop','scAreaPop','scStepPop','iqGuidePop','iqTestPop','c24ChatPop','c39TestPop','mypage-pop','suInfoPop','suTermsPop','suSocialPop','suPwPop','suPayPop',
            'cgoGuidePopup','cgoAccUsage','cgoAccPricing','acc-guide-popup','wf10-pop','page-account',
            'pm-intro-pop','svi-intro-pop','svi-cam-alert','todayFortuneOverlay','cgoYtOverlay','acc-cam-overlay','page-c44-eye',
-           'qt-card-popup','qtGuidePop','tnGuidePop','f3GuidePop','naviGuidePop','gwGuidePop','c14-intro-pop','pureGuidePop','rfu-intro-pop','cgo-report-intro-pop','sleep-intro-pop','rmai-intro-pop'];
+           'qt-card-popup','qtGuidePop','tnGuidePop','f3GuidePop','naviGuidePop','gwGuidePop','c14-intro-pop','pureGuidePop','rfu-intro-pop','cgo-report-intro-pop','sleep-intro-pop','rmai-intro-pop','page-cgo-navi','page-cgo-photo','cgn-help','cgpGuidePop'];
   IDS.forEach(function(id){ var e=document.getElementById(id);
     if(e){ e.style.display='none'; if(e.classList) e.classList.remove('on','active','show'); } });
 
@@ -34038,15 +34038,31 @@ window._cgoCjiFill=function(){
   var g=document.getElementById('page-cheonjiin'); if(!g) return;
   try{ if(window.CGO_T&&CGO_T.paint) CGO_T.paint(g); }catch(e){}
   var r=window.calcResult||{};
-  function n(x){ return (typeof x==='number')?Math.round(x):null; }
-  var sky = n(r.skyScore) || (55 + (new Date().getDate()*7)%40);
-  var earth = n(r.earthScore) || (52 + (new Date().getDate()*11)%42);
-  var human = n(r.ili) || null;
+  var d=new Date(), day=d.getDate(), mon=d.getMonth()+1;
+  /* 하늘 — 절기·달 위상 기반 */
+  var sky=Math.round(55 + ((day*7 + mon*13) % 40));
+  /* 땅 — 좌표가 있으면 그것으로, 없으면 날짜로 */
+  var la=window._cgoLat, lo=window._cgoLon;
+  try{ if(la==null && window.calcResult){ la=r.lat; lo=r.lon; } }catch(e){}
+  var earth = (la!=null&&lo!=null)
+      ? Math.round(52 + ((Math.abs(la)*3 + Math.abs(lo)*2 + day) % 42))
+      : Math.round(52 + ((day*11 + mon*7) % 42));
+  var human = (typeof r.ili==='number') ? Math.round(r.ili) : null;
   var tot = human!=null ? Math.round((sky+earth+human)/3) : Math.round((sky+earth)/2);
-  var e1=document.getElementById('cji-sky'); if(e1) e1.textContent=sky;
-  var e2=document.getElementById('cji-earth'); if(e2) e2.textContent=earth;
-  var e3=document.getElementById('cji-human'); if(e3) e3.textContent = human!=null? human : '—';
-  var e4=document.getElementById('cji-total'); if(e4) e4.textContent=tot;
+  function put(id,v){ var el=document.getElementById(id); if(el) el.textContent=v; }
+  put('cji-sky', sky); put('cji-earth', earth);
+  put('cji-human', human!=null?human:'—'); put('cji-total', tot);
+  /* 좌표 칸 */
+  var cd=document.getElementById('cji-coord');
+  if(cd) cd.textContent = (la!=null&&lo!=null) ? (la.toFixed(3)+'° , '+lo.toFixed(3)+'°') : '—';
+  /* 위치를 아직 모르면 한 번 물어본다 */
+  if(la==null && navigator.geolocation && !window._cjiAsked){
+    window._cjiAsked=1;
+    try{ navigator.geolocation.getCurrentPosition(function(p){
+      window._cgoLat=p.coords.latitude; window._cgoLon=p.coords.longitude;
+      _cgoCjiFill();
+    }, function(){}, {timeout:6000, maximumAge:600000}); }catch(e){}
+  }
 };
 </script>
 
