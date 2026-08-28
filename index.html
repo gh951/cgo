@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko" translate="no"><head>
-<!-- rpt79 · 1787922607829 -->
+<!-- rpt81 · 1787923229101 -->
 <meta charset="utf-8">
 <meta name="google" content="notranslate">
 <style>
@@ -485,10 +485,10 @@ window.setLang=window.cgoSwitchLang=function(L){
      var host=box(el), top=0, bot=vh;
      if(host){ var hb=host.getBoundingClientRect(); top=hb.top; bot=hb.bottom; }
      var near = b.bottom > top-pad && b.top < bot+pad;
-     if(near){ el.classList.remove('cgo-rest'); }
+     if(near){ el.classList.remove('cgo-rest'); el.style.minHeight=''; }
      else{
        if(!el.dataset.cgoH){ var hh=b.height; if(hh>0) el.dataset.cgoH=Math.round(hh); }
-       if(el.dataset.cgoH) el.style.containIntrinsicSize='auto '+el.dataset.cgoH+'px';
+       if(el.dataset.cgoH){ el.style.containIntrinsicSize='auto '+el.dataset.cgoH+'px'; el.style.minHeight=el.dataset.cgoH+'px'; }
        el.classList.add('cgo-rest');
      }
    }
