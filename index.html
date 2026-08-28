@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko" translate="no"><head>
-<!-- rpt77 · 1787896844812 -->
+<!-- rpt79 · 1787922607829 -->
 <meta charset="utf-8">
 <meta name="google" content="notranslate">
 <style>
@@ -212,7 +212,7 @@ window.CGO_I18N=window.CGO_I18N||{};   /* 옛 코드가 이 이름을 찾는다 
   return null;
  }
 
- /* 화면 안에 든 자리인가 — 위아래 260px 여유 (특허: 260px 앞에서 미리 깨운다) */
+ /* 화면 안에 든 자리인가 — 위아래 260px 여유 (특허: 900px 앞에서 미리 깨운다) */
  function _cgoPaintNear(e){
   try{
    if(!e.offsetParent && e.offsetWidth===0 && e.offsetHeight===0) return false;
@@ -518,7 +518,7 @@ window.setLang=window.cgoSwitchLang=function(L){
        el.classList.add('cgo-rest');
      }
    }
- },{root:null,rootMargin:'260px 0px',threshold:0});
+ },{root:null,rootMargin:'900px 0px',threshold:0});
 
  function watch(root){
    var list=(root||document).querySelectorAll(SEL);
@@ -22081,8 +22081,7 @@ function _cgoRepClose(){
 }
 function _cgoReportIntroPopup(){
   var p=document.getElementById('cgo-report-intro-pop'); if(!p) return;
-  try{ var sk=localStorage.getItem('cgo_report_intro_skip_v2');
-       if(sk===(new Date()).toISOString().slice(0,10)){ if(typeof _cgoReportGo==='function') _cgoReportGo(); return; } }catch(e){}
+  /* 검증 동안은 늘 띄운다 */
   /* ★ 팝업은 body 직속이라야 한다 — 페이지 안에 있으면 높이가 0 이 된다 */
   if(p.parentElement!==document.body) document.body.appendChild(p);
   p.style.display='block';
