@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko" translate="no"><head>
-<!-- cji14 · 1787943042688 -->
+<!-- cji15 · 1787943364526 -->
 <meta charset="utf-8">
 <meta name="google" content="notranslate">
 <style>
@@ -34073,6 +34073,7 @@ window._cgoCjiFill=function(){
   put('cji-human', human!=null?human:'—'); put('cji-total', tot);
 
   /* 하늘·땅 세부 여덟 칸 */
+  try{ if(!window._nasaPlanets && typeof calcAllPlanets==='function') calcAllPlanets(); }catch(e){}
   var P=window._nasaPlanets||{};
   var sl=(typeof window._cgoSolarLonV==='number')?window._cgoSolarLonV:null;
   if(sl==null){ var dd=Math.floor((d-new Date(d.getFullYear(),0,0))/864e5); sl=((dd*0.9856+280)%360); }
