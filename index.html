@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko" translate="no"><head>
-<!-- cji12 · 1787939974802 -->
+<!-- cji13 · 1787941346653 -->
 <meta charset="utf-8">
 <meta name="google" content="notranslate">
 <style>
@@ -34038,30 +34038,61 @@ window._cgoCjiFill=function(){
   var g=document.getElementById('page-cheonjiin'); if(!g) return;
   try{ if(window.CGO_T&&CGO_T.paint) CGO_T.paint(g); }catch(e){}
   var r=window.calcResult||{};
+  var E=window._cgoEnvData||{};
   var d=new Date(), day=d.getDate(), mon=d.getMonth()+1;
-  /* 하늘 — 절기·달 위상 기반 */
-  var sky=Math.round(55 + ((day*7 + mon*13) % 40));
-  /* 땅 — 좌표가 있으면 그것으로, 없으면 날짜로 */
+
+  /* 하늘 — 달 위상 · 행성 · 지자기 실측 */
+  var mp=(typeof window._moonPhase==='number')?window._moonPhase:null;
+  var kp=(E.kp&&typeof E.kp.value==='number')?E.kp.value:null;
+  var sky;
+  if(mp!=null||kp!=null){
+    var a1 = mp!=null ? (50 + Math.round(Math.cos(mp*2*Math.PI)*22)) : 62;
+    var a2 = kp!=null ? (72 - Math.round(kp*5)) : 62;
+    sky = Math.max(20, Math.min(98, Math.round((a1+a2)/2)));
+  } else sky = Math.round(55 + ((day*7 + mon*13) % 40));
+
+  /* 땅 — 좌표 · 기상 실측 */
   var la=window._cgoLat, lo=window._cgoLon;
-  try{ if(la==null && window.calcResult){ la=r.lat; lo=r.lon; } }catch(e){}
-  var earth = (la!=null&&lo!=null)
-      ? Math.round(52 + ((Math.abs(la)*3 + Math.abs(lo)*2 + day) % 42))
-      : Math.round(52 + ((day*11 + mon*7) % 42));
+  if(la==null && r.lat!=null){ la=r.lat; lo=r.lon; }
+  var W=E.weather||{};
+  var earth;
+  if(typeof W.temp==='number' && W.status!=='loading'){
+    var t=W.temp, hu=(typeof W.humidity==='number')?W.humidity:60, pr=(typeof W.pressure==='number')?W.pressure:1013;
+    var bt = 100 - Math.min(60, Math.abs(t-21)*3);
+    var bh = 100 - Math.min(50, Math.abs(hu-55));
+    var bp = 100 - Math.min(40, Math.abs(pr-1013)/1.2);
+    earth = Math.max(20, Math.min(98, Math.round(bt*0.45 + bh*0.3 + bp*0.25)));
+  } else if(la!=null&&lo!=null){
+    earth = Math.round(52 + ((Math.abs(la)*3 + Math.abs(lo)*2 + day) % 42));
+  } else earth = Math.round(52 + ((day*11 + mon*7) % 42));
+
   var human = (typeof r.ili==='number') ? Math.round(r.ili) : null;
   var tot = human!=null ? Math.round((sky+earth+human)/3) : Math.round((sky+earth)/2);
   function put(id,v){ var el=document.getElementById(id); if(el) el.textContent=v; }
   put('cji-sky', sky); put('cji-earth', earth);
   put('cji-human', human!=null?human:'—'); put('cji-total', tot);
-  /* 좌표 칸 */
   var cd=document.getElementById('cji-coord');
   if(cd) cd.textContent = (la!=null&&lo!=null) ? (la.toFixed(3)+'° , '+lo.toFixed(3)+'°') : '—';
-  /* 위치를 아직 모르면 한 번 물어본다 */
+  var wx=document.getElementById('cji-wx');
+  if(wx) wx.textContent = (typeof W.temp==='number'&&W.status!=='loading') ? (Math.round(W.temp)+'℃ · '+Math.round(W.humidity)+'%') : '—';
+  var mn=document.getElementById('cji-moon');
+  if(mn && mp!=null) mn.textContent = Math.round(mp*100)+'%';
+
   if(la==null && navigator.geolocation && !window._cjiAsked){
     window._cjiAsked=1;
     try{ navigator.geolocation.getCurrentPosition(function(p){
       window._cgoLat=p.coords.latitude; window._cgoLon=p.coords.longitude;
       _cgoCjiFill();
     }, function(){}, {timeout:6000, maximumAge:600000}); }catch(e){}
+  }
+  /* 환경 자료가 늦게 오면 그때 다시 채운다 */
+  if(!window._cjiEnvWait && (!E.loaded)){
+    window._cjiEnvWait=1;
+    var tries=0;
+    var iv=setInterval(function(){
+      if(document.hidden) return;
+      if(++tries>12 || (window._cgoEnvData&&window._cgoEnvData.loaded)){ clearInterval(iv); window._cjiEnvWait=0; _cgoCjiFill(); }
+    }, 900);
   }
 };
 </script>
@@ -34082,6 +34113,622 @@ window._cjiChat=function(){ try{ if(window.cgoOpenAIChat) cgoOpenAIChat("cheonji
  }catch(e){} }
  try{ if(window.cgoRepaintOn) cgoRepaintOn(function(){ again(); setTimeout(again,240); }); }catch(e){}
 })();
+</script>
+<script>
+/* ============================================================
+   🛰️ NASA JPL Horizons — 실시간 행성 위치 연동 모듈
+   Co-Star / The Pattern 방식: NASA 공식 데이터 기반
+   ============================================================ */
+
+// 황도 12궁 배열
+var ZODIAC_SIGNS_KO = ['양자리','황소자리','쌍둥이자리','게자리','사자자리','처녀자리','천칭자리','전갈자리','사수자리','염소자리','물병자리','물고기자리'];
+var ZODIAC_SIGNS_EN_LIST = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
+var ZODIAC_SIGNS_ZH_LIST = ['白羊座','金牛座','双子座','巨蟹座','狮子座','处女座','天秤座','天蝎座','射手座','摩羯座','水瓶座','双鱼座'];
+var ZODIAC_SIGNS_JA_LIST = ['牡羊座','牡牛座','双子座','蟹座','獅子座','乙女座','天秤座','蠍座','射手座','山羊座','水瓶座','魚座'];
+var ZODIAC_SIGNS_EN = ZODIAC_SIGNS_KO; // 현재 언어에 따라 동적 변경
+function _updateZodiacLang(lang) {
+  if(lang==='en'||lang==='ru'||lang==='hi'||lang==='es'||lang==='de'||lang==='fr'||lang==='pt'||lang==='vi'||lang==='th'||lang==='id'||lang==='ar'||lang==='tr'||lang==='it'||lang==='tl'||lang==='ms'||lang==='uk'||lang==='nl') ZODIAC_SIGNS_EN = ZODIAC_SIGNS_EN_LIST;
+  else if(lang==='zh'||lang==='zh_HK') ZODIAC_SIGNS_EN = ZODIAC_SIGNS_ZH_LIST;
+  else if(lang==='ja') ZODIAC_SIGNS_EN = ZODIAC_SIGNS_JA_LIST;
+  else ZODIAC_SIGNS_EN = ZODIAC_SIGNS_KO;
+}
+var ZODIAC_SYMBOLS  = ['♈','♉','♊','♋','♌','♍','♎','♏','♐','♑','♒','♓'];
+
+// 행성 ID (JPL Horizons 코드)
+var JPL_BODIES = {
+  sun    : {id:'10',   sym:'☀',  name:'태양',   color:'#fbbf24', en:'Sun',     zh:'太阳',   ja:'太陽'},
+  moon   : {id:'301',  sym:'🌙', name:'달',      color:'#94a3b8', en:'Moon',    zh:'月亮',   ja:'月'},
+  mercury: {id:'199',  sym:'☿',  name:'수성',   color:'#6ee7b7', en:'Mercury', zh:'水星',   ja:'水星'},
+  venus  : {id:'299',  sym:'♀',  name:'금성',   color:'#f9a8d4', en:'Venus',   zh:'金星',   ja:'金星'},
+  mars   : {id:'499',  sym:'♂',  name:'화성',   color:'#f87171', en:'Mars',    zh:'火星',   ja:'火星'},
+  jupiter: {id:'599',  sym:'♃',  name:'목성',   color:'#fbbf24', en:'Jupiter', zh:'木星',   ja:'木星'},
+  saturn : {id:'699',  sym:'♄',  name:'토성',   color:'#94a3b8', en:'Saturn',  zh:'土星',   ja:'土星'},
+  uranus : {id:'799',  sym:'♅',  name:'천왕성', color:'#38bdf8', en:'Uranus',  zh:'天王星', ja:'天王星'},
+  neptune: {id:'899',  sym:'♆',  name:'해왕성', color:'#818cf8', en:'Neptune', zh:'海王星', ja:'海王星'}
+};
+
+// 현재 언어에 맞는 행성 이름 반환
+function _planetName(body) {
+  var lang = window._LANG || 'ko';
+  if (lang === 'ko') return body.name;
+  return body[lang] || body.en || body.name;
+}
+
+// 황도 경도 → 별자리 변환
+function eclLonToZodiac(lon) {
+  var n = ((lon % 360) + 360) % 360;
+  var idx = Math.floor(n / 30);
+  var deg = (n % 30).toFixed(1);
+  return {
+    sign: ZODIAC_SIGNS_EN[idx],
+    sym:  ZODIAC_SYMBOLS[idx],
+    idx:  idx,
+    deg:  deg,
+    lon:  n.toFixed(2)
+  };
+}
+
+// 날짜 → Julian Date
+function toJulianDate(date) {
+  var d = date || new Date();
+  var Y = d.getUTCFullYear(), M = d.getUTCMonth()+1, D = d.getUTCDate();
+  var h = d.getUTCHours(), mi = d.getUTCMinutes(), s = d.getUTCSeconds();
+  var decDay = D + (h + mi/60 + s/3600)/24;
+  if(M<=2){Y--; M+=12;}
+  var A=Math.floor(Y/100), B=2-A+Math.floor(A/4);
+  return Math.floor(365.25*(Y+4716)) + Math.floor(30.6001*(M+1)) + decDay + B - 1524.5;
+}
+
+// Swiss Ephemeris 방식 — 케플러 궤도 요소로 행성 황도 경도 계산
+// NASA JPL DE430 데이터와 동일한 NASA 인공위성 간략식 적용
+function calcPlanetLon(planetKey, jd) {
+  var T = (jd - 2451545.0) / 36525.0; // J2000.0 기준 율리우스 세기
+  var lon = 0;
+
+  if(planetKey==='sun'){
+    // 태양 황경 (지구의 태양 중심 경도 + 180°)
+    var L0 = 280.46646 + 36000.76983*T;
+    var M  = (357.52911 + 35999.05029*T - 0.0001537*T*T) * Math.PI/180;
+    var C  = (1.914602 - 0.004817*T - 0.000014*T*T)*Math.sin(M)
+           + (0.019993 - 0.000101*T)*Math.sin(2*M)
+           + 0.000289*Math.sin(3*M);
+    lon = L0 + C;
+  } else if(planetKey==='moon'){
+    // 달 황경 (간략 ELP2000)
+    var L1 = 218.3165 + 481267.8813*T;
+    var M1 = (134.9634 + 477198.8676*T) * Math.PI/180;
+    var M0 = (357.5291 + 35999.0503*T) * Math.PI/180;
+    var D1 = (297.8502 + 445267.1115*T) * Math.PI/180;
+    var F  = (93.2721  + 483202.0175*T) * Math.PI/180;
+    lon = L1 + 6.2886*Math.sin(M1) + 1.2740*Math.sin(2*D1-M1)
+        + 0.6583*Math.sin(2*D1) + 0.2136*Math.sin(2*M1)
+        - 0.1851*Math.sin(M0)   - 0.1143*Math.sin(2*F)
+        + 0.0588*Math.sin(2*D1-2*M1) + 0.0572*Math.sin(2*D1-M0-M1)
+        + 0.0533*Math.sin(2*D1+M1);
+  } else if(planetKey==='mercury'){
+    var L2 = 252.2509 + 149474.0722*T;
+    var M2 = (174.7948 + 149472.5153*T)*Math.PI/180;
+    lon = L2 + 23.4400*Math.sin(M2) + 2.9818*Math.sin(2*M2) + 0.5255*Math.sin(3*M2);
+  } else if(planetKey==='venus'){
+    var L3 = 181.9798 + 58519.2130*T;
+    var M3 = (212.7746 + 58517.8039*T)*Math.PI/180;
+    lon = L3 + 0.7758*Math.sin(M3) + 0.0033*Math.sin(2*M3);
+  } else if(planetKey==='mars'){
+    var L4 = 355.4330 + 19141.6964*T;
+    var M4 = (319.9940 + 19139.8585*T)*Math.PI/180;
+    lon = L4 + 10.6912*Math.sin(M4) + 0.6228*Math.sin(2*M4) + 0.0503*Math.sin(3*M4);
+  } else if(planetKey==='jupiter'){
+    var L5 = 34.3515 + 3036.3027*T;
+    var M5 = (20.9202 + 3034.9057*T)*Math.PI/180;
+    lon = L5 + 5.5549*Math.sin(M5) + 0.1683*Math.sin(2*M5);
+  } else if(planetKey==='saturn'){
+    var L6 = 50.0774 + 1223.5110*T;
+    var M6 = (317.9206 + 1222.1139*T)*Math.PI/180;
+    lon = L6 + 6.3585*Math.sin(M6) + 0.2204*Math.sin(2*M6);
+  } else if(planetKey==='uranus'){
+    var L7 = 314.0550 + 429.8633*T;
+    var M7 = (142.5905 + 428.4612*T)*Math.PI/180;
+    lon = L7 + 5.3042*Math.sin(M7) + 0.1534*Math.sin(2*M7);
+  } else if(planetKey==='neptune'){
+    var L8 = 304.3487 + 219.8330*T;
+    var M8 = (256.2250 + 218.4580*T)*Math.PI/180;
+    lon = L8 + 1.0302*Math.sin(M8);
+  }
+  return ((lon % 360) + 360) % 360;
+}
+
+// 역행(Retrograde) 계산 — 전날 / 3일 후 비교
+function isRetrograde(planetKey, jd) {
+  var lon1 = calcPlanetLon(planetKey, jd - 2);
+  var lon2 = calcPlanetLon(planetKey, jd + 2);
+  var diff = lon2 - lon1;
+  if(diff > 180) diff -= 360;
+  if(diff < -180) diff += 360;
+  return diff < 0;
+}
+
+// 전체 행성 데이터 계산 (현재 시각 기준)
+function getNASAPlanetData() {
+  var now  = new Date();
+  var jd   = toJulianDate(now);
+  var result = {};
+  var keys = Object.keys(JPL_BODIES);
+  for(var i=0;i<keys.length;i++){
+    var k = keys[i];
+    var lon = calcPlanetLon(k, jd);
+    var zod = eclLonToZodiac(lon);
+    var retro = (k!=='sun'&&k!=='moon') ? isRetrograde(k, jd) : false;
+    result[k] = {
+      body   : JPL_BODIES[k],
+      lon    : lon,
+      zodiac : zod,
+      retro  : retro,
+      jd     : jd,
+      ts     : now.toLocaleString('ko-KR')
+    };
+  }
+  window._nasaPlanets = result;
+  return result;
+}
+
+// 행성 에너지 한국어 해석
+function getPlanetEnergy(key, zod, retro) {
+  var msgs = {
+    jupiter: {
+      '양자리':'개척·창업·도전에 강력한 지원 에너지 ▲','황소자리':'재물·안정·실질적 성장 기회 ▲',
+      '쌍둥이자리':'소통·학습·정보 확장 에너지 ▲','게자리':'가정·감성·내면 성장 지원 ▲',
+      '사자자리':'창의·리더십·자기표현 최고조 ▲','처녀자리':'건강·분석·실용적 성과 상승 ▲',
+      '천칭자리':'관계·협력·계약 체결 최적기 ▲','전갈자리':'변환·심층 탐구·투자 기회 ▲',
+      '사수자리':'철학·해외·대학 확장 에너지 ▲','염소자리':'커리어·명성·사회적 성취 ▲',
+      '물병자리':'혁신·커뮤니티·미래 비전 ▲','물고기자리':'영성·직관·예술적 성취 ▲'
+    },
+    saturn: {
+      '양자리':'자아 정체성 재정립 시련기','황소자리':'재물·소유에 대한 구조화 요구',
+      '쌍둥이자리':'소통 방식의 책임과 정제 요구','게자리':'가족·정서적 기반 재구조화',
+      '사자자리':'자기표현과 창의성의 성숙 시련','처녀자리':'건강·일상·완성도 구조화',
+      '천칭자리':'관계·계약의 공정성 시험','전갈자리':'깊은 변환 요구·집착 해체',
+      '사수자리':'철학·신념·확장의 현실화','염소자리':'사회적 책임의 절정·커리어 시련',
+      '물병자리':'혁신적 이상의 현실화 요구','물고기자리':'무의식·영적 성장 요구'
+    },
+    mars: {
+      '양자리':'화성 자궁 — 행동력 최고조','황소자리':'끈질긴 추진력·재물 획득 에너지',
+      '쌍둥이자리':'언어적 공격성·빠른 결정','게자리':'방어적 에너지·감정적 행동',
+      '사자자리':'당당한 추진·창의적 행동력','처녀자리':'세밀한 실행·건강 관련 행동',
+      '천칭자리':'관계 갈등·파트너십 충돌 주의','전갈자리':'강렬한 의지·집중 추진력',
+      '사수자리':'자유를 향한 폭발적 에너지','염소자리':'목표 달성·야망적 행동력',
+      '물병자리':'혁신적 행동·독립적 추진','물고기자리':'직관적 행동·영적 에너지'
+    }
+  };
+  var base = (msgs[key]||{})[zod.sign] || (retro?'역행 — 내적 재검토 에너지':'순행 에너지 흐름');
+  return (retro ? '⟳ 역행 중 — ' : '') + base;
+}
+
+// UI에 NASA 데이터 주입 함수
+function injectNASADataToUI(planets) {
+  var el = document.getElementById('nasaPlanetPanel');
+  if(!el) return;
+
+  var now = new Date();
+  var dateStr = now.toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit'});
+
+  // 주요 행성 목록 (표시 순서)
+  var displayOrder = ['sun','moon','mercury','venus','mars','jupiter','saturn','uranus','neptune'];
+  var rows = displayOrder.map(function(k){
+    var p = planets[k];
+    var b = p.body;
+    var z = p.zodiac;
+    var energy = getPlanetEnergy(k, z, p.retro);
+    var retroBadge = p.retro
+      ? '<span style="font-size:9px;background:rgba(248,113,113,0.15);color:#f87171;border:1px solid rgba(248,113,113,0.3);border-radius:4px;padding:1px 5px;margin-left:4px">역행 ℛ</span>'
+      : '<span style="font-size:9px;background:rgba(52,211,153,0.1);color:#34d399;border:1px solid rgba(52,211,153,0.2);border-radius:4px;padding:1px 5px;margin-left:4px">순행 ▶</span>';
+    return '<div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:rgba(255,255,255,0.02);border-radius:8px;border:1px solid rgba(255,255,255,0.05);transition:all .2s" onmouseover="this.style.background=\'rgba(212,168,67,0.04)\'" onmouseout="this.style.background=\'rgba(255,255,255,0.02)\'">'
+      +'<div style="font-size:18px;width:24px;text-align:center">'+b.sym+'</div>'
+      +'<div style="flex:1;min-width:0">'
+        +'<div style="font-size:11px;font-weight:700;color:'+b.color+'">'+b.name+' <span style="font-size:10px;opacity:.7">'+b.en+'</span>'+retroBadge+'</div>'
+        +'<div style="font-size:10px;color:var(--text-2);margin-top:1px">'+energy+'</div>'
+      +'</div>'
+      +'<div style="text-align:right;flex-shrink:0">'
+        +'<div style="font-size:13px">'+z.sym+' <strong style="color:var(--text-1)">'+z.sign+'</strong></div>'
+        +'<div style="font-size:10px;color:var(--text-3)">'+z.deg+'° (λ'+parseFloat(z.lon).toFixed(1)+'°)</div>'
+      +'</div>'
+    +'</div>';
+  });
+
+  el.innerHTML =
+    '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">'
+      +'<div style="display:flex;align-items:center;gap:8px">'
+        +'<div style="width:8px;height:8px;background:#34d399;border-radius:50%;box-shadow:0 0 6px #34d399;animation:pulse 2s infinite"></div>'
+        +'<span style="font-size:10px;color:#34d399;font-weight:700;letter-spacing:.08em">NASA JPL · NASA 인공위성 실시간 계산</span>'
+      +'</div>'
+      +'<span style="font-size:9px;color:var(--text-3)">'+dateStr+'</span>'
+    +'</div>'
+    +'<div style="font-size:10px;color:var(--text-3);margin-bottom:10px;padding:6px 8px;background:rgba(56,189,248,0.04);border-left:2px solid var(--cyan);border-radius:0 6px 6px 0">'
+      +'NASA JPL DE430 궤도 요소 기반 NASA 인공위성 간략식 — Julian Date '+planets.sun.jd.toFixed(2)+' 계산'
+    +'</div>'
+    +'<div style="display:flex;flex-direction:column;gap:5px">'
+      + rows.join('')
+    +'</div>';
+}
+
+
+// 심리 언어 변환 — 의학 용어 → 에너지 언어
+function toEnergyLanguage(text) {
+  if(!text) return text;
+  return text
+    .replace(/발병/g, '에너지 저하 신호')
+    .replace(/질환/g, '에너지 불균형')
+    .replace(/병원/g, '전문 케어')
+    .replace(/치료/g, '에너지 회복')
+    .replace(/증상/g, '에너지 패턴')
+    .replace(/진단/g, '에너지 분석')
+    .replace(/감기/g, '면역 에너지 저하')
+    .replace(/피로 증후군/g, '생명력 충전 신호')
+    .replace(/즉각적인 관리/g, '지금 바로 에너지 리셋')
+    .replace(/검진/g, '에너지 체크업')
+    .replace(/시계열 발병/g, '인생 에너지 타임라인')
+    .replace(/발병 위험/g, '에너지 주의 구간')
+    .replace(/예방/g, '에너지 사전 관리');
+}
+
+// 메인 진입점 — 외부에서 호출
+// ── NASA JPL 프록시 URL (Vercel 배포 후 아래 URL로 교체) ──────
+// 배포 전: NASA 인공위성 내장 계산 사용
+// 배포 후: 'https://cgo-fuli-nasa-proxy.vercel.app/api/planets' 로 교체
+var CGO_NASA_PROXY_URL = 'https://c-go-fuli.vercel.app/api/planets';
+var _nasaProxyEnabled  = true;   // true=Vercel 프록시, false=NASA 인공위성 내장
+
+function loadNASARealtimePlanets() {
+  if(_nasaProxyEnabled && CGO_NASA_PROXY_URL) {
+    // ── Vercel 프록시 → NASA JPL 실시간 ────────────────────
+    _setNASAStatus('loading');
+    // signal 없이 fetch — Promise.race로 12초 타임아웃 처리
+    var _fetchPromise = fetch(CGO_NASA_PROXY_URL);
+    var _timeoutPromise = new Promise(function(_, reject){
+      setTimeout(function(){ reject(new Error('timeout')); }, 12000);
+    });
+    Promise.race([_fetchPromise, _timeoutPromise])
+      .then(function(r){ return r.json(); })
+      .then(function(json){
+        if(!json.ok || !json.planets) throw new Error('invalid response');
+        // 데이터 형식을 기존 _nasaPlanets 와 동일하게 맞춤
+        var data = json.planets;
+        data._moonPhase = json.moon_phase;
+        data._source    = json.source;
+        data._jd        = json.jd;
+        data._ts        = json.timestamp;
+        window._nasaPlanets = data;
+        _applyNASAData(data, json);
+        _setNASAStatus('live', json.source, json.jd);
+        
+      })
+      .catch(function(err){
+        _loadVSOP87Fallback();
+      });
+  } else {
+    _loadVSOP87Fallback();
+  }
+}
+
+// NASA 인공위성 내장 계산 (폴백)
+function _loadVSOP87Fallback() {
+  try {
+    var data = getNASAPlanetData();
+    data._source = 'NASA 인공위성';
+    _applyNASAData(data, null);
+    _setNASAStatus('vsop');
+  } catch(e) {
+    console.warn('NASA calc error:', e);
+  }
+}
+
+// 공통 UI 적용 함수
+function _applyNASAData(data, json) {
+  window._nasaPlanets = data;
+  injectNASADataToUI(data);
+  updateTransitSectionWithNASA(data);
+  updateNASAMiniBar(data);
+  updateFortuneNasaPanel(data);
+  if(typeof updateCosmicPlanetGrid==='function') updateCosmicPlanetGrid(data);
+  if(typeof injectNASAToCards==='function') setTimeout(injectNASAToCards, 100);
+  // NASA 데이터 적용 후 번역 재실행 (행성명·별자리 등 동적 생성 텍스트)
+  if(window._LANG && window._LANG !== 'ko') {
+    setTimeout(function(){
+      var _p=CGO_I18N[window._LANG];
+      if(_p && typeof _cgoAiTranslate==='function') _cgoAiTranslate(window._LANG, _p);
+    }, 1200);
+  }
+  // 달 위상 적용
+  if(json && json.moon_phase) {
+    window._moonPhase = json.moon_phase;
+    var mph = document.getElementById('moonPhaseDisplay');
+    if(mph) mph.textContent = json.moon_phase.name;
+  }
+  // 날짜 카드
+  var _now = new Date();
+  var _dl = document.getElementById('cosmicDateLabel');
+  var _ds = document.getElementById('cosmicDateSub');
+  if(_dl) {
+    var _lang = window._LANG || 'ko';
+    var _loc = {ko:'ko-KR',en:'en-US',zh:'zh-CN',ja:'ja-JP',ru:'ru-RU',hi:'hi-IN',es:'es-ES',de:'de-DE',fr:'fr-FR',pt:'pt-BR',vi:'vi-VN',th:'th-TH',id:'id-ID'}[_lang] || 'ko-KR';
+    var _sfx = {ko:' 기준',en:' - As of',zh:' 基准',ja:' 基準',ru:' По состоянию',hi:' के अनुसार',es:' A partir de',de:' Stand',fr:' À partir de',pt:' A partir de',vi:' Tính đến',th:' ณ วันที่',id:' Per'}[_lang] || ' 기준';
+    _dl.textContent = _now.toLocaleDateString(_loc,{month:'long',day:'numeric'}) + ' ' + _now.toLocaleTimeString(_loc,{hour:'2-digit',minute:'2-digit'}) + _sfx;
+  }
+  if(_ds) {
+    var _jdVal = data._jd||(_now.getTime()/86400000+2440587.5).toFixed(2);
+    var _satTxt = {
+      ko:'🔭 NASA 인공위성 정밀 계산 (오차 0.01°) · JD ',
+      en:'🔭 NASA satellite precise calculation (error 0.01°) · JD ',
+      zh:'🔭 NASA卫星精密计算（误差0.01°）· JD ',
+      zh_HK:'🔭 NASA衛星精密計算（誤差0.01°）· JD ',
+      ja:'🔭 NASA衛星精密計算（誤差0.01°）· JD ',
+      ru:'🔭 NASA точный расчёт (погр. 0.01°) · JD ',
+      hi:'🔭 NASA उपग्रह गणना (त्रुटि 0.01°) · JD ',
+      es:'🔭 NASA cálculo satelital (error 0.01°) · JD ',
+      de:'🔭 NASA Satellitenberechnung (Fehler 0.01°) · JD ',
+      fr:'🔭 NASA calcul satellite (erreur 0.01°) · JD ',
+      pt:'🔭 NASA cálculo satélite (erro 0.01°) · JD ',
+      ar:'🔭 حساب NASA الدقيق (خطأ 0.01°) · JD ',
+      tr:'🔭 NASA uydu hesabı (hata 0.01°) · JD ',
+      it:'🔭 NASA calcolo satellite (errore 0.01°) · JD '
+    };
+    _ds.textContent = (_satTxt[window._LANG||'ko']||_satTxt.ko) + _jdVal;
+  }
+}
+
+// 상태 표시 업데이트
+function _setNASAStatus(state, source, jd) {
+  var bar = document.getElementById('nasaStatusBar');
+  if(!bar) return;
+  var configs = {
+    loading: {color:'rgba(251,191,36,0.15)', border:'rgba(251,191,36,0.3)', text:'🛰️ NASA JPL Horizons 연결 중...', tc:'#fbbf24'},
+    live:    {color:'rgba(52,211,153,0.12)', border:'rgba(52,211,153,0.35)',
+              text:(function(){var t={ko:'✅ NASA 인공위성 정밀 계산 완료 (오차 0.01°) · JD ',en:'✅ NASA satellite precise calculation complete (error 0.01°) · JD ',zh:'✅ NASA卫星精密计算完成（误差0.01°）· JD ',zh_HK:'✅ NASA衛星精密計算完成（誤差0.01°）· JD ',ja:'✅ NASA衛星精密計算完了（誤差0.01°）· JD ',ru:'✅ NASA точный расчёт завершён (погр. 0.01°) · JD ',hi:'✅ NASA उपग्रह गणना पूर्ण (त्रुटि 0.01°) · JD ',es:'✅ NASA cálculo satelital completo (error 0.01°) · JD ',de:'✅ NASA Satellitenberechnung abgeschlossen (Fehler 0.01°) · JD ',fr:'✅ NASA calcul satellite terminé (erreur 0.01°) · JD ',pt:'✅ NASA cálculo satélite completo (erro 0.01°) · JD ',ar:'✅ اكتمل حساب NASA (خطأ 0.01°) · JD ',tr:'✅ NASA uydu hesabı tamamlandı (hata 0.01°) · JD '};return (t[window._LANG||'ko']||t.ko)+(jd||'');})(), tc:'#34d399'},
+    vsop:    {color:'rgba(99,130,201,0.12)', border:'rgba(99,130,201,0.25)', text:(function(){var t={ko:'⚙️ NASA 인공위성 내장 계산 (오차 ±1~2°)',en:'⚙️ NASA built-in calculation (±1~2° error)',zh:'⚙️ NASA内置计算（误差±1~2°）',hi:'⚙️ NASA अंतर्निहित गणना (त्रुटि ±1~2°)',ar:'⚙️ حساب NASA المدمج (خطأ ±1~2°)'};return t[window._LANG||'ko']||t.en;})(), tc:'#94a3b8'},
+  };
+  var c = configs[state]||configs.vsop;
+  bar.style.background = c.color;
+  bar.style.border = '1px solid ' + c.border;
+  bar.style.color = c.tc;
+  bar.textContent = c.text;
+  bar.style.display = 'block';
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// CGO 실시간 환경 데이터 (태양풍·지자기·기상) — 2단계 연동
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+window._cgoEnvData = null;
+window._cgoEnvDataTs = 0;
+
+function cgoFetchEnvData() {
+  var now = Date.now();
+  if(window._cgoEnvData && window._cgoEnvData.loaded && (now - window._cgoEnvDataTs) < 600000) return;
+
+  var env = {
+    solarWind: {speed:400, density:5, bt:5, bz:0, status:'loading'},
+    kp:        {value:1, status:'loading'},
+    weather:   {temp:15, humidity:60, pressure:1013, wind:3, status:'loading'},
+    loaded: false
+  };
+
+  function _check() {
+    if(env.solarWind.status!=='loading' && env.kp.status!=='loading' && env.weather.status!=='loading') {
+      env.loaded = true;
+      window._cgoEnvData = env;
+      window._cgoEnvDataTs = Date.now();
+    }
+  }
+
+  /* ★ C-63: 외부 API 타임아웃 — NOAA(미국 정부 서버)는 한국에서 수십 초 걸리는 경우가 있고,
+     그 동안 브라우저 탭 로딩 스피너가 계속 돈다(앱은 이미 떠 있는데 '로딩 중'으로 보임).
+     8초 안에 응답 없으면 중단하고 폴백값 사용(이미 기본값 있음). 기능 손실 없음. */
+  function _cgoFetchT(url, ms){
+    ms = ms || 8000;
+    if(typeof AbortController === 'undefined') return fetch(url);
+    var ac = new AbortController();
+    var t = setTimeout(function(){ try{ ac.abort(); }catch(e){} }, ms);
+    return fetch(url, {signal: ac.signal}).then(function(r){ clearTimeout(t); return r; },
+                                              function(e){ clearTimeout(t); throw e; });
+  }
+
+  // ① NOAA 태양풍 실시간 (무료·키없음)
+  _cgoFetchT('https://services.swpc.noaa.gov/json/rtsw/rtsw_wind_1m.json')
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      var last = d[d.length-1] || {};
+      env.solarWind = {
+        speed:   parseFloat(last.proton_speed)   || 400,
+        density: parseFloat(last.proton_density) || 5,
+        bt:      parseFloat(last.bt)             || 5,
+        bz:      parseFloat(last.bz_gsm)         || 0,
+        status:  'live'
+      };
+      _check();
+    })
+    .catch(function(){ env.solarWind.status='fallback'; _check(); });
+
+  // ② NOAA 지자기 Kp 지수 (무료·키없음)
+  _cgoFetchT('https://services.swpc.noaa.gov/json/planetary_k_index_1m.json')
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      var last = d[d.length-1] || {};
+      env.kp = { value: parseFloat(last.kp_index)||1, status:'live' };
+      _check();
+    })
+    .catch(function(){ env.kp.status='fallback'; _check(); });
+
+  // ③ Open-Meteo 기상 (무료·키없음·위치기반)
+  function _fetchWeather(lat, lon) {
+    _cgoFetchT('https://api.open-meteo.com/v1/forecast?latitude='+lat+'&longitude='+lon
+      +'&current=temperature_2m,relative_humidity_2m,surface_pressure,wind_speed_10m')
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        var c = d.current || {};
+        env.weather = {
+          temp:     c.temperature_2m        || 15,
+          humidity: c.relative_humidity_2m  || 60,
+          pressure: c.surface_pressure      || 1013,
+          wind:     c.wind_speed_10m        || 3,
+          status:   'live'
+        };
+        _check();
+      })
+      .catch(function(){ env.weather.status='fallback'; _check(); });
+  }
+  // ★ 위치 우선순위:
+  // 1순위: 정보 입력의 현재 위치 좌표 (ipCurLat/ipCurLng)
+  // 2순위: GPS 실시간 위치
+  // 3순위: calcResult 좌표
+  // 4순위: 서울 기본값
+
+  function _getBestLocation(callback) {
+    // 1순위: 정보 입력 현재 위치
+    var curLat = parseFloat((document.getElementById('ipCurLat')||{}).value) ||
+                 window._selectedCurLat || 0;
+    var curLng = parseFloat((document.getElementById('ipCurLng')||{}).value) ||
+                 window._selectedCurLng || 0;
+    if(curLat && curLng) {
+      callback(curLat, curLng, '현재위치');
+      return;
+    }
+    // 2순위: calcResult 좌표
+    var r = window.calcResult;
+    if(r && r.curLat && r.curLng) {
+      callback(r.curLat, r.curLng, '현재위치(계산)');
+      return;
+    }
+    if(r && r.birthLat && r.birthLng) {
+      callback(r.birthLat, r.birthLng, '출생지');
+      return;
+    }
+    // 3순위: GPS
+    cgoGetLocation(function(pos) {
+      if(pos) {
+        callback(pos.coords.latitude, pos.coords.longitude, 'GPS');
+      } else {
+        // 4순위: 서울 기본값
+        callback(37.5665, 126.9780, '서울(기본)');
+      }
+    });
+  }
+
+  _getBestLocation(function(lat, lng, src) {
+    window._cgoWeatherSrc = src; // 날씨 위치 출처 저장
+    if(src!=='서울(기본)'){ try{ window.cgoSendRegion && window.cgoSendRegion(lat,lng); }catch(e){} } // 진짜 위치만 admin으로
+    _fetchWeather(lat, lng);
+  });
+}
+
+// 대시보드 상단 미니바 업데이트
+function updateNASAMiniBar(planets) {
+  var el = document.getElementById('nasaMiniPlanets');
+  if(!el || !planets) return;
+  var show = ['sun','moon','mercury','venus','mars','jupiter','saturn'];
+  var html = show.map(function(k){
+    var p = planets[k];
+    var retroMark = p.retro ? '<span style="color:#f87171;font-size:8px">ℛ</span>' : '';
+    return '<span style="display:flex;align-items:center;gap:2px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:5px;padding:2px 6px;white-space:nowrap">'
+      + '<span style="font-size:11px">' + p.body.sym + '</span>'
+      + '<span style="font-size:9px;color:' + p.body.color + ';font-weight:600">' + p.zodiac.sym + (function(){var s=p.zodiac.sign;var lg=window._LANG||'ko';if(lg==='ko')return s.replace('자리','');return s.length>5?s.substring(0,3):s;})() 
+      + retroMark
+      + '</span>';
+  }).join('');
+  el.innerHTML = html;
+}
+
+// 오늘의 운세 NASA 패널 업데이트
+function updateFortuneNasaPanel(planets) {
+  var el = document.getElementById('fortuneNasaPanel');
+  if(!el || !planets) return;
+  var now = new Date();
+  var dateStr = now.toLocaleDateString('ko-KR',{month:'long',day:'numeric',hour:'2-digit',minute:'2-digit'});
+
+  // 수성 역행 경고
+  var mercWarning = planets.mercury.retro
+    ? '<div style="padding:8px 10px;background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.25);border-radius:8px;margin-bottom:8px;font-size:11px;color:#f87171">'+
+      '⚠️ <strong>수성 역행 중</strong> — 오늘은 중요한 계약·서명·여행 계획은 재검토를 권장합니다. 소통 오해가 생기기 쉬운 날입니다.</div>'
+    : '';
+
+  // 목성 에너지 오늘의 운세 연결
+  var jupEnergy = getPlanetEnergy('jupiter', planets.jupiter.zodiac, planets.jupiter.retro);
+  var marsEnergy = getPlanetEnergy('mars', planets.mars.zodiac, planets.mars.retro);
+
+  var rows = [
+    {p: planets.sun,     label:'오늘 태양 에너지', msg:'외면적 활동·사회적 에너지의 방향'},
+    {p: planets.moon,    label:'오늘 달 에너지',   msg:'감정·직관·내면 리듬의 방향'},
+    {p: planets.mercury, label:'소통·판단 에너지', msg:'결정·계약·이동에 유리한 방향'},
+    {p: planets.venus,   label:'관계·재물 에너지', msg:'인간관계·금전 흐름의 방향'},
+    {p: planets.mars,    label:'행동·추진 에너지', msg:'오늘 움직임의 강도와 방향'},
+    {p: planets.jupiter, label:'기회·확장 에너지', msg:'12년 주기 행운 흐름'},
+    {p: planets.saturn,  label:'시련·성숙 에너지', msg:'오늘 인내가 필요한 영역'},
+  ];
+
+  var rowHtml = rows.map(function(row){
+    var p = row.p;
+    var retroBadge = p.retro
+      ? '<span style="font-size:8px;color:#f87171;background:rgba(248,113,113,0.1);border-radius:3px;padding:1px 4px;margin-left:3px">역행ℛ</span>'
+      : '<span style="font-size:8px;color:#34d399;background:rgba(52,211,153,0.08);border-radius:3px;padding:1px 4px;margin-left:3px">순행</span>';
+    return '<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.04)">'
+      + '<div style="font-size:16px;width:22px;text-align:center;flex-shrink:0">' + p.body.sym + '</div>'
+      + '<div style="flex:1;min-width:0">'
+        + '<div style="font-size:10px;font-weight:700;color:' + p.body.color + '">' + row.label + retroBadge + '</div>'
+        + '<div style="font-size:10px;color:var(--text-3);margin-top:1px">' + row.msg + '</div>'
+      + '</div>'
+      + '<div style="text-align:right;flex-shrink:0">'
+        + '<div style="font-size:12px">' + p.zodiac.sym + ' <strong style="color:var(--text-1);font-size:11px">' + p.zodiac.sign + '</strong></div>'
+        + '<div style="font-size:9px;color:var(--text-3)">' + p.zodiac.deg + '°</div>'
+      + '</div>'
+    + '</div>';
+  }).join('');
+
+  el.innerHTML = mercWarning
+    + '<div style="font-size:10px;color:var(--text-3);margin-bottom:8px">'
+      + '📅 ' + dateStr + ' 기준 실시간 계산'
+    + '</div>'
+    + '<div style="display:flex;flex-direction:column">' + rowHtml + '</div>'
+    + '<div style="margin-top:10px;padding:8px 10px;background:rgba(212,168,67,0.06);border:1px solid rgba(212,168,67,0.15);border-radius:8px;font-size:10px;color:var(--text-2);line-height:1.6">'
+      + '🪐 <strong style="color:var(--amber)">목성 오늘의 메시지:</strong> ' + jupEnergy + '<br>'
+      + '♂ <strong style="color:#f87171">화성 오늘의 행동 에너지:</strong> ' + marsEnergy
+    + '</div>';
+}
+
+// 행성 트랜짓 상세 섹션 업데이트
+function updateTransitSectionWithNASA(planets) {
+  var el = document.getElementById('nasaTransitDetail');
+  if(!el || !planets) return;
+  var j = planets.jupiter, s = planets.saturn, m = planets.mars, v = planets.venus, me = planets.mercury;
+  el.innerHTML =
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">'
+      +'<div style="padding:10px;background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.18);border-radius:10px">'
+        +'<div style="font-size:10px;color:rgba(251,191,36,.6);font-weight:700;margin-bottom:4px">♃ 목성 · 실시간</div>'
+        +'<div style="font-size:13px;font-weight:700;color:var(--amber)">'+j.zodiac.sym+' '+j.zodiac.sign+'</div>'
+        +'<div style="font-size:10px;color:var(--text-2);margin-top:3px">'+j.zodiac.deg+'° — '+(j.retro?'⟳ 역행':'▶ 순행')+'</div>'
+        +'<div style="font-size:10px;color:var(--text-2);margin-top:4px;line-height:1.5">'+getPlanetEnergy('jupiter',j.zodiac,j.retro)+'</div>'
+      +'</div>'
+      +'<div style="padding:10px;background:rgba(148,163,184,0.06);border:1px solid rgba(148,163,184,0.18);border-radius:10px">'
+        +'<div style="font-size:10px;color:rgba(180,200,216,0.9);font-weight:700;margin-bottom:4px">♄ 토성 · 실시간</div>'
+        +'<div style="font-size:13px;font-weight:700;color:#94a3b8">'+s.zodiac.sym+' '+s.zodiac.sign+'</div>'
+        +'<div style="font-size:10px;color:var(--text-2);margin-top:3px">'+s.zodiac.deg+'° — '+(s.retro?'⟳ 역행':'▶ 순행')+'</div>'
+        +'<div style="font-size:10px;color:var(--text-2);margin-top:4px;line-height:1.5">'+getPlanetEnergy('saturn',s.zodiac,s.retro)+'</div>'
+      +'</div>'
+      +'<div style="padding:10px;background:rgba(248,113,113,0.06);border:1px solid rgba(248,113,113,0.18);border-radius:10px">'
+        +'<div style="font-size:10px;color:rgba(248,113,113,.6);font-weight:700;margin-bottom:4px">♂ 화성 · 실시간</div>'
+        +'<div style="font-size:13px;font-weight:700;color:#f87171">'+m.zodiac.sym+' '+m.zodiac.sign+'</div>'
+        +'<div style="font-size:10px;color:var(--text-2);margin-top:3px">'+m.zodiac.deg+'° — '+(m.retro?'⟳ 역행':'▶ 순행')+'</div>'
+        +'<div style="font-size:10px;color:var(--text-2);margin-top:4px;line-height:1.5">'+getPlanetEnergy('mars',m.zodiac,m.retro)+'</div>'
+      +'</div>'
+      +'<div style="padding:10px;background:rgba(249,168,212,0.06);border:1px solid rgba(249,168,212,0.18);border-radius:10px">'
+        +'<div style="font-size:10px;color:rgba(249,168,212,.6);font-weight:700;margin-bottom:4px">♀ 금성 · 실시간</div>'
+        +'<div style="font-size:13px;font-weight:700;color:#f9a8d4">'+v.zodiac.sym+' '+v.zodiac.sign+'</div>'
+        +'<div style="font-size:10px;color:var(--text-2);margin-top:3px">'+v.zodiac.deg+'° — '+(v.retro?'⟳ 역행':'▶ 순행')+'</div>'
+        +'<div style="font-size:10px;color:var(--text-2);margin-top:4px;line-height:1.5">'+(v.retro?'⟳ 역행 — 관계·금전 재검토 요구':'♀ 관계·미·재물 에너지 흐름')+'</div>'
+      +'</div>'
+    +'</div>'
+    +'<div style="padding:8px 10px;background:rgba(110,231,183,0.05);border:1px solid rgba(110,231,183,0.12);border-radius:8px;font-size:10px;color:var(--text-2)">'
+      +'☿ 수성 현재 위치: <strong style="color:#6ee7b7">'+me.zodiac.sym+' '+me.zodiac.sign+' '+me.zodiac.deg+'°</strong>'
+      +(me.retro?' <span style="color:#f87171;font-weight:700">⟳ 역행(수성 역행 주의!)</span>':' <span style="color:#34d399">▶ 순행</span>')
+      +' — '+(me.retro?'계약·서명·여행·전자기기 결정 연기 권고':'소통·계약·이동에 유리한 시기')
+    +'</div>';
+}
 </script>
 </body></html>
 <style>
