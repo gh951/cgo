@@ -6230,57 +6230,6 @@ body{font-family:Noto Sans KR,sans-serif;background:#fff;color:#111;padding:40px
 #mfu-intro-pop *:hover,
 #c24-disease-pop *:hover,
 #mfu-order-pop *:hover{ transform:none!important }
-
-/* ★ 이름을 하나하나 적는 대신 「팝업이면」 로 건다 — 뒤에 만든 팝업(작명·궁합·여행·
-   리포트 등)이 목록에서 빠져 애니메이션이 남았고, 그 애니메이션이 1.6~2.5초마다
-   화면을 다시 그려 글자 선택·복사가 끊겼다. 규칙을 더하는 것이 아니라 같은 세 줄을
-   이름 대신 모양으로 걸어 빠짐을 없앤다. */
-/* ★ 팝업에는 contain 을 걸지 않는다 — 스크롤이 멈췄다.
-   무거운 것(그림자·흐림·애니메이션)만 없애고, 구르는 성질은 건드리지 않는다. */
-body > div[id$="-pop"],
-body > div[id$="Pop"],
-body > div[id$="-popup"],
-body > div[id$="Popup"]{
-  overflow:visible!important;
-  contain:none!important;
-}
-/* 팝업이 떠 있는 동안 뒤 페이지를 흐름에서 뺀다 — 아래에 이어 붙어 보였다 */
-html.cgo-pop-on .content,
-html.cgo-pop-on body > .page{ display:none!important; }
-/* 팝업 안쪽은 재우지 않는다 — 재우면 높이가 600px 로 가정되어 아래가 잘렸다 */
-body > div[id$="-pop"] *,
-body > div[id$="Pop"] *,
-body > div[id$="-popup"] *,
-body > div[id$="Popup"] *{
-  content-visibility:visible!important;
-  contain-intrinsic-size:auto!important;
-}
-body > div[id$="-pop"] .cgo-rest,
-body > div[id$="Pop"] .cgo-rest,
-body > div[id$="-popup"] .cgo-rest,
-body > div[id$="Popup"] .cgo-rest{
-  content-visibility:visible!important;
-  contain:none!important;
-  min-height:0!important;
-}
-body > div[id$="-pop"] *,
-body > div[id$="Pop"] *,
-body > div[id$="-popup"] *,
-body > div[id$="Popup"] *{
-  box-shadow:none!important;
-  backdrop-filter:none!important;
-  -webkit-backdrop-filter:none!important;
-  animation:none!important;
-}
-body > div[id$="-pop"] *:hover,
-body > div[id$="Pop"] *:hover,
-body > div[id$="-popup"] *:hover,
-body > div[id$="Popup"] *:hover{ transform:none!important }
-
-/* 팝업 안 글자는 고를 수 있게 둔다 (복사 가능) */
-body > div[id$="-pop"] *, body > div[id$="Pop"] *{
-  -webkit-user-select:text; user-select:text;
-}
 </style>
 
 <style id="cgo-gate-patent">
@@ -7163,33 +7112,63 @@ function _cgoEyeCloseAll(){
   try{ if(window.eyeCancelMeasure) eyeCancelMeasure(); }catch(_){}
   try{ if(window.eyeStopMeasure) eyeStopMeasure(); }catch(_){}
 }
+/* ★ 나갈 때 되돌리는 창구 하나 — 이름 목록에 기대지 않는다.
+   기능마다 취소 함수 이름을 적어 두었더니 뒤에 붙인 기능이 목록에서 빠져
+   카메라가 켜진 채 남고 펼친 것이 그대로였다. 모양으로 찾아 끈다. */
+window._cgoStopAllCams = function(){
+  try{
+    document.querySelectorAll('video').forEach(function(vd){
+      try{
+        var s=vd.srcObject;
+        if(s && s.getTracks) s.getTracks().forEach(function(t){ try{ t.stop(); }catch(_){} });
+        vd.srcObject=null;
+        try{ vd.pause(); }catch(_){}
+      }catch(_){}
+    });
+  }catch(_){}
+  /* 소리도 멈춘다 */
+  try{ document.querySelectorAll('audio').forEach(function(a){ try{ a.pause(); }catch(_){} }); }catch(_){}
+  try{ if(window._cgoAudioCtx && _cgoAudioCtx.suspend) _cgoAudioCtx.suspend(); }catch(_){}
+};
+
 function cgoHome(){
-  try{ _cgoEyeCloseAll(); }catch(_){}
+  /* ① 카메라·소리를 먼저 끈다 — 결과를 만드는 종료 함수는 부르지 않는다 */
+  try{ window._cgoStopAllCams(); }catch(_){}
+  ['cgoNaviStop','scStop','c39Stop','_cplCancel','tvyCamStop','foodCamStop',
+   'cgoPhotoClose','cgoNaviClose','_cgoVisionClose','cgoDeepYeokCancel',
+   'rmaiScanStop','cgpCamHintOff','cgoAccCamClose','_vgClose',
+   /* .js 안의 취소 함수 — 결과를 만드는 종료 함수(_c24Stop 등)는 부르지 않는다 */
+   'rmaiArStop','_c24Cancel','_c24BreathStop','eyeLuxStop','musicStop',
+   'sviCancel','iqCamStop','eyeCancelMeasure'].forEach(function(fn){
+    try{ if(typeof window[fn]==='function') window[fn](); }catch(_){}
+  });
 
-  /* 화면에 떠 있는 것을 모두 닫는다 */
-  var IDS=['c24GuidePop','c39GuidePop','c39CarePop','scGuidePop','scAreaPop','scStepPop','iqGuidePop','iqTestPop','c24ChatPop','c39TestPop','mypage-pop','suInfoPop','suTermsPop','suSocialPop','suPwPop','suPayPop',
-           'cgoGuidePopup','cgoAccUsage','cgoAccPricing','acc-guide-popup','wf10-pop','page-account',
-           'pm-intro-pop','svi-intro-pop','svi-cam-alert','todayFortuneOverlay','cgoYtOverlay','acc-cam-overlay','page-c44-eye',
-           'qt-card-popup','gwGuidePop','c14-intro-pop','cgo-couple-pop','rfu-intro-pop','cgo-report-intro-pop','sleep-intro-pop','rmai-intro-pop','page-cgo-navi','page-cgo-photo','cgn-help','cgpGuidePop'];
-  IDS.forEach(function(id){ var e=document.getElementById(id);
-    if(e){ e.style.display='none'; if(e.classList) e.classList.remove('on','active','show'); } });
+  /* ② 떠 있는 것을 종류 가리지 않고 닫는다 (팝업 안의 팝업까지) */
+  try{
+    document.querySelectorAll('body > div[id$="-pop"], body > div[id$="Pop"], body > div[id$="-popup"], body > div[id$="Popup"]').forEach(function(e){
+      /* 만들어진 팝업은 지우고, 마크업에 놓인 팝업은 감춘다 */
+      if(e.dataset && e.dataset.cgoKeep==='1'){ e.style.display='none'; return; }
+      if(e.parentNode) e.parentNode.removeChild(e);
+    });
+  }catch(_){}
+  try{ document.querySelectorAll('.modal.on,.popup.on,.fsp.on,.sheet.on').forEach(function(e){ e.classList.remove('on'); }); }catch(_){}
+  /* ★ 두 곳 모두에서 뗀다 — 여는 쪽이 html·body 두 갈래라
+     한 곳만 떼면 남은 쪽이 뒤 페이지를 계속 덮어 카드가 눌리지 않았다. */
+  try{ document.documentElement.classList.remove('cgo-pop-on'); }catch(_){}
+  try{ document.body.classList.remove('cgo-pop-on'); }catch(_){}
 
-  /* 실행 중에 만들어진 팝업은 지운다 */
-  ['c24-scan-guide-pop','c24-chat-guide','c24-capture-cd','cgoInAppGuide','cpl-invite-pop','vg-popup'].forEach(function(id){
-    var e=document.getElementById(id); if(e&&e.parentNode) e.parentNode.removeChild(e); });
-  document.querySelectorAll('.modal.on,.popup.on,.fsp.on').forEach(function(e){ e.classList.remove('on'); });
-  /* 측정 중이면 결과를 만들지 않고 접는다 · 카메라도 끈다 */
-  try{ if(window._c24Cancel) window._c24Cancel(); }catch(_){}
-  try{ if(window.c39Stop) window.c39Stop(); }catch(_){}
-  try{ if(window.scStop) window.scStop(); }catch(_){}
-  try{ if(window.sviCancel) window.sviCancel(); }catch(_){}
-  try{ if(window._cplCancel) window._cplCancel(); }catch(_){}
-  try{ if(window.musicStop) window.musicStop(); }catch(_){}
-  try{ if(window._cgoStopAllCams) window._cgoStopAllCams(); }catch(_){}
-  /* 팝업이 잠갔던 스크롤을 되돌린다 */
+  /* ③ 펼친 것을 접는다 */
+  try{ document.querySelectorAll('details[open]').forEach(function(d){ d.open=false; }); }catch(_){}
+  try{ document.querySelectorAll('.acc.on,.fold.on,.exp.on,[data-fold].on').forEach(function(e){ e.classList.remove('on'); }); }catch(_){}
+
+  /* ④ 페이지마다 스크롤을 맨 위로 */
+  try{ document.querySelectorAll('.page').forEach(function(p){ if(p.scrollTop) p.scrollTop=0; }); }catch(_){}
   try{ document.body.style.overflow=''; document.documentElement.style.overflow=''; }catch(_){}
+
+  /* ⑤ 대시보드로 */
   try{ cgoGoPage('dashboard'); }catch(_){}
   try{ window.scrollTo(0,0); }catch(_){}
+
 }
 window.cgoHome=cgoHome;
 
@@ -19599,7 +19578,8 @@ window._cgoPopClose = function(id){
       if(s==='none') continue;
       if(e.offsetHeight>0 || e.offsetWidth>0) live++;
     }
-    if(!live) document.documentElement.classList.remove('cgo-pop-on');
+    if(!live){ document.documentElement.classList.remove('cgo-pop-on');
+                try{ document.body.classList.remove('cgo-pop-on'); }catch(e){} }
   }catch(e){}
 };
 function _cgoFDIntro(cfg){
@@ -19624,7 +19604,7 @@ function _cgoFDIntro(cfg){
   /* ★ 팝업 안에 또 하나의 스크롤을 두지 않는다.
    상자 안 스크롤은 기기·손짓에 따라 손끝이 겉돌아 「밑으로 안 내려간다」가 되풀이됐다.
    앱에서 늘 잘 도는 페이지 스크롤 하나로 굴린다 — 문서 흐름에 얹고 높이만 채운다. */
-pop.style.cssText='position:absolute;left:0;right:0;top:var(--hdrH,56px);min-height:calc(100vh - var(--hdrH,56px));z-index:30600;background:#f0fdf9;';
+pop.style.cssText='position:fixed;left:0;right:0;bottom:0;top:var(--hdrH,56px);z-index:30600;background:#f0fdf9;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;contain:layout paint style;';
   var h='<div style="max-width:600px;margin:0 auto;background:#f0fdf9;border-top:3px solid '+ac+';padding:22px 18px 40px;">';
   h+='<div style="display:flex;align-items:flex-start;gap:11px;margin-bottom:16px;"><span style="font-size:30px;flex-shrink:0;line-height:1.1;">'+(cfg.ico||'✨')+'</span><div style="min-width:0;flex:1;"><div style="font-size:17px;font-weight:900;color:#0f172a;line-height:1.3;"'+_dk('title')+'>'+_t('title',cfg.title||'')+'</div>'+(cfg.subtitle?'<div style="font-size:11px;color:#64748b;margin-top:3px;line-height:1.5;"'+_dk('subtitle')+'>'+_t('subtitle',cfg.subtitle)+'</div>':'')+'</div><button onclick="var p=document.getElementById(\''+id+'\');if(p)p.remove();window._cgoPopClose&&_cgoPopClose(\''+id+'\');" style="flex-shrink:0;width:30px;height:30px;border-radius:50%;background:#f1f5f9;border:1px solid rgba(2,8,23,.08);color:#64748b;font-size:15px;cursor:pointer;line-height:1;font-family:inherit;">✕</button></div>';
   if(cfg.badge) h+='<div style="display:inline-block;padding:5px 12px;border-radius:100px;background:linear-gradient(135deg,'+ac+','+ac2+');color:#334155;font-size:10.5px;font-weight:800;margin-bottom:12px;letter-spacing:.01em;"'+_dk('badge')+'>'+_t('badge',_cgoT(cfg.badge))+'</div>';
@@ -25051,7 +25031,7 @@ function _cgoGmdIntroPopup(){
   /* ★ 팝업 안에 또 하나의 스크롤을 두지 않는다.
    상자 안 스크롤은 기기·손짓에 따라 손끝이 겉돌아 「밑으로 안 내려간다」가 되풀이됐다.
    앱에서 늘 잘 도는 페이지 스크롤 하나로 굴린다 — 문서 흐름에 얹고 높이만 채운다. */
-pop.style.cssText='position:absolute;left:0;right:0;top:var(--hdrH,56px);min-height:calc(100vh - var(--hdrH,56px));z-index:30600;background:#f0fdf9;';
+pop.style.cssText='position:fixed;left:0;right:0;bottom:0;top:var(--hdrH,56px);z-index:30600;background:#f0fdf9;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;contain:layout paint style;';
   var h='<div style="max-width:600px;margin:0 auto;background:#f0fdf9;border-top:3px solid #d4a843;padding:22px 18px 40px;">';
   h+='<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;"><span style="font-size:32px;">📸</span><div><div style="font-size:17px;font-weight:900;color:#b8860b;">풍수 카메라</div><div style="font-size:11px;color:#b8860b;margin-top:2px;">전 세계 7대 공간 에너지 AI 분석 시스템</div></div></div>';
   h+='<div style="font-size:12px;color:#334155;line-height:1.9;margin-bottom:14px;padding:12px 14px;background:rgba(212,168,67,.06);border:1px solid rgba(212,168,67,.2);border-radius:12px;">공간을 <b style="color:#b8860b;">10방향으로 촬영</b>하면 AI가 <b style="color:#b8860b;">세계 7대 공간 에너지 시스템</b>으로 종합 분석합니다.</div>';
@@ -39110,7 +39090,8 @@ window._cgoClosePop=function(id){
   try{
     var any=false, all=document.querySelectorAll('body > div[id]');
     for(var i=0;i<all.length;i++){ var d=all[i].style.display; if(d==='block'||d==='flex'){ any=true; break; } }
-    if(!any) document.body.classList.remove('cgo-pop-on');
+    if(!any){ document.body.classList.remove('cgo-pop-on');
+               try{ document.documentElement.classList.remove('cgo-pop-on'); }catch(e){} }
   }catch(e){}
 };
 </script>
@@ -46972,6 +46953,8 @@ window.tvyShowIntroPopup = function(){
 
 
 
+
+
 </body></html>
 <style>
 /* ★v5 — 앱 전체 스크롤. 구형은 .content 안에만 스크롤이 있어 휠·스와이프가 겉돌았다 */
@@ -47107,4 +47090,6 @@ header input,header input::placeholder{color:#cbd5e1!important}
 
 
 </style>
+
+
 
