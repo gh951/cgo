@@ -477,12 +477,16 @@ window.setLang=window.cgoSwitchLang=function(L){
  var SEL='.content > div, .page, .fdash-cat, .fdash-grid, .fdash-card, .lc, .card, section, .fsp, .acc, .panel, [id^=page-], [id^=cgo-], details, .gf-item, .mypg-card, .guide-sec, #cgoGuidePopup > div > div, #mypage-pop-content > div';
  /* 화면 위치를 직접 재서 켜고 끈다 — 관찰기만 믿었을 때 한 번도 쉬지 않았다 */
  var LIST=[], tick=null;
+ /* ★ 재기와 쓰기를 갈라 놓는다.
+    한 덩이 안에서 재고 곧 쓰면 브라우저가 그 자리마다 배치를 다시 셈해,
+    3,500칸이면 배치 셈이 3,500번 일어나 손끝이 얼어붙었다(스크롤·복사 멈춤).
+    먼저 다 재고(1번), 그 뒤에 다 쓴다(1번). 그리고 화면이 꺼져 있거나
+    display:none 안에 든 것은 아예 재지 않는다. */
  function judge(){
    tick=null;
+   if(document.hidden) return;
    var vh=innerHeight, pad=260;
-   /* 팝업처럼 스스로 구르는 상자 안에서는 그 상자를 창 대신 본다 */
    function box(el){
-     /* 스스로 구르는 상자는 바뀌지 않는다 — 한 번 찾고 기억한다 */
      if(el._cgoBox!==undefined) return el._cgoBox;
      var r=null;
      for(var p=el.parentElement; p && p!==document.body; p=p.parentElement){
@@ -491,15 +495,35 @@ window.setLang=window.cgoSwitchLang=function(L){
      }
      el._cgoBox=r; return r;
    }
-   for(var i=0;i<LIST.length;i++){
-     var el=LIST[i]; if(!el.isConnected) continue;
+   /* ① 재기만 — 쓰지 않는다 */
+   var job=[], hostRect={}, i, el;
+   for(i=0;i<LIST.length;i++){
+     el=LIST[i];
+     if(!el.isConnected) continue;
+     if(!el.offsetParent && el.style.position!=='fixed') continue;  /* 죽은 페이지 안은 건너뜀 */
+     /* ★ 팝업 안은 특허를 걸지 않는다 — 팝업은 스스로 구르는 상자라
+        재우면 스크롤이 그 자리에서 멈추고 글자 선택이 끊겼다. */
+     if(el._cgoPop===undefined){
+       var pp=el.closest('body > div[id$="-pop"], body > div[id$="Pop"], body > div[id$="-popup"], body > div[id$="Popup"]');
+       el._cgoPop = !!pp;
+     }
+     if(el._cgoPop){ el.classList.remove('cgo-rest'); el.style.minHeight=''; el.style.containIntrinsicSize=''; continue; }
      var b=el.getBoundingClientRect();
+     if(b.width===0 && b.height===0) continue;
      var host=box(el), top=0, bot=vh;
-     if(host){ var hb=host.getBoundingClientRect(); top=hb.top; bot=hb.bottom; }
-     var near = b.bottom > top-pad && b.top < bot+pad;
-     if(near){ el.classList.remove('cgo-rest'); el.style.minHeight=''; }
+     if(host){
+       var key=host._cgoKey || (host._cgoKey='h'+(++box._n||(box._n=1)));
+       var hb=hostRect[key] || (hostRect[key]=host.getBoundingClientRect());
+       top=hb.top; bot=hb.bottom;
+     }
+     job.push([el, (b.bottom > top-pad && b.top < bot+pad), b.height]);
+   }
+   /* ② 쓰기만 — 배치 셈은 다음 프레임에 한 번 */
+   for(i=0;i<job.length;i++){
+     el=job[i][0];
+     if(job[i][1]){ el.classList.remove('cgo-rest'); el.style.minHeight=''; }
      else{
-       if(!el.dataset.cgoH){ var hh=b.height; if(hh>0) el.dataset.cgoH=Math.round(hh); }
+       if(!el.dataset.cgoH){ var hh=job[i][2]; if(hh>0) el.dataset.cgoH=Math.round(hh); }
        if(el.dataset.cgoH){ el.style.containIntrinsicSize='auto '+el.dataset.cgoH+'px'; el.style.minHeight=el.dataset.cgoH+'px'; }
        el.classList.add('cgo-rest');
      }
@@ -512,7 +536,7 @@ window.setLang=window.cgoSwitchLang=function(L){
  addEventListener('resize',ping);
  document.addEventListener('scroll',ping,{passive:true,capture:true});
  (function(){ var t=null, idle=null;
-  function go(){ if(window._p0Entered) judge(); }
+  function go(){ if(document.hidden) return; if(window._p0Entered) judge(); }
   function soon(){ if(t) return; t=setTimeout(function(){ t=null; go(); },120); }
   addEventListener('scroll',soon,{passive:true});
   addEventListener('resize',soon,{passive:true});
@@ -6208,13 +6232,23 @@ body{font-family:Noto Sans KR,sans-serif;background:#fff;color:#111;padding:40px
    리포트 등)이 목록에서 빠져 애니메이션이 남았고, 그 애니메이션이 1.6~2.5초마다
    화면을 다시 그려 글자 선택·복사가 끊겼다. 규칙을 더하는 것이 아니라 같은 세 줄을
    이름 대신 모양으로 걸어 빠짐을 없앤다. */
+/* ★ 팝업에는 contain 을 걸지 않는다 — 스크롤이 멈췄다.
+   무거운 것(그림자·흐림·애니메이션)만 없애고, 구르는 성질은 건드리지 않는다. */
 body > div[id$="-pop"],
 body > div[id$="Pop"],
 body > div[id$="-popup"],
 body > div[id$="Popup"]{
-  contain:layout paint style;
   -webkit-overflow-scrolling:touch;
-  overscroll-behavior:contain;
+  overflow-y:auto;
+  touch-action:pan-y;
+}
+body > div[id$="-pop"] .cgo-rest,
+body > div[id$="Pop"] .cgo-rest,
+body > div[id$="-popup"] .cgo-rest,
+body > div[id$="Popup"] .cgo-rest{
+  content-visibility:visible!important;
+  contain:none!important;
+  min-height:0!important;
 }
 body > div[id$="-pop"] *,
 body > div[id$="Pop"] *,
@@ -19549,7 +19583,7 @@ function _cgoFDIntro(cfg){
   var ac=cfg.accent||'#0284c7', ac2=cfg.accent2||ac;
   var pop=document.createElement('div');
   pop.id=id;
-  pop.style.cssText='position:fixed;left:0;right:0;bottom:0;top:var(--hdrH,56px);z-index:30600;background:#f0fdf9;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;contain:layout paint style;';
+  pop.style.cssText='position:fixed;left:0;right:0;bottom:0;top:var(--hdrH,56px);z-index:30600;background:#f0fdf9;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;';
   var h='<div style="max-width:600px;margin:0 auto;background:#f0fdf9;border-top:3px solid '+ac+';padding:22px 18px 40px;">';
   h+='<div style="display:flex;align-items:flex-start;gap:11px;margin-bottom:16px;"><span style="font-size:30px;flex-shrink:0;line-height:1.1;">'+(cfg.ico||'✨')+'</span><div style="min-width:0;flex:1;"><div style="font-size:17px;font-weight:900;color:#0f172a;line-height:1.3;"'+_dk('title')+'>'+_t('title',cfg.title||'')+'</div>'+(cfg.subtitle?'<div style="font-size:11px;color:#64748b;margin-top:3px;line-height:1.5;"'+_dk('subtitle')+'>'+_t('subtitle',cfg.subtitle)+'</div>':'')+'</div><button onclick="var p=document.getElementById(\''+id+'\');if(p)p.remove();" style="flex-shrink:0;width:30px;height:30px;border-radius:50%;background:#f1f5f9;border:1px solid rgba(2,8,23,.08);color:#64748b;font-size:15px;cursor:pointer;line-height:1;font-family:inherit;">✕</button></div>';
   if(cfg.badge) h+='<div style="display:inline-block;padding:5px 12px;border-radius:100px;background:linear-gradient(135deg,'+ac+','+ac2+');color:#334155;font-size:10.5px;font-weight:800;margin-bottom:12px;letter-spacing:.01em;"'+_dk('badge')+'>'+_t('badge',_cgoT(cfg.badge))+'</div>';
@@ -24971,7 +25005,7 @@ function _cgoGmdIntroPopup(){
   var old=document.getElementById('cgo-gmd-pop'); if(old) old.remove();
   var pop=document.createElement('div');
   pop.id='cgo-gmd-pop';
-  pop.style.cssText='position:fixed;left:0;right:0;bottom:0;top:var(--hdrH,56px);z-index:30600;background:#f0fdf9;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;contain:layout paint style;';
+  pop.style.cssText='position:fixed;left:0;right:0;bottom:0;top:var(--hdrH,56px);z-index:30600;background:#f0fdf9;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;';
   var h='<div style="max-width:600px;margin:0 auto;background:#f0fdf9;border-top:3px solid #d4a843;padding:22px 18px 40px;">';
   h+='<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;"><span style="font-size:32px;">📸</span><div><div style="font-size:17px;font-weight:900;color:#b8860b;">풍수 카메라</div><div style="font-size:11px;color:#b8860b;margin-top:2px;">전 세계 7대 공간 에너지 AI 분석 시스템</div></div></div>';
   h+='<div style="font-size:12px;color:#334155;line-height:1.9;margin-bottom:14px;padding:12px 14px;background:rgba(212,168,67,.06);border:1px solid rgba(212,168,67,.2);border-radius:12px;">공간을 <b style="color:#b8860b;">10방향으로 촬영</b>하면 AI가 <b style="color:#b8860b;">세계 7대 공간 에너지 시스템</b>으로 종합 분석합니다.</div>';
