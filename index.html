@@ -6238,9 +6238,19 @@ body > div[id$="-pop"],
 body > div[id$="Pop"],
 body > div[id$="-popup"],
 body > div[id$="Popup"]{
-  -webkit-overflow-scrolling:touch;
-  overflow-y:auto;
-  touch-action:pan-y;
+  overflow:visible!important;
+  contain:none!important;
+}
+/* 팝업이 떠 있는 동안 뒤 페이지를 흐름에서 뺀다 — 아래에 이어 붙어 보였다 */
+html.cgo-pop-on .content,
+html.cgo-pop-on body > .page{ display:none!important; }
+/* 팝업 안쪽은 재우지 않는다 — 재우면 높이가 600px 로 가정되어 아래가 잘렸다 */
+body > div[id$="-pop"] *,
+body > div[id$="Pop"] *,
+body > div[id$="-popup"] *,
+body > div[id$="Popup"] *{
+  content-visibility:visible!important;
+  contain-intrinsic-size:auto!important;
 }
 body > div[id$="-pop"] .cgo-rest,
 body > div[id$="Pop"] .cgo-rest,
@@ -19564,6 +19574,26 @@ function _cgoGetScore() {
   };
 }
 
+/* ★ 팝업이 문서 흐름에 얹히면서 뒤 페이지가 아래에 이어 붙어 보였다.
+   팝업이 떠 있는 동안에는 뒤 페이지를 흐름에서 빼고, 닫을 때 되돌린다.
+   창구를 이 둘로만 두어 어디서 닫아도 같은 길을 지난다. */
+window._cgoPopOpen = function(){
+  try{ document.documentElement.classList.add('cgo-pop-on'); }catch(e){}
+};
+window._cgoPopClose = function(id){
+  try{ var p=document.getElementById(id); if(p) p.remove(); }catch(e){}
+  try{
+    /* 떠 있는 것만 센다 — 숨어 있는 팝업이 DOM 에 남아 있어 뒤 페이지가 계속 빠져 있었다 */
+    var all=document.querySelectorAll('body > div[id$="-pop"], body > div[id$="Pop"], body > div[id$="-popup"], body > div[id$="Popup"]');
+    var live=0;
+    for(var i=0;i<all.length;i++){
+      var e=all[i], s=e.style.display;
+      if(s==='none') continue;
+      if(e.offsetHeight>0 || e.offsetWidth>0) live++;
+    }
+    if(!live) document.documentElement.classList.remove('cgo-pop-on');
+  }catch(e){}
+};
 function _cgoFDIntro(cfg){
   cfg=cfg||{};
   var _N=cfg.nums||{};
@@ -19583,9 +19613,12 @@ function _cgoFDIntro(cfg){
   var ac=cfg.accent||'#0284c7', ac2=cfg.accent2||ac;
   var pop=document.createElement('div');
   pop.id=id;
-  pop.style.cssText='position:fixed;left:0;right:0;bottom:0;top:var(--hdrH,56px);z-index:30600;background:#f0fdf9;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;';
+  /* ★ 팝업 안에 또 하나의 스크롤을 두지 않는다.
+   상자 안 스크롤은 기기·손짓에 따라 손끝이 겉돌아 「밑으로 안 내려간다」가 되풀이됐다.
+   앱에서 늘 잘 도는 페이지 스크롤 하나로 굴린다 — 문서 흐름에 얹고 높이만 채운다. */
+pop.style.cssText='position:absolute;left:0;right:0;top:var(--hdrH,56px);min-height:calc(100vh - var(--hdrH,56px));z-index:30600;background:#f0fdf9;';
   var h='<div style="max-width:600px;margin:0 auto;background:#f0fdf9;border-top:3px solid '+ac+';padding:22px 18px 40px;">';
-  h+='<div style="display:flex;align-items:flex-start;gap:11px;margin-bottom:16px;"><span style="font-size:30px;flex-shrink:0;line-height:1.1;">'+(cfg.ico||'✨')+'</span><div style="min-width:0;flex:1;"><div style="font-size:17px;font-weight:900;color:#0f172a;line-height:1.3;"'+_dk('title')+'>'+_t('title',cfg.title||'')+'</div>'+(cfg.subtitle?'<div style="font-size:11px;color:#64748b;margin-top:3px;line-height:1.5;"'+_dk('subtitle')+'>'+_t('subtitle',cfg.subtitle)+'</div>':'')+'</div><button onclick="var p=document.getElementById(\''+id+'\');if(p)p.remove();" style="flex-shrink:0;width:30px;height:30px;border-radius:50%;background:#f1f5f9;border:1px solid rgba(2,8,23,.08);color:#64748b;font-size:15px;cursor:pointer;line-height:1;font-family:inherit;">✕</button></div>';
+  h+='<div style="display:flex;align-items:flex-start;gap:11px;margin-bottom:16px;"><span style="font-size:30px;flex-shrink:0;line-height:1.1;">'+(cfg.ico||'✨')+'</span><div style="min-width:0;flex:1;"><div style="font-size:17px;font-weight:900;color:#0f172a;line-height:1.3;"'+_dk('title')+'>'+_t('title',cfg.title||'')+'</div>'+(cfg.subtitle?'<div style="font-size:11px;color:#64748b;margin-top:3px;line-height:1.5;"'+_dk('subtitle')+'>'+_t('subtitle',cfg.subtitle)+'</div>':'')+'</div><button onclick="var p=document.getElementById(\''+id+'\');if(p)p.remove();window._cgoPopClose&&_cgoPopClose(\''+id+'\');" style="flex-shrink:0;width:30px;height:30px;border-radius:50%;background:#f1f5f9;border:1px solid rgba(2,8,23,.08);color:#64748b;font-size:15px;cursor:pointer;line-height:1;font-family:inherit;">✕</button></div>';
   if(cfg.badge) h+='<div style="display:inline-block;padding:5px 12px;border-radius:100px;background:linear-gradient(135deg,'+ac+','+ac2+');color:#334155;font-size:10.5px;font-weight:800;margin-bottom:12px;letter-spacing:.01em;"'+_dk('badge')+'>'+_t('badge',_cgoT(cfg.badge))+'</div>';
   if(cfg.summary) h+='<div style="font-size:12px;color:#334155;line-height:1.85;margin-bottom:13px;padding:13px 14px;background:#ffffff;border:1px solid rgba(2,8,23,.07);border-radius:12px;"'+_dk('summary')+'>'+_t('summary',cfg.summary)+'</div>';
   var _fdList=function(lb,arr,pre,lbKey){ if(!arr||!arr.length) return ''; var mk=['①','②','③','④','⑤','⑥','⑦','⑧','⑨','⑩']; var s='<div style="background:#ffffff;border:1px solid rgba(2,8,23,.07);border-radius:12px;padding:14px;margin-bottom:12px;"><div style="font-size:11px;font-weight:800;color:'+ac+';margin-bottom:11px;"'+(lbKey?_dk(lbKey):'')+'>'+lb+'</div><div style="display:flex;flex-direction:column;gap:9px;">'; arr.forEach(function(x,i){ var t=x,d=''; if(x.indexOf('|')>0){var sp=x.split('|');t=sp[0];d=sp[1];}
@@ -19596,7 +19629,7 @@ function _cgoFDIntro(cfg){
   if(cfg.note) h+='<div style="background:rgba(220,38,38,.05);border:1px solid rgba(220,38,38,.18);border-radius:12px;padding:11px 14px;margin-bottom:14px;"><div style="font-size:11px;font-weight:800;color:#dc2626;margin-bottom:5px;" data-k="19897">⚖️ 정직 안내</div><div style="font-size:10px;color:#475569;line-height:1.75;"'+_dk('note')+'>'+_t('note',cfg.note)+'</div></div>';
   var cbId=id+'-skip';
   if(sk) h+='<label style="display:flex;align-items:center;gap:8px;margin-bottom:10px;cursor:pointer;font-size:11px;color:#64748b;"><input type="checkbox" id="'+cbId+'" style="cursor:pointer;width:14px;height:14px;accent-color:'+ac+';"><span data-k="19898">오늘 하루 보지 않기</span></label>';
-  h+='<button onclick="(function(){var cb=document.getElementById(\''+cbId+'\');if(cb&&cb.checked){try{localStorage.setItem(\''+(sk||'')+'\',\'1\');}catch(e){}}var p=document.getElementById(\''+id+'\');if(p)p.remove();'+(cfg.launch||'')+'})();" style="width:100%;padding:16px;background:linear-gradient(135deg,'+ac+','+ac2+');border:none;border-radius:14px;color:#334155;font-size:15px;font-weight:900;cursor:pointer;"'+_dk('btnLabel')+'>'+_t('btnLabel',cfg.btnLabel||'시작하기')+'</button>';
+  h+='<button onclick="(function(){var cb=document.getElementById(\''+cbId+'\');if(cb&&cb.checked){try{localStorage.setItem(\''+(sk||'')+'\',\'1\');}catch(e){}}var p=document.getElementById(\''+id+'\');if(p)p.remove();window._cgoPopClose&&_cgoPopClose(\''+id+'\');'+(cfg.launch||'')+'})();" style="width:100%;padding:16px;background:linear-gradient(135deg,'+ac+','+ac2+');border:none;border-radius:14px;color:#334155;font-size:15px;font-weight:900;cursor:pointer;"'+_dk('btnLabel')+'>'+_t('btnLabel',cfg.btnLabel||'시작하기')+'</button>';
   h+='</div>';
   pop.innerHTML=h;
   /* 지금 만든 팝업만 기억한다 — 되살리기는 「떠 있을 때만」 조건이 막는다 */
@@ -19660,6 +19693,8 @@ function _cgoFDIntro(cfg){
      번역하므로 한글이 화면에 뜰 기회 자체가 없어진다. */
   try{ if(window._cgoTranslateNode) window._cgoTranslateNode(pop); }catch(e){}
   document.body.appendChild(pop);
+  try{ window._cgoPopOpen&&_cgoPopOpen(); }catch(e){}
+  try{ window.scrollTo(0,0); }catch(e){}
   /* 두피·6부위 팝업과 같은 길 — 붙인 뒤 공용 칠하기로 번호를 칠한다 */
   try{ if(window.CGO_T&&CGO_T.paint) CGO_T.paint(pop); }catch(e){}
   setTimeout(function(){
@@ -25005,7 +25040,10 @@ function _cgoGmdIntroPopup(){
   var old=document.getElementById('cgo-gmd-pop'); if(old) old.remove();
   var pop=document.createElement('div');
   pop.id='cgo-gmd-pop';
-  pop.style.cssText='position:fixed;left:0;right:0;bottom:0;top:var(--hdrH,56px);z-index:30600;background:#f0fdf9;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;';
+  /* ★ 팝업 안에 또 하나의 스크롤을 두지 않는다.
+   상자 안 스크롤은 기기·손짓에 따라 손끝이 겉돌아 「밑으로 안 내려간다」가 되풀이됐다.
+   앱에서 늘 잘 도는 페이지 스크롤 하나로 굴린다 — 문서 흐름에 얹고 높이만 채운다. */
+pop.style.cssText='position:absolute;left:0;right:0;top:var(--hdrH,56px);min-height:calc(100vh - var(--hdrH,56px));z-index:30600;background:#f0fdf9;';
   var h='<div style="max-width:600px;margin:0 auto;background:#f0fdf9;border-top:3px solid #d4a843;padding:22px 18px 40px;">';
   h+='<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;"><span style="font-size:32px;">📸</span><div><div style="font-size:17px;font-weight:900;color:#b8860b;">풍수 카메라</div><div style="font-size:11px;color:#b8860b;margin-top:2px;">전 세계 7대 공간 에너지 AI 분석 시스템</div></div></div>';
   h+='<div style="font-size:12px;color:#334155;line-height:1.9;margin-bottom:14px;padding:12px 14px;background:rgba(212,168,67,.06);border:1px solid rgba(212,168,67,.2);border-radius:12px;">공간을 <b style="color:#b8860b;">10방향으로 촬영</b>하면 AI가 <b style="color:#b8860b;">세계 7대 공간 에너지 시스템</b>으로 종합 분석합니다.</div>';
@@ -46855,21 +46893,14 @@ window.tvyRunMatch = function(){
   function setup(){
     var pg = document.getElementById('page-travel-yeogi');
     if(!pg) return;
-    function init(){
-      window.tvyFillCountries();
-      window.tvyRenderSys();
-      // ★ 입구 팝업 (오늘 하루 보지 않기 체크 시 skip)
-      // 즉시 호출 — setTimeout 제거 (본 페이지 깜빡임 방지)
-      try{
-        if(localStorage.getItem('cgo_yeogi_intro_skip_v2') !== '1'){
-          window.tvyShowIntroPopup();
-        }
-      }catch(e){}
-    }
-    if(pg.classList.contains('active')) init();
-    new MutationObserver(function(){
-      if(pg.classList.contains('active')) init();
-    }).observe(pg, {attributes:true, attributeFilter:['class']});
+    /* ★ 페이지가 열릴 때 팝업을 부르지 않는다 — 카드에서 팝업을 한 번 지나오므로
+       여기서 또 부르면 팝업이 끝없이 되살아나 페이지에 들어가지 못했다.
+       감시자도 두지 않는다(CLAUDE.md — 새 감시자 금지). */
+    window.tvyInitOnce = function(){
+      if(pg._tvyDone) return; pg._tvyDone = 1;
+      try{ window.tvyFillCountries(); window.tvyRenderSys(); }catch(e){}
+    };
+    if(pg.classList.contains('active')) window.tvyInitOnce();
   }
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', setup);
   else setTimeout(setup, 100);
@@ -46884,6 +46915,7 @@ window.cgoTvyClearPops = function(){
     ['tvy-intro-pop','cgo-travel-pop','tvyHelpPopup','trv2-intro-pop'].forEach(function(id){
       var el=document.getElementById(id);
       if(el){ if(id==='tvyHelpPopup') el.style.display='none'; else el.remove(); }
+      try{ if(window._cgoPopClose) _cgoPopClose(id); }catch(e){}
     });
     /* 여행 글자를 담은 채 화면을 덮고 있는 것도 함께 치운다 */
     var all=document.querySelectorAll('body > div[id$="-pop"], body > div[id*="intro"], body > div[id*="Intro"]');
@@ -46894,10 +46926,15 @@ window.cgoTvyClearPops = function(){
   }catch(e){}
 };
 window.cgoTvyOpen = function(){
-  /* ★ 입구 팝업을 두지 않는다 — 구 CGO 에서 옮겨온 뒤 팝업이 겹쳐 남는 일이
-     반복되어, 카드에서 페이지로 바로 잇는다. 안내는 페이지 안 「❓ 사용법」이 맡는다. */
+  /* 카드 → 팝업 → 페이지. 팝업을 여는 곳은 여기 하나뿐이다. */
   cgoTvyClearPops();
-  try{ cgoGoPage('travel-yeogi'); }catch(e){}
+  try{
+    if(localStorage.getItem('cgo_yeogi_intro_skip_v2') === '1'){
+      if(window.tvyInitOnce) window.tvyInitOnce();
+      cgoGoPage('travel-yeogi'); return;
+    }
+  }catch(e){}
+  try{ window.tvyShowIntroPopup(); }catch(e){ try{ cgoGoPage('travel-yeogi'); }catch(_){} }
 };
 window.tvyShowIntroPopup = function(){
   var _T=(typeof _cgoT==="function")?_cgoT:function(x){return x;};
