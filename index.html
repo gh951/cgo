@@ -30,6 +30,9 @@
 /* 헤더 z 는 처음부터 확정 · 관문 화면을 그보다 위로 올린다 */
 html:not(.cgo-ready) #entSplash{z-index:100010!important}
 html:not(.cgo-ready) #phase0{z-index:100005!important}
+/* ★ 관문을 지나기 전에는 상단 바를 아예 두지 않는다 — 첫 프레임에 대문 위로
+   대시보드 로고 바가 스쳐 보였다. z 로 덮는 대신 없앤다. */
+html:not(.cgo-ready) header{display:none!important}
 /* ★ 페이지 머리가 헤더에 닿지 않게 — 스크롤 도중에도 제목이 안 잘린다 */
 .content{ padding-top:0 }
 #page-mypage > div:first-child,
@@ -14946,7 +14949,12 @@ try{
 (function(){
   function ready(){
     var e=document.getElementById('entSplash'), p=document.getElementById('phase0');
-    var open=false;
+    /* ★ 아직 대문이 만들어지지 않은 첫 프레임에는 「열려 있다」로 본다.
+       없으면 닫힌 줄 알고 상단 바를 곧 보여, 대문 위로 대시보드 로고 바가
+       한 번 스쳤다(잔상). 지나갔다고 기억된 경우만 닫힌 것으로 센다. */
+    var passed=false;
+    try{ passed = (sessionStorage.getItem('cgo_ent')==='1' && sessionStorage.getItem('cgo_lang_ok')==='1'); }catch(_){}
+    var open = (!e && !p) ? !passed : false;
     [e,p].forEach(function(el){
       if(!el) return;
       var cs=getComputedStyle(el);
